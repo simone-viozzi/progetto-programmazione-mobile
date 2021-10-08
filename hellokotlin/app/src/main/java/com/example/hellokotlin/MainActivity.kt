@@ -12,8 +12,7 @@ class MainActivity : AppCompatActivity()
         setContentView(R.layout.activity_main)
 
         bottomNavigationView.background = null
-        //bottomNavigationView.menu.getItem(2).isEnabled = false
-
+        bottomNavigationView.menu.getItem(2).isEnabled = false
 
     }
 }
