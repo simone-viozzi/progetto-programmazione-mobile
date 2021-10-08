@@ -91,3 +91,6 @@ lint/tmp/
 *.hprof
 
 .idea/compiler.xml
+.idea/gradle.xml
+.idea/misc.xml
+
