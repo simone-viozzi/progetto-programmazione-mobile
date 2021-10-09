@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Maxxy/AndroidStudioProjects/progetto-programmazione-mobile/scorllactivity/app/src/main/res/layout/activity_scrolling.xml" value="0.12" />
+        <entry key="..\:/Users/Maxxy/AndroidStudioProjects/progetto-programmazione-mobile/scorllactivity/app/src/main/res/layout-w1240dp/content_scrolling.xml" value="0.13420348058902276" />
+        <entry key="..\:/Users/Maxxy/AndroidStudioProjects/progetto-programmazione-mobile/scorllactivity/app/src/main/res/layout-w936dp/content_scrolling.xml" value="0.156640625" />
+        <entry key="..\:/Users/Maxxy/AndroidStudioProjects/progetto-programmazione-mobile/scorllactivity/app/src/main/res/layout/activity_scrolling.xml" value="0.18" />
+        <entry key="..\:/Users/Maxxy/AndroidStudioProjects/progetto-programmazione-mobile/scorllactivity/app/src/main/res/layout/content_scrolling.xml" value="0.13" />
       </map>
     </option>
   </component>
