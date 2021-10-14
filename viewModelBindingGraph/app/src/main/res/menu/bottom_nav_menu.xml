@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Hello!"
+        android:id="@+id/helloFragment"
+        android:icon="@drawable/ic_baseline_accessibility_new_24"/>
+    <item android:title="list"
+        android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+        android:id="@+id/listFragment"/>
+    <item android:title=""
+        />
+    <item android:title="3"
+        android:icon="@drawable/ic_baseline_looks_3_24"
+        android:id="@+id/thirdFragment"/>
+    <item android:title="4"
+        android:icon="@drawable/ic_baseline_looks_4_24"
+        android:id="@+id/fourthFragment"/>
+</menu>

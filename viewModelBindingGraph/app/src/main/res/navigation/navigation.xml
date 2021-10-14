@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/navigation"
+    app:startDestination="@id/helloFragment">
+
+    <fragment
+        android:id="@+id/helloFragment"
+        android:name="com.example.viewmodelbindinggraph.hello.HelloFragment"
+        tools:layout="@layout/hello_fragment"
+        android:label="HelloFragment" />
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.viewmodelbindinggraph.list.listFragment"
+        android:label="list_fragment"
+        tools:layout="@layout/list_fragment" />
+    <fragment
+        android:id="@+id/thirdFragment"
+        android:name="com.example.viewmodelbindinggraph.tirdF.ThirdFragment"
+        android:label="third_fragment"
+        tools:layout="@layout/third_fragment" />
+    <fragment
+        android:id="@+id/fourthFragment"
+        android:name="com.example.viewmodelbindinggraph.fourth.FourthFragment"
+        android:label="fourth_fragment"
+        tools:layout="@layout/fourth_fragment" />
+</navigation>
