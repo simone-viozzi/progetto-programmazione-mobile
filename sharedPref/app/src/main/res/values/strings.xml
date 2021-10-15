@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">sharedPref</string>
+    <string name="string_pref">string_pref</string>
+    <string name="int_pref">int_pref</string>
+    <string name="float_pref">float_pref</string>
+    <string name="boolean_pref">boolean_pref</string>
+</resources>
