@@ -16,6 +16,14 @@ class ColorViewModel(private val repository: ColorRepository): ViewModel()
         repository.insert(color)
     }
 
+    fun deleteAll() = viewModelScope.launch {
+        repository.deleteAll()
+    }
+
+    fun delete(color: MyColor) = viewModelScope.launch {
+
+        repository.delete(color)
+    }
 }
 
 class ColorViewModelFactory(private val repository: ColorRepository): ViewModelProvider.Factory {

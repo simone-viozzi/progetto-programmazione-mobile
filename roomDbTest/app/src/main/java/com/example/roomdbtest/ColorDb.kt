@@ -29,7 +29,7 @@ abstract class ColorDb: RoomDatabase()
                     ColorDb::class.java,
                     "word_database"
                 ).fallbackToDestructiveMigration()
-                    .addCallback(ColorDbCallback(scope))
+                    //.addCallback(ColorDbCallback(scope))
                     .build()
                 INSTANCE = instance
                 // return instance
@@ -38,21 +38,21 @@ abstract class ColorDb: RoomDatabase()
         }
     }
 
-    private class ColorDbCallback(
-        private val scope: CoroutineScope,
-    ) : RoomDatabase.Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase)
-        {
-            super.onCreate(db)
-            INSTANCE.let { database ->
-
-                scope.launch{
-                    val colorDao = database?.colorDao()
-
-                    // Delete all content here.
-                    colorDao?.deleteAll()
-                }
-            }
-        }
-    }
+//    private class ColorDbCallback(
+//        private val scope: CoroutineScope,
+//    ) : RoomDatabase.Callback() {
+//        override fun onCreate(db: SupportSQLiteDatabase)
+//        {
+//            super.onCreate(db)
+//            INSTANCE.let { database ->
+//
+//                scope.launch{
+//                    val colorDao = database?.colorDao()
+//
+//                    // Delete all content here.
+//                    colorDao?.deleteAll()
+//                }
+//            }
+//        }
+//    }
 }

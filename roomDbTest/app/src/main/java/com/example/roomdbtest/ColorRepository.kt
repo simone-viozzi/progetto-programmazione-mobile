@@ -6,13 +6,15 @@ class ColorRepository(private val colorDao: ColorDao)
 {
     val allColors: LiveData<List<MyColor>> = colorDao.getAll()
 
-
     suspend fun insert(myColor: MyColor) {
         colorDao.insert(myColor)
     }
 
-
     suspend fun delete(myColor: MyColor) {
         colorDao.delete(myColor)
+    }
+
+    suspend fun deleteAll() {
+        colorDao.deleteAll()
     }
 }

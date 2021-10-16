@@ -17,8 +17,8 @@ import timber.log.Timber
 import android.util.DisplayMetrics
 
 import android.graphics.PointF
-
-
+import android.view.MenuItem
+import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 
 
 class MainActivity : AppCompatActivity()
@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity()
         recyclerView.layoutManager = SmoothLinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
 
+        adapter.onItemClick = { color ->
+            viewModel.delete(color)
+        }
 
         viewModel.allColors.observe(this) {
             adapter.submitList(it.asReversed())
@@ -63,6 +66,19 @@ class MainActivity : AppCompatActivity()
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when(item.itemId)
+        {
+            R.id.app_bar_delete_all -> {
+                viewModel.deleteAll()
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     class SmoothLinearLayoutManager(context: Context) : LinearLayoutManager(context){
         override fun smoothScrollToPosition(
             recyclerView: RecyclerView?,
@@ -74,18 +90,14 @@ class MainActivity : AppCompatActivity()
                 recyclerView!!.context
             )
             {
-                override fun computeScrollVectorForPosition(targetPosition: Int): PointF?
-                {
-                    return super.computeScrollVectorForPosition(targetPosition)
-                }
-
                 override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float
                 {
-                    return 20f / displayMetrics.densityDpi
+                    return 0.001f / displayMetrics.densityDpi
                 }
             }
 
-            super.smoothScrollToPosition(recyclerView, state, position)
+            linearSmoothScroller.targetPosition = position
+            startSmoothScroll(linearSmoothScroller)
         }
     }
 
