@@ -18,6 +18,7 @@ import android.util.DisplayMetrics
 
 import android.graphics.PointF
 import android.view.MenuItem
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 
 
@@ -40,12 +41,26 @@ class MainActivity : AppCompatActivity()
         val adapter = ColorListAdapter()
 
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = SmoothLinearLayoutManager(this)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.setHasFixedSize(true)
 
         adapter.onItemClick = { color ->
             viewModel.delete(color)
         }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
+            {
+                if (dy > 0)
+                {
+                    binding.fab.hide()
+                }
+                if (dy < 0)
+                {
+                    binding.fab.show()
+                }
+            }
+        })
 
         viewModel.allColors.observe(this) {
             adapter.submitList(it.asReversed())
@@ -79,27 +94,7 @@ class MainActivity : AppCompatActivity()
         return super.onOptionsItemSelected(item)
     }
 
-    class SmoothLinearLayoutManager(context: Context) : LinearLayoutManager(context){
-        override fun smoothScrollToPosition(
-            recyclerView: RecyclerView?,
-            state: RecyclerView.State?,
-            position: Int
-        )
-        {
-            val linearSmoothScroller: LinearSmoothScroller = object : LinearSmoothScroller(
-                recyclerView!!.context
-            )
-            {
-                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float
-                {
-                    return 0.001f / displayMetrics.densityDpi
-                }
-            }
 
-            linearSmoothScroller.targetPosition = position
-            startSmoothScroll(linearSmoothScroller)
-        }
-    }
 
 
 }

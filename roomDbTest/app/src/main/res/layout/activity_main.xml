@@ -22,7 +22,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="?attr/colorPrimary"
-                android:elevation="4dp"
+                android:elevation="8dp"
                 android:theme="@style/Theme.MaterialComponents.DayNight"
                 app:popupTheme="@style/Theme.MaterialComponents.DayNight" />
 
@@ -35,7 +35,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialToolbar" />
+                app:layout_constraintTop_toBottomOf="@+id/materialToolbar"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
