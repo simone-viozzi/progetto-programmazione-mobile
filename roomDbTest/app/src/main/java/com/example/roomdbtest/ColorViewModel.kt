@@ -1,6 +1,7 @@
 package com.example.roomdbtest
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,7 +10,7 @@ import java.lang.IllegalArgumentException
 
 class ColorViewModel(private val repository: ColorRepository): ViewModel()
 {
-    val allColors = repository.allColors
+    val allColors: LiveData<List<MyColor>> = repository.allColors
 
     fun addColor(color: MyColor) = viewModelScope.launch {
         repository.insert(color)

@@ -26,7 +26,7 @@ class ColorListAdapter(): ListAdapter<MyColor, ColorListAdapter.ColorViewHolder>
     {
         override fun areItemsTheSame(oldItem: MyColor, newItem: MyColor): Boolean
         {
-            return oldItem === newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: MyColor, newItem: MyColor): Boolean
