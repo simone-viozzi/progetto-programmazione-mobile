@@ -1,9 +1,17 @@
-package com.example.roomdbtest
+package com.example.roomdbtest.db
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
+/**
+ * this represents a single row of the database
+ *
+ * @property id
+ * @property red
+ * @property green
+ * @property blue
+ * @constructor Create empty My color
+ */
 @Entity
 data class MyColor(
     @PrimaryKey(autoGenerate = true)
@@ -16,9 +24,13 @@ data class MyColor(
     var blue: Int = 0,
 )
 {
-
     companion object
     {
+        /**
+         * Create random color from a static context
+         *
+         * @return the color created
+         */
         fun createRandomColor(): MyColor
         {
             val red = (0..255).random()
@@ -28,7 +40,6 @@ data class MyColor(
             return MyColor(red = red, green = green, blue = blue)
         }
     }
-
 
     fun generateHex(): String
     {

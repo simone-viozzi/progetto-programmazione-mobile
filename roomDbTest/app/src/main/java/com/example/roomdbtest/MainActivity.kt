@@ -1,30 +1,24 @@
 package com.example.roomdbtest
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.view.Menu
-import androidx.activity.viewModels
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
-import com.example.roomdbtest.databinding.ActivityMainBinding
-import timber.log.Timber
-import android.util.DisplayMetrics
-
-import android.graphics.PointF
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.roomdbtest.databinding.ActivityMainBinding
+import com.example.roomdbtest.db.MyColor
 
 
 class MainActivity : AppCompatActivity()
 {
+    // create the view model with the view model factory and passing the repository to it
     private val viewModel: ColorViewModel by viewModels {
+        // the declaration of the repository is on the application (App)
         ColorViewModelFactory((application as App).repository)
     }
 
@@ -33,22 +27,43 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
+        // this is needed for the view model to work
         binding.lifecycleOwner = this
 
+        // set the toolbar as action bar
         setSupportActionBar(binding.materialToolbar)
 
         val recyclerView = binding.recyclerView
-        val adapter = ColorListAdapter()
 
+        // create and set the adapter
+        val adapter = ColorListAdapter()
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
+        // this sets the layoutManager, the possible choice are: LinearLayoutManager, GridLayoutManager, StaggeredGridLayoutManager
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // if the recyclerView does not change in size, this add optimizations
         recyclerView.setHasFixedSize(true)
 
+
+        /**
+         * this is the click listener of every element of the recyclerView
+         */
         adapter.onItemClick = { color ->
+            // if the element corresponding to the element color get clicked, delete it.
             viewModel.delete(color)
         }
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        {
+            /**
+             * if i'm scrolling up i display the fab, if i'm scrolling down i hide it
+             *
+             * @param recyclerView -> parent recyclerView
+             * @param dx -> derivate of movement with respect to the horizontal axis
+             * @param dy -> vertical derivate of movement
+             */
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
             {
                 if (dy > 0)
@@ -62,30 +77,50 @@ class MainActivity : AppCompatActivity()
             }
         })
 
+        // observe the live data from the viewModel
         viewModel.allColors.observe(this) {
+            // set it as the list of the adapter (reversed so new item are on top)
             adapter.submitList(it.asReversed())
         }
 
+
         binding.fab.setOnClickListener {
+            // create a random color using the utility from Color
             val color = MyColor.createRandomColor()
+            // adding it to the database
             viewModel.addColor(color)
+            // notify the adapter that the element 0 is changing
             adapter.notifyItemChanged(0)
+            // add autoscroll to reveal the element just added
             recyclerView.smoothScrollToPosition(0)
         }
 
     }
 
+    /**
+     * to add the three dot menu in the appBar
+     *
+     * @param menu
+     * @return
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean
     {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         return true
     }
 
+    /**
+     * when a menu item get called, this function handle it
+     *
+     * @param item
+     * @return
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
-        when(item.itemId)
+        when (item.itemId)
         {
-            R.id.app_bar_delete_all -> {
+            R.id.app_bar_delete_all ->
+            {
                 viewModel.deleteAll()
                 return true
             }
@@ -93,8 +128,6 @@ class MainActivity : AppCompatActivity()
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 
 
 }

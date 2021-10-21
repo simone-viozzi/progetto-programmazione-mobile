@@ -1,15 +1,16 @@
-package com.example.roomdbtest
+package com.example.roomdbtest.db
 
 import android.content.Context
-import android.telecom.Call
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-
+/**
+ * Color db -> this get initialized in the App
+ *
+ * @constructor Create empty Color db
+ */
 @Database(entities = arrayOf(MyColor::class), version = 1)
 abstract class ColorDb: RoomDatabase()
 {
@@ -20,7 +21,8 @@ abstract class ColorDb: RoomDatabase()
         private var INSTANCE: ColorDb? = null
 
         fun getDatabase(context: Context,
-                        scope: CoroutineScope): ColorDb {
+                        scope: CoroutineScope): ColorDb
+        {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
@@ -29,7 +31,6 @@ abstract class ColorDb: RoomDatabase()
                     ColorDb::class.java,
                     "word_database"
                 ).fallbackToDestructiveMigration()
-                    //.addCallback(ColorDbCallback(scope))
                     .build()
                 INSTANCE = instance
                 // return instance
@@ -38,21 +39,5 @@ abstract class ColorDb: RoomDatabase()
         }
     }
 
-//    private class ColorDbCallback(
-//        private val scope: CoroutineScope,
-//    ) : RoomDatabase.Callback() {
-//        override fun onCreate(db: SupportSQLiteDatabase)
-//        {
-//            super.onCreate(db)
-//            INSTANCE.let { database ->
-//
-//                scope.launch{
-//                    val colorDao = database?.colorDao()
-//
-//                    // Delete all content here.
-//                    colorDao?.deleteAll()
-//                }
-//            }
-//        }
-//    }
+
 }
