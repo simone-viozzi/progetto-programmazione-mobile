@@ -10,6 +10,10 @@ import com.example.viewmodelbindinggraph.R
 import com.example.viewmodelbindinggraph.databinding.HelloFragmentBinding
 import kotlinx.android.synthetic.main.hello_fragment.*
 
+/**
+ * example fragment that use the view binding and the view model
+ *
+ */
 class HelloFragment : Fragment(R.layout.hello_fragment)
 {
     private val viewModel: HelloViewModel by viewModels()
@@ -29,6 +33,7 @@ class HelloFragment : Fragment(R.layout.hello_fragment)
     {
         super.onViewCreated(view, savedInstanceState)
 
+        // this is needed for binding the view model to the binding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
