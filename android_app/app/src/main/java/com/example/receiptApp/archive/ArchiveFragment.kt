@@ -1,36 +1,40 @@
 package com.example.receiptApp.archive
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.receiptApp.R
+import com.example.receiptApp.add.AddViewModel
+import com.example.receiptApp.databinding.AddFragmentBinding
+import com.example.receiptApp.databinding.ArchiveFragmentBinding
 
-class ArchiveFragment : Fragment()
+class ArchiveFragment : Fragment(R.layout.archive_fragment)
 {
 
-    companion object
-    {
-        fun newInstance() = ArchiveFragment()
-    }
-
-    private lateinit var viewModel: ArchiveViewModel
+    private val viewModel: ArchiveViewModel by viewModels()
+    private lateinit var binding: ArchiveFragmentBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View?
+    ): View
     {
-        return inflater.inflate(R.layout.archive_fragment, container, false)
+        binding = ArchiveFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ArchiveViewModel::class.java)
-        // TODO: Use the ViewModel
+        super.onViewCreated(view, savedInstanceState)
+
+        // this is needed for binding the view model to the binding
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
     }
 
 }
