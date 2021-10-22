@@ -14,6 +14,9 @@ assignees: ''
 ## which graphical elements should be used?
 
 
+## how the bottom bar should behave when the user is in this page?
+
+
 ## this page need a [top app bar](https://material.io/components/app-bars-top)? 
 
 
