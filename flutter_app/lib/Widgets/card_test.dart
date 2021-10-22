@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 Widget buildCard(BuildContext context){
 
   return Card(
+    elevation: 15.0,
     clipBehavior: Clip.antiAlias,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(35.0),
