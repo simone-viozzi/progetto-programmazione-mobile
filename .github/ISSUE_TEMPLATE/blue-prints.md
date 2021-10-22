@@ -14,7 +14,7 @@ assignees: ''
 ## which graphical elements should be used?
 
 
-## this page need an [top app bar](https://material.io/components/app-bars-top)? 
+## this page need a [top app bar](https://material.io/components/app-bars-top)? 
 
 
 # with what structural component of the app this page need to interact?
