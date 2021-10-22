@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Bottom_app_bar_fab.bottom_bar_menu" parent="@style/Widget.MaterialComponents.BottomAppBar.PrimarySurface">
+
+        <item name="itemIconTint">@color/mtrl_navigation_bar_item_tint</item>
+
+    </style>
+
+</resources>

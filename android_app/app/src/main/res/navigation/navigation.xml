@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/archiveFragment"
+        android:name="com.example.receiptApp.archive.ArchiveFragment"
+        android:label="archive_fragment"
+        tools:layout="@layout/archive_fragment" >
+        <argument
+            android:name="MenuShow"
+            android:defaultValue="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/graphsFragment"
+        android:name="com.example.receiptApp.graphs.GraphsFragment"
+        android:label="graphs_fragment"
+        tools:layout="@layout/graphs_fragment" >
+        <argument
+            android:name="FabShow"
+            android:defaultValue="false"/>
+        <argument
+            android:name="MenuShow"
+            android:defaultValue="false"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.receiptApp.home.HomeFragment"
+        android:label="home_fragment"
+        tools:layout="@layout/home_fragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_addFragment"
+            app:destination="@id/addFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="false" />
+        <argument
+            android:name="FabGravity"
+            android:defaultValue="@integer/FabGravityCenter"/>
+        <argument
+            android:name="FabIcon"
+            android:defaultValue="@drawable/ic_baseline_add_24" />
+        <action
+            android:id="@+id/action_homeFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addFragment"
+        android:name="com.example.receiptApp.add.AddFragment"
+        android:label="add_fragment"
+        tools:layout="@layout/add_fragment" >
+        <argument
+            android:name="FabGravity"
+            android:defaultValue="@integer/FabGravityEnd"/>
+        <argument
+            android:name="MenuShow"
+            android:defaultValue="false"/>
+        <argument
+            android:name="FabShow"
+            android:defaultValue="true"/>
+        <argument
+            android:name="NavigationIcon"
+            android:defaultValue="false"/>
+        <argument
+            android:name="FabIcon"
+            android:defaultValue="@drawable/ic_baseline_check_24" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.receiptApp.about.AboutFragment"
+        android:label="about_fragment"
+        tools:layout="@layout/about_fragment">
+
+        <argument
+            android:name="FabShow"
+            android:defaultValue="false"/>
+        <argument
+            android:name="NavigationIcon"
+            android:defaultValue="false"/>
+        <argument
+            android:name="MenuShow"
+            android:defaultValue="false"/>
+
+    </fragment>
+
+</navigation>
