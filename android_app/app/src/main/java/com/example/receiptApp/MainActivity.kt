@@ -2,6 +2,7 @@ package com.example.receiptApp
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity()
 
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.navigationView)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        binding.scrim.visibility = View.GONE
 
         // TODO there is a better way to bind those?
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity()
         // callBack for then the user click on the hamburger icon
         binding.bottomAppBar.setNavigationOnClickListener {
             // open the navigation drawer
+            binding.scrim.visibility = View.VISIBLE
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             binding.fab.hide()
         }
@@ -93,18 +96,15 @@ class MainActivity : AppCompatActivity()
             // close the bottom navigation drawer
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             // handle the navigation
+            binding.scrim.visibility = View.GONE
             NavigationUI.onNavDestinationSelected(menuItem, navController)
         }
 
 
-        // TODO we most likely want to make scrim totally disappear from the screen when it's not needed!
-        //  now even if bottomSheetBehavior.state = STATE_HIDDEN this callBack handle clicks on the screen!
         binding.scrim.setOnClickListener {
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-            {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                binding.fab.show()
-            }
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            binding.fab.show()
+            binding.scrim.visibility = View.GONE
         }
 
         // TODO totally need to do this in another way
@@ -113,6 +113,23 @@ class MainActivity : AppCompatActivity()
             {
                 val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
                 navController.navigate(action)
+            }
+        }
+
+
+        binding.bottomAppBar.setOnMenuItemClickListener {
+            when (it.itemId)
+            {
+                R.id.bottom_bar_menu_about -> {
+                    navController.navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
+                    true
+                }
+
+                R.id.bottom_bar_menu_edit -> {
+                    // TODO !!
+                    true
+                }
+                else -> false
             }
         }
 
@@ -148,4 +165,5 @@ class MainActivity : AppCompatActivity()
     {
 
     }
+
 }
