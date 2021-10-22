@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title="main menu"
+        app:showAsAction="always">
+
+        <menu
+            style="@style/Theme.Bottom_app_bar_fab.bottom_bar_menu">
+
+            <item
+                android:icon="@drawable/ic_baseline_help_24"
+                android:title="About"
+                android:orderInCategory="100"
+                android:iconTint="@color/black"
+                app:showAsAction="never" />
+
+            <item
+                android:icon="@drawable/ic_baseline_edit_24"
+                android:title="Edit"
+                android:orderInCategory="100"
+                app:showAsAction="never" />
+
+        </menu>
+    </item>
+</menu>
