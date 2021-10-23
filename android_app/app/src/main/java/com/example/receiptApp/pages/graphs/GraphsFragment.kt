@@ -1,4 +1,4 @@
-package com.example.receiptApp.graphs
+package com.example.receiptApp.pages.graphs
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,10 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.receiptApp.R
-import com.example.receiptApp.archive.ArchiveViewModel
-import com.example.receiptApp.databinding.ArchiveFragmentBinding
 import com.example.receiptApp.databinding.GraphsFragmentBinding
 
 class GraphsFragment : Fragment(R.layout.graphs_fragment)

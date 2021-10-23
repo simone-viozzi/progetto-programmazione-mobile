@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/archiveFragment"
-        android:name="com.example.receiptApp.archive.ArchiveFragment"
+        android:name="com.example.receiptApp.pages.archive.ArchiveFragment"
         android:label="archive_fragment"
         tools:layout="@layout/archive_fragment" >
         <argument
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/graphsFragment"
-        android:name="com.example.receiptApp.graphs.GraphsFragment"
+        android:name="com.example.receiptApp.pages.graphs.GraphsFragment"
         android:label="graphs_fragment"
         tools:layout="@layout/graphs_fragment" >
         <argument
@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.receiptApp.home.HomeFragment"
+        android:name="com.example.receiptApp.pages.home.HomeFragment"
         android:label="home_fragment"
         tools:layout="@layout/home_fragment" >
         <action
@@ -52,7 +52,7 @@
 
     <fragment
         android:id="@+id/addFragment"
-        android:name="com.example.receiptApp.add.AddFragment"
+        android:name="com.example.receiptApp.pages.add.AddFragment"
         android:label="add_fragment"
         tools:layout="@layout/add_fragment" >
         <argument
@@ -74,7 +74,7 @@
 
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.example.receiptApp.about.AboutFragment"
+        android:name="com.example.receiptApp.pages.about.AboutFragment"
         android:label="about_fragment"
         tools:layout="@layout/about_fragment">
 

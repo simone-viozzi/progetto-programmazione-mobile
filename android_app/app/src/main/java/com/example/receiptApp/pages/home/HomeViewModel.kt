@@ -1,4 +1,4 @@
-package com.example.receiptApp.home
+package com.example.receiptApp.pages.home
 
 import androidx.lifecycle.ViewModel
 

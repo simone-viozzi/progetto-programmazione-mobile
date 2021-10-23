@@ -5,13 +5,13 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.receiptApp.graphs.GraphsViewModel" />
+            type="com.example.receiptApp.pages.graphs.GraphsViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".graphs.GraphsFragment">
+        tools:context=".pages.graphs.GraphsFragment">
 
         <TextView
             android:layout_width="match_parent"

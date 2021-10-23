@@ -5,14 +5,14 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.receiptApp.archive.ArchiveViewModel" />
+            type="com.example.receiptApp.pages.archive.ArchiveViewModel" />
     </data>
 
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".archive.ArchiveFragment">
+        tools:context=".pages.archive.ArchiveFragment">
 
         <TextView
             android:layout_width="match_parent"
