@@ -3,6 +3,7 @@ package com.example.receiptApp
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.res.ResourcesCompat
@@ -25,6 +26,7 @@ import com.google.android.material.math.MathUtils
 class MainActivity : AppCompatActivity()
 {
     private lateinit var navController: NavController
+    private val viewModel: ActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -62,13 +64,9 @@ class MainActivity : AppCompatActivity()
             // handle the fab hide / show
             if (bundle?.getBoolean("FabShow", true) != false) binding.fab.show() else binding.fab.hide()
 
-            // set the menu of the appbar TODO we most likely want to change how this work and allow to load arbitrary menu
+
             binding.bottomAppBar.replaceMenu(
-                if (bundle?.getBoolean(
-                        "MenuShow",
-                        true
-                    ) != false
-                ) R.menu.bottom_bar_menu else R.menu.bottom_bar_menu_hide
+                bundle?.getInt("BottomBarMenu", R.menu.bottom_bar_menu_hide) ?:R.menu.bottom_bar_menu_hide
             )
 
             // Display / hide the hamburger menu TODO the theme doesn't work!
@@ -106,31 +104,16 @@ class MainActivity : AppCompatActivity()
             binding.scrim.visibility = View.GONE
         }
 
-        // TODO totally need to do this in another way
-        binding.fab.setOnClickListener {
-            if (navController.currentDestination == navController.findDestination(R.id.homeFragment))
-            {
-                val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
-                navController.navigate(action)
-            }
+
+        viewModel.fabOnClickListener.observe(this) {
+            binding.fab.setOnClickListener(it)
         }
 
 
-        binding.bottomAppBar.setOnMenuItemClickListener {
-            when (it.itemId)
-            {
-                R.id.bottom_bar_menu_about -> {
-                    navController.navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
-                    true
-                }
-
-                R.id.bottom_bar_menu_edit -> {
-                    // TODO !!
-                    true
-                }
-                else -> false
-            }
+        viewModel.bABOnMenuItemClickListener.observe(this) {
+            binding.bottomAppBar.setOnMenuItemClickListener(it)
         }
+
 
 
         // leave this method alone, it's doing it's job

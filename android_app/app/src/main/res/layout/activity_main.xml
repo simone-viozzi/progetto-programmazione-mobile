@@ -49,7 +49,7 @@
             app:fabAlignmentMode="center"
             app:fabCradleMargin="5dp"
             app:hideOnScroll="true"
-            app:menu="@menu/bottom_bar_menu"
+            app:menu="@menu/bottom_bar_menu_main"
             app:navigationIcon="@drawable/ic_baseline_menu_24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

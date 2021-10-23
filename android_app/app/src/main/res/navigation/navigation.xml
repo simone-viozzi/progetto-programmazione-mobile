@@ -11,8 +11,8 @@
         android:label="archive_fragment"
         tools:layout="@layout/archive_fragment" >
         <argument
-            android:name="MenuShow"
-            android:defaultValue="true"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_main"/>
     </fragment>
 
     <fragment
@@ -24,8 +24,8 @@
             android:name="FabShow"
             android:defaultValue="false"/>
         <argument
-            android:name="MenuShow"
-            android:defaultValue="false"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_hide"/>
     </fragment>
 
     <fragment
@@ -48,6 +48,9 @@
         <action
             android:id="@+id/action_homeFragment_to_aboutFragment"
             app:destination="@id/aboutFragment" />
+        <argument
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_main"/>
     </fragment>
 
     <fragment
@@ -59,8 +62,8 @@
             android:name="FabGravity"
             android:defaultValue="@integer/FabGravityEnd"/>
         <argument
-            android:name="MenuShow"
-            android:defaultValue="false"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_add"/>
         <argument
             android:name="FabShow"
             android:defaultValue="true"/>
@@ -85,8 +88,8 @@
             android:name="NavigationIcon"
             android:defaultValue="false"/>
         <argument
-            android:name="MenuShow"
-            android:defaultValue="false"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_hide"/>
 
     </fragment>
 
