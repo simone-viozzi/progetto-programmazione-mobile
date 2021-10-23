@@ -1,11 +1,14 @@
 package com.example.receiptApp.db
 
+import android.location.Location
 import android.net.Uri
 import androidx.room.TypeConverter
 import com.google.firebase.firestore.GeoPoint
 import com.google.gson.Gson
 import java.util.*
 
+
+data class LocationStripped(var latitude: Double, var longitude: Double)
 
 class Converters
 {
@@ -22,15 +25,19 @@ class Converters
 
     // TODO how to save location
     @TypeConverter
-    fun stringToGeoPoint(data: String?): GeoPoint
+    fun locationStrippedToLocation(locationStrip: LocationStripped): Location
     {
-        return Gson().fromJson(data, GeoPoint::class.java)
+        val location = Location("") //provider name is unnecessary
+
+        location.latitude = locationStrip.latitude
+        location.longitude = locationStrip.longitude
+        return location
     }
 
     @TypeConverter
-    fun geoPointToString(geoPoint: GeoPoint?): String
+    fun locationToLocationStripped(location: Location): LocationStripped
     {
-        return Gson().toJson(geoPoint)
+        return LocationStripped(location.latitude, location.longitude)
     }
 
     @TypeConverter
