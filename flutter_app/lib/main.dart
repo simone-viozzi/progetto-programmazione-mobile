@@ -29,15 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: ThemeColors.matPrimary,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) =>                   const MyHomePage(title: 'Home',           pageId: PageMap.homeId),
-        '/archive': (context) =>            const MyHomePage(title: 'Archive',        pageId: PageMap.archiveId),
-        '/archive/element': (context) =>    const MyHomePage(title: 'Element',        pageId: PageMap.agrViewId),
-        '/graphs': (context) =>             const MyHomePage(title: 'Graphs',         pageId: PageMap.graphsId),
-        '/add_aggregate': (context) =>      const MyHomePage(title: 'Add aggregate',  pageId: PageMap.addAgrId),
-        '/camera_view': (context) =>        const MyHomePage(title: 'Dashboard',      pageId: PageMap.cameraViewId),
-      }
+
     );
   }
 }
