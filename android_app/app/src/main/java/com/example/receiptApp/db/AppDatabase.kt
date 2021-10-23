@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.receiptApp.DATABASE_NAME
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.AggregatesDao
@@ -14,6 +15,7 @@ import com.example.receiptApp.db.tag.TagsDao
 
 
 @Database(entities = [Aggregate::class, Element::class, Tag::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase()
 {
     abstract fun aggregateDao(): AggregatesDao
