@@ -1,10 +1,11 @@
 package com.example.receiptApp
 
 import android.app.Application
+import android.text.Editable
 import com.example.receiptApp.db.AppDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
+
+fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
 
 class App : Application()
 {

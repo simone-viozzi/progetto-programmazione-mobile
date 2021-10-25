@@ -1,11 +1,8 @@
 package com.example.receiptApp.pages.add
 
-import android.icu.text.DateFormat.getDateInstance
 import android.os.Bundle
-import android.text.Editable
 import android.text.format.DateFormat
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -15,20 +12,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.ActivityViewModel
-import com.example.receiptApp.App
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.google.android.material.datepicker.MaterialDatePicker
-import java.text.SimpleDateFormat
-import java.util.*
+import timber.log.Timber
 
 class AddFragment : Fragment(R.layout.add_fragment)
 {
     private val viewModel: AddViewModel by viewModels()
     private val activityViewModel: ActivityViewModel by activityViewModels()
-
-
     private lateinit var binding: AddFragmentBinding
 
     override fun onCreateView(
@@ -62,44 +56,41 @@ class AddFragment : Fragment(R.layout.add_fragment)
             findNavController().navigateUp()
         }
 
+        // TODO attach this to the onclick of the textField inside the header
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select date")
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .build()
 
-        binding.dateOverlay.setOnClickListener {
-            datePicker.show(childFragmentManager, "tag");
+        val addAdapter = AddAdapter(viewModel.textEditCallback) {
+            datePicker.show(childFragmentManager, "tag")
         }
 
-        // TODO datePicker.selection to get the selection -> in millis
+        viewModel.rvList.observe(viewLifecycleOwner) {
+            Timber.d("ao")
+            addAdapter.submitList(it)
+        }
+
         datePicker.addOnPositiveButtonClickListener {
-            binding.dateText.text = Editable.Factory().newEditable(
-                datePicker.selection.let {
-                    if (it == null)
-                    {
-                        ""
-                    }
-                    else
-                    {
-                        DateFormat.format("dd/MM/yyyy", it)
-                    }
-                }
-            )
-        }
-        datePicker.addOnNegativeButtonClickListener {
-            // Respond to negative button click.
-        }
-        datePicker.addOnCancelListener {
-            // Respond to cancel button click.
-        }
-        datePicker.addOnDismissListener {
-            // Respond to dismiss events.
+            // need a separated variable because if you do one line the setter and getter doesn't get called
+            datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
+            addAdapter.notifyItemChanged(0)
         }
 
         activityViewModel.setBABOnMenuItemClickListener {
             Toast.makeText(activity, "halooo", Toast.LENGTH_SHORT).show()
             true
         }
+
+        activityViewModel.setFabOnClickListener {
+            Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(activity)
+            adapter = addAdapter
+        }
+
 
     }
 
