@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity()
         navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
 
+
+        // TODO maybe move this logic into the activity viewModel, so it can be changed dynamically
         // if i go to a specific route i need to do some specific actions.
         // the action are defined as attributes is the navigation xml
         navController.addOnDestinationChangedListener { navController: NavController,
@@ -79,6 +81,9 @@ class MainActivity : AppCompatActivity()
             )
         }
 
+
+        // TODO there is a way to move this code into the viewModel? and observe the click listener?
+        //   this code is only valid for the 3 top level destination
         // callBack for then the user click on the hamburger icon
         binding.bottomAppBar.setNavigationOnClickListener {
             // open the navigation drawer
@@ -103,6 +108,7 @@ class MainActivity : AppCompatActivity()
             binding.fab.show()
             binding.scrim.visibility = View.GONE
         }
+        /////////////////////////////////////////////////////////////////////////////////////////////// TODO
 
 
         viewModel.fabOnClickListener.observe(this) {
@@ -113,7 +119,6 @@ class MainActivity : AppCompatActivity()
         viewModel.bABOnMenuItemClickListener.observe(this) {
             binding.bottomAppBar.setOnMenuItemClickListener(it)
         }
-
 
 
         // leave this method alone, it's doing it's job

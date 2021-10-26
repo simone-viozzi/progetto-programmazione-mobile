@@ -1,7 +1,6 @@
 package com.example.receiptApp.pages.add
 
 import android.os.Bundle
-import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,10 @@ import com.example.receiptApp.ActivityViewModel
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.google.android.material.datepicker.MaterialDatePicker
-import timber.log.Timber
+
+
+// TODO ! the bottom app bar should be under the keyboard!!!!!
+
 
 class AddFragment : Fragment(R.layout.add_fragment)
 {
@@ -43,9 +45,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        /**
-         * set the toolbar for this fragment
-         */
+        // set the toolbar for this fragment
         NavigationUI.setupWithNavController(binding.topAppBar, findNavController())
 
         setHasOptionsMenu(true)
@@ -56,32 +56,37 @@ class AddFragment : Fragment(R.layout.add_fragment)
             findNavController().navigateUp()
         }
 
-        // TODO attach this to the onclick of the textField inside the header
         val datePicker = MaterialDatePicker.Builder.datePicker()
+            // TODO get the string out of here!
             .setTitleText("Select date")
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .build()
 
+        // the adapter take the two callBacks, one is implemented in the View model the other here
         val addAdapter = AddAdapter(viewModel.textEditCallback) {
+            // TODO use a constant tag in the constants
             datePicker.show(childFragmentManager, "tag")
         }
 
-        viewModel.rvList.observe(viewLifecycleOwner) {
-            Timber.d("ao")
-            addAdapter.submitList(it)
-        }
-
+        // if the user select a date and press ok, set it into the view model
         datePicker.addOnPositiveButtonClickListener {
-            // need a separated variable because if you do one line the setter and getter doesn't get called
             datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
+            // need to notify that this element changed otherwise it doesn't update the value
             addAdapter.notifyItemChanged(0)
         }
 
+        // observe the list of elements and submit it to the adapter
+        viewModel.rvList.observe(viewLifecycleOwner) {
+            addAdapter.submitList(it)
+        }
+
+        // TODO !!
         activityViewModel.setBABOnMenuItemClickListener {
             Toast.makeText(activity, "halooo", Toast.LENGTH_SHORT).show()
             true
         }
 
+        // TODO !!
         activityViewModel.setFabOnClickListener {
             Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
         }
@@ -90,7 +95,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
             layoutManager = LinearLayoutManager(activity)
             adapter = addAdapter
         }
-
 
     }
 
