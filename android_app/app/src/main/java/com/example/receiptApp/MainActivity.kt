@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity()
             )
         }
 
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         // TODO there is a way to move this code into the viewModel? and observe the click listener?
         //   this code is only valid for the 3 top level destination
         // callBack for then the user click on the hamburger icon

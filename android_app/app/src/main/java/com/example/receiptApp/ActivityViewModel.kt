@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModel
 
 class ActivityViewModel: ViewModel()
 {
+    // TODO those can be private? with the pattern MutableLiveData private and LiveData public
+    //   if is possible should be done
     val fabOnClickListener: MutableLiveData<View.OnClickListener> = MutableLiveData<View.OnClickListener>()
     val bABOnMenuItemClickListener: MutableLiveData<Toolbar.OnMenuItemClickListener> = MutableLiveData<Toolbar.OnMenuItemClickListener>()
+
 
     fun setFabOnClickListener(clickListener: View.OnClickListener)
     {

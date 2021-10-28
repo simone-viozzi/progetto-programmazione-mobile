@@ -15,14 +15,19 @@ import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 
 
+
+
 @Database(entities = [Aggregate::class, Element::class, Tag::class], version = 1, exportSchema = false)
+// to auto-convert the values in and out of the database you need to specify the class responsible here
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase()
 {
+    // all the daos need to be declared here
     abstract fun aggregateDao(): AggregatesDao
     abstract fun elementsDao(): ElementsDao
     abstract fun tagsDao(): TagsDao
     abstract fun aggregateWithElementsDao(): AggregateWithElementsDao
+
 
     companion object
     {

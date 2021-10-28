@@ -10,6 +10,10 @@ import java.util.*
 
 data class LocationStripped(var latitude: Double, var longitude: Double)
 
+
+/**
+ * this class hold all the type converter to save in the  database complex data
+ */
 class Converters
 {
     @TypeConverter
