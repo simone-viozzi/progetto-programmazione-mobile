@@ -73,11 +73,7 @@ class AddViewModel : ViewModel()
 
     private fun getLastId(autoincrement: Boolean = true): Int
     {
-        if (autoincrement)
-        {
-            return lastId++
-        }
-        return lastId
+        return if (autoincrement) lastId++ else lastId
     }
 
     init

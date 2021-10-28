@@ -162,6 +162,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarC
                     parent,
                     false
                 ),
+                // the other parameters in the constructor
                 textEditCallback,
                 calendarClick
             )
@@ -178,6 +179,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarC
             else -> throw IllegalStateException("the view type in the RecyclerView is wrongggg! ")
         }
     }
+
 
     override fun onBindViewHolder(holder: AddViewHolder, position: Int)
     {

@@ -16,6 +16,7 @@ import com.example.receiptApp.ActivityViewModel
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.google.android.material.datepicker.MaterialDatePicker
+import timber.log.Timber
 
 
 // TODO ! the bottom app bar should be under the keyboard!!!!!
@@ -41,15 +42,22 @@ class AddFragment : Fragment(R.layout.add_fragment)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        // this is needed for binding the view model to the binding
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner
+        with(binding)
+        {
+            // this is needed for binding the view model to the binding
+            viewModel = viewModel
+            lifecycleOwner = viewLifecycleOwner
+
+            // this need to appear only if the user click on the attach button
+            scrim.visibility = View.GONE
+            recyclerViewImgs.visibility = View.GONE
+        }
 
         // set the toolbar for this fragment
         NavigationUI.setupWithNavController(binding.topAppBar, findNavController())
-
         setHasOptionsMenu(true)
         (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
+
 
         binding.topAppBar.setNavigationOnClickListener {
             // TODO need to check the state before going up!
@@ -65,12 +73,15 @@ class AddFragment : Fragment(R.layout.add_fragment)
         // the adapter take the two callBacks, one is implemented in the View model the other here
         val addAdapter = AddAdapter(viewModel.textEditCallback) {
             // TODO use a constant tag in the constants
+            // TODO if the user call this more than one  time the app crash, need to test if datePicker is visible
             datePicker.show(childFragmentManager, "tag")
         }
 
         // if the user select a date and press ok, set it into the view model
         datePicker.addOnPositiveButtonClickListener {
             datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
+
+            // TODO, there is a way to avoid this?
             // need to notify that this element changed otherwise it doesn't update the value
             addAdapter.notifyItemChanged(0)
         }
@@ -83,12 +94,26 @@ class AddFragment : Fragment(R.layout.add_fragment)
         // TODO !!
         activityViewModel.setBABOnMenuItemClickListener {
             Toast.makeText(activity, "halooo", Toast.LENGTH_SHORT).show()
+
+            with(binding)
+            {
+                scrim.visibility = View.VISIBLE
+                recyclerViewImgs.visibility = View.VISIBLE
+
+                addMotionLayout.transitionToEnd {
+                    // here can be specified the callback then the animation end
+                }
+            }
+
             true
         }
 
+
         // TODO !!
+        //  here viewModel.rvList.value should be saved into the db
         activityViewModel.setFabOnClickListener {
             Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
+            Timber.d("\nlist -> \n${viewModel.rvList.value}")
         }
 
         binding.recyclerView.apply {

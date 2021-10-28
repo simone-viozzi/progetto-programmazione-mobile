@@ -1,5 +1,9 @@
 package com.example.receiptApp.pages.add
 
+
+/**
+ * those are the data structures that will be displayed in the recyclerview
+ */
 sealed class AddDataModel
 {
     data class Header(
