@@ -1,5 +1,8 @@
+// importing main components
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
+
+// import data widgets
+import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
 // importing themes
 import 'package:flutter_app/styles/recipteapp_theme.dart';
@@ -8,12 +11,16 @@ import 'package:flutter_app/styles/recipteapp_theme.dart';
 import 'package:flutter_app/definitions.dart';
 
 
-void openBottomNavigationDrawer(BuildContext context, int page, changestate){
+void openBottomNavigationDrawer(BuildContext context){
 
   showModalBottomSheet<void>(
     elevation: 2.0,
     context: context,
     builder: (BuildContext context) {
+
+      // retrieving data from main data object
+      int pageId = MainFragDataScope.of(context).pageSelected;
+
       return Container(
         height: 250,
         color: Colors.white,
@@ -26,17 +33,10 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
             children: <Widget>[
               GestureDetector(
               onTap: (){
-                if(page != PageMap.homeId){
-                  changestate(true);
-                  //Navigator.pushNamed(context, '/');
-                  // change route and discard the last page state
-                  // Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                  /*Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MyHomePage(title: 'Home', pageId: PageMap.homeId),
-                    ),
-                  );*/
+                if(pageId != PageMap.homeId){
+                  print('open home');
+                  MainFragDataWidget.of(context).changePage(PageMap.homeId);
+                  Navigator.pop(context); // close the bottom sheet
                 }
               },
                 child: Row(
@@ -44,7 +44,7 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
                     Icon(
                       Icons.home,
                       size: 40,
-                      color: (page == PageMap.homeId) ? ThemeColors.matPrimary : Colors.black,
+                      color: (pageId == PageMap.homeId) ? ThemeColors.matPrimary : Colors.black,
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(35.0, 0, 0, 0),
@@ -53,7 +53,7 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: (page == PageMap.homeId) ? ThemeColors.matPrimary : Colors.black,
+                          color: (pageId == PageMap.homeId) ? ThemeColors.matPrimary : Colors.black,
                         ),
                       ),
                     )
@@ -62,18 +62,10 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
               ),
               GestureDetector(
                 onTap: (){
-                  if(page != PageMap.archiveId){
-                    //Navigator.pushNamed(context, '/archive');
-                    // change route and discard the last page state
-                    Navigator.of(context).pushNamedAndRemoveUntil('/archive', (Route<dynamic> route) => false);
-
-                    /*
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: 'Archive', pageId: PageMap.archiveId),
-                      ),
-                    );*/
+                  if(pageId != PageMap.archiveId){
+                    print('open archive');
+                    MainFragDataWidget.of(context).changePage(PageMap.archiveId);
+                    Navigator.pop(context); // close the bottom sheet
                   }
                 },
                 child: Row(
@@ -81,7 +73,7 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
                     Icon(
                       Icons.archive,
                       size: 40,
-                      color: (page == PageMap.archiveId) ? ThemeColors.matPrimary : Colors.black,
+                      color: (pageId == PageMap.archiveId) ? ThemeColors.matPrimary : Colors.black,
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(35.0, 0, 0, 0),
@@ -90,7 +82,7 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: (page == PageMap.archiveId) ? ThemeColors.matPrimary : Colors.black,
+                            color: (pageId == PageMap.archiveId) ? ThemeColors.matPrimary : Colors.black,
                         ),
                       ),
                     )
@@ -99,13 +91,10 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
               ),
               GestureDetector(
                 onTap: (){
-                  if(page != PageMap.graphsId){
-                    // change route and put the last page in stack
-                    //Navigator.pushNamed(context, '/graphs');
-
-                    // change route and discard the last page state
-                    Navigator.of(context).pushNamedAndRemoveUntil('/graphs', (Route<dynamic> route) => false);
-
+                  if(pageId != PageMap.graphsId){
+                    print('open graphs');
+                    MainFragDataWidget.of(context).changePage(PageMap.graphsId);
+                    Navigator.pop(context); // close the bottom sheet
                   }
                 },
                 child: Row(
@@ -113,7 +102,7 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
                     Icon(
                       Icons.insights,
                       size: 40,
-                      color: (page == PageMap.graphsId) ? ThemeColors.matPrimary : Colors.black,
+                      color: (pageId == PageMap.graphsId) ? ThemeColors.matPrimary : Colors.black,
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(35.0, 0, 0, 0),
@@ -122,7 +111,7 @@ void openBottomNavigationDrawer(BuildContext context, int page, changestate){
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: (page == PageMap.graphsId) ? ThemeColors.matPrimary : Colors.black,
+                          color: (pageId == PageMap.graphsId) ? ThemeColors.matPrimary : Colors.black,
                         ),
                       ),
                     )
