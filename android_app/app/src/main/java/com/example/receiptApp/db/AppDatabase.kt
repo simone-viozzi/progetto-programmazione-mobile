@@ -4,26 +4,33 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.receiptApp.DATABASE_NAME
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.AggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.ElementsDao
+import com.example.receiptApp.db.relationships.AggregateWithElementsDao
 import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 
 
+
+
 @Database(entities = [Aggregate::class, Element::class, Tag::class], version = 1, exportSchema = false)
+// to auto-convert the values in and out of the database you need to specify the class responsible here
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase()
 {
+    // all the daos need to be declared here
     abstract fun aggregateDao(): AggregatesDao
     abstract fun elementsDao(): ElementsDao
     abstract fun tagsDao(): TagsDao
+    abstract fun aggregateWithElementsDao(): AggregateWithElementsDao
 
 
     companion object
     {
-
         // For Singleton instantiation
         @Volatile
         private var instance: AppDatabase? = null
@@ -35,7 +42,6 @@ abstract class AppDatabase : RoomDatabase()
             }
         }
 
-
         private fun buildDatabase(context: Context): AppDatabase
         {
             return Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
@@ -43,6 +49,4 @@ abstract class AppDatabase : RoomDatabase()
                 .build()
         }
     }
-
-
 }

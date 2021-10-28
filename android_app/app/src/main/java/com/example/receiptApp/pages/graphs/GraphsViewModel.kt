@@ -1,4 +1,4 @@
-package com.example.receiptApp.graphs
+package com.example.receiptApp.pages.graphs
 
 import androidx.lifecycle.ViewModel
 

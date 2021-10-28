@@ -1,8 +1,8 @@
-package com.example.receiptApp.archive
+package com.example.receiptApp.pages.home
 
 import androidx.lifecycle.ViewModel
 
-class ArchiveViewModel : ViewModel()
+class HomeViewModel : ViewModel()
 {
     // TODO: Implement the ViewModel
 }

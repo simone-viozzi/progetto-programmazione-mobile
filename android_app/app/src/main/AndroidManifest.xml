@@ -12,7 +12,8 @@
         android:theme="@style/Theme.RecipeApp">
         <activity
             android:name="com.example.receiptApp.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

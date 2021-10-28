@@ -1,4 +1,4 @@
-package com.example.receiptApp.about
+package com.example.receiptApp.pages.about
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,13 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
-import com.example.receiptApp.R
-import com.example.receiptApp.archive.ArchiveViewModel
 import com.example.receiptApp.databinding.AboutFragmentBinding
-import com.example.receiptApp.databinding.ArchiveFragmentBinding
 
 
 class AboutFragment : Fragment()

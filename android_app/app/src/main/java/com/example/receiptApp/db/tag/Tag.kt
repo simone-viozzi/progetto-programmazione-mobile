@@ -7,4 +7,8 @@ import androidx.room.PrimaryKey
 data class Tag(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+
+    var tag_name: String,
+
+    var aggregate: Boolean
 )

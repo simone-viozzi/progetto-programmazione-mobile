@@ -1,4 +1,4 @@
-package com.example.receiptApp.home
+package com.example.receiptApp.pages.archive
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,17 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.receiptApp.R
-import com.example.receiptApp.databinding.GraphsFragmentBinding
-import com.example.receiptApp.databinding.HomeFragmentBinding
-import com.example.receiptApp.graphs.GraphsViewModel
+import com.example.receiptApp.databinding.ArchiveFragmentBinding
 
-class HomeFragment : Fragment()
+class ArchiveFragment : Fragment(R.layout.archive_fragment)
 {
 
-    private val viewModel: HomeViewModel by viewModels()
-    private lateinit var binding: HomeFragmentBinding
+    private val viewModel: ArchiveViewModel by viewModels()
+    private lateinit var binding: ArchiveFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,7 +21,7 @@ class HomeFragment : Fragment()
         savedInstanceState: Bundle?
     ): View
     {
-        binding = HomeFragmentBinding.inflate(inflater, container, false)
+        binding = ArchiveFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 

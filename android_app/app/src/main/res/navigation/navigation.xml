@@ -7,30 +7,30 @@
 
     <fragment
         android:id="@+id/archiveFragment"
-        android:name="com.example.receiptApp.archive.ArchiveFragment"
+        android:name="com.example.receiptApp.pages.archive.ArchiveFragment"
         android:label="archive_fragment"
         tools:layout="@layout/archive_fragment" >
         <argument
-            android:name="MenuShow"
-            android:defaultValue="true"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_main"/>
     </fragment>
 
     <fragment
         android:id="@+id/graphsFragment"
-        android:name="com.example.receiptApp.graphs.GraphsFragment"
+        android:name="com.example.receiptApp.pages.graphs.GraphsFragment"
         android:label="graphs_fragment"
         tools:layout="@layout/graphs_fragment" >
         <argument
             android:name="FabShow"
             android:defaultValue="false"/>
         <argument
-            android:name="MenuShow"
-            android:defaultValue="false"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_hide"/>
     </fragment>
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.receiptApp.home.HomeFragment"
+        android:name="com.example.receiptApp.pages.home.HomeFragment"
         android:label="home_fragment"
         tools:layout="@layout/home_fragment" >
         <action
@@ -48,19 +48,22 @@
         <action
             android:id="@+id/action_homeFragment_to_aboutFragment"
             app:destination="@id/aboutFragment" />
+        <argument
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_main"/>
     </fragment>
 
     <fragment
         android:id="@+id/addFragment"
-        android:name="com.example.receiptApp.add.AddFragment"
+        android:name="com.example.receiptApp.pages.add.AddFragment"
         android:label="add_fragment"
         tools:layout="@layout/add_fragment" >
         <argument
             android:name="FabGravity"
             android:defaultValue="@integer/FabGravityEnd"/>
         <argument
-            android:name="MenuShow"
-            android:defaultValue="false"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_add"/>
         <argument
             android:name="FabShow"
             android:defaultValue="true"/>
@@ -74,7 +77,7 @@
 
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.example.receiptApp.about.AboutFragment"
+        android:name="com.example.receiptApp.pages.about.AboutFragment"
         android:label="about_fragment"
         tools:layout="@layout/about_fragment">
 
@@ -85,8 +88,8 @@
             android:name="NavigationIcon"
             android:defaultValue="false"/>
         <argument
-            android:name="MenuShow"
-            android:defaultValue="false"/>
+            android:name="BottomBarMenu"
+            android:defaultValue="@menu/bottom_bar_menu_hide"/>
 
     </fragment>
 
