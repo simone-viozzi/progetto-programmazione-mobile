@@ -3,6 +3,7 @@ package com.example.receiptApp
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -41,14 +42,18 @@ class MainActivity : AppCompatActivity()
         theme.applyStyle(applicationInfo.theme, true)
 
 
+        ////////////////////// init the navigation view behavior //////////////////////
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.navigationView)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         binding.scrim.visibility = View.GONE
 
+
+        ////////////////////// set the nav navController //////////////////////
         // TODO there is a better way to bind those?
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
+
 
 
         // TODO maybe move this logic into the activity viewModel, so it can be changed dynamically
@@ -143,14 +148,9 @@ class MainActivity : AppCompatActivity()
         })
     }
 
-    override fun onSupportNavigateUp(): Boolean
-    {
-        return super.onSupportNavigateUp()
-    }
-
     override fun onBackPressed()
     {
-
+        Toast.makeText(this, "halooo", Toast.LENGTH_SHORT).show()
     }
 
 }

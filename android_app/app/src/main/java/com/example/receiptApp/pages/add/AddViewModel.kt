@@ -45,7 +45,7 @@ class AddViewModel : ViewModel()
 
                 val newList = _rvList.value?.toMutableList().also { it?.set(el.id, oldEl) }
 
-                if (el.id == getLastId(false) - 1)
+                if (el.id == getLastId(false))
                 {
                     // TODO update the list only if there was a change!
                     _rvList.value = newList?.plus(listOf(AddDataModel.SingleElement(id = getLastId())))
@@ -58,6 +58,7 @@ class AddViewModel : ViewModel()
         }
     }
 
+
     // this get called when the date picker return
     fun setDate(millis: Long)
     {
@@ -68,12 +69,11 @@ class AddViewModel : ViewModel()
         }
     }
 
-
-    private var lastId = 1
+    private var lastId = 0
 
     private fun getLastId(autoincrement: Boolean = true): Int
     {
-        return if (autoincrement) lastId++ else lastId
+        return if (autoincrement) ++lastId else lastId
     }
 
     init

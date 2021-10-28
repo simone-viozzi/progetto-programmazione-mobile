@@ -12,7 +12,7 @@ import com.example.receiptApp.databinding.AddHeadBinding
 import com.example.receiptApp.databinding.AddSingleElementBinding
 import com.example.receiptApp.toEditable
 
-class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarClick: (() -> Unit)) :
+class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarClick: (() -> Unit)) :
     ListAdapter<AddDataModel, AddAdapter.AddViewHolder>(AddDiffCallback())
 {
     /**
@@ -46,7 +46,6 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarC
             }
             return false
         }
-
     }
 
     /**
@@ -89,6 +88,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarC
                         AddDataModel.Header(id = adapterPosition, tag = text.toString())
                     )
                 }
+
                 binding.dateOverlay.setOnClickListener {
                     calendarClick.invoke()
                 }
@@ -149,6 +149,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarC
         }
 
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddViewHolder
     {

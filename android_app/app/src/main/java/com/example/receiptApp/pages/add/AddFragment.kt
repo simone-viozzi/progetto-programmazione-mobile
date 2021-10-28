@@ -19,9 +19,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import timber.log.Timber
 
 
-// TODO ! the bottom app bar should be under the keyboard!!!!!
-
-
 class AddFragment : Fragment(R.layout.add_fragment)
 {
     private val viewModel: AddViewModel by viewModels()
@@ -48,6 +45,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
 
+
             // this need to appear only if the user click on the attach button
             scrim.visibility = View.GONE
             recyclerViewImgs.visibility = View.GONE
@@ -64,11 +62,13 @@ class AddFragment : Fragment(R.layout.add_fragment)
             findNavController().navigateUp()
         }
 
+
         val datePicker = MaterialDatePicker.Builder.datePicker()
             // TODO get the string out of here!
             .setTitleText("Select date")
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .build()
+
 
         // the adapter take the two callBacks, one is implemented in the View model the other here
         val addAdapter = AddAdapter(viewModel.textEditCallback) {
@@ -77,19 +77,22 @@ class AddFragment : Fragment(R.layout.add_fragment)
             datePicker.show(childFragmentManager, "tag")
         }
 
+
         // if the user select a date and press ok, set it into the view model
         datePicker.addOnPositiveButtonClickListener {
             datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
 
-            // TODO, there is a way to avoid this?
+            // TODO, there is a way to avoid this? --> prof!
             // need to notify that this element changed otherwise it doesn't update the value
             addAdapter.notifyItemChanged(0)
         }
+
 
         // observe the list of elements and submit it to the adapter
         viewModel.rvList.observe(viewLifecycleOwner) {
             addAdapter.submitList(it)
         }
+
 
         // TODO !!
         activityViewModel.setBABOnMenuItemClickListener {
@@ -115,6 +118,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
             Timber.d("\nlist -> \n${viewModel.rvList.value}")
         }
+
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)

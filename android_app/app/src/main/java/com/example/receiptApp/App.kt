@@ -5,7 +5,9 @@ import android.text.Editable
 import com.example.receiptApp.db.AppDatabase
 import timber.log.Timber
 
+
 fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
+
 
 class App : Application()
 {
