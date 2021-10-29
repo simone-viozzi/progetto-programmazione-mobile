@@ -43,7 +43,7 @@ class AddViewModel : ViewModel()
                 if (el.num != null) oldEl.num = el.num
                 if (el.cost != null) oldEl.cost = el.cost
 
-                val newList = _rvList.value?.toMutableList().also { it?.set(el.id, oldEl) }
+                val newList = _rvList.value?.toMutableList().also{ it?.set(el.id, oldEl) }
 
                 if (el.id == getLastId(false) - 1)
                 {
@@ -67,7 +67,6 @@ class AddViewModel : ViewModel()
             li[0] = header.also { it.date = date }
         }
     }
-
 
     private var lastId = 1
 

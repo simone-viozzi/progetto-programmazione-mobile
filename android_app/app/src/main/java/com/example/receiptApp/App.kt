@@ -13,7 +13,6 @@ class App : Application()
     // TODO implement repositories
     // val repository by lazy { ColorRepository(database.colorDao()) }
 
-
     override fun onCreate()
     {
         super.onCreate()

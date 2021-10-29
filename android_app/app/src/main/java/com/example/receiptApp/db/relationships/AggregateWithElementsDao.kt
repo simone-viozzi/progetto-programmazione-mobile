@@ -37,6 +37,6 @@ interface AggregateWithElementsDao
     @Insert(onConflict = REPLACE)
     fun insert(company: Aggregate?): Long
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     fun insert(employee: Element?)
 }

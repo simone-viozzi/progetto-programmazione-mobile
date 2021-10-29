@@ -147,7 +147,6 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> (Unit)), var calendarC
                 binding.textFieldCost.editText?.text = element.cost?.toString()?.toEditable()
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddViewHolder

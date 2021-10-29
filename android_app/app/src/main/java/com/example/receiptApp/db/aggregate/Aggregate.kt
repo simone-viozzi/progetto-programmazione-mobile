@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import com.example.receiptApp.db.Converters
 import java.util.*
 
-@Entity
+@Entity(tableName = "aggregate")
 data class Aggregate(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
@@ -17,9 +17,9 @@ data class Aggregate(
 
     var date: Date,
 
-    var location: Location,
+    var location: Location? = null,
 
-    var attachment: Uri,
+    var attachment: Uri? = null,
 
     var total_cost: Long = 0L,
 )

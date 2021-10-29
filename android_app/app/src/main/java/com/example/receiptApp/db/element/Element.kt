@@ -9,6 +9,7 @@ import com.example.receiptApp.db.aggregate.Aggregate
 
 
 @Entity(
+    tableName = "element",
     foreignKeys = [ForeignKey(
         entity = Aggregate::class,
         parentColumns = ["id"],
