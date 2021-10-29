@@ -15,7 +15,7 @@ data class Aggregate(
 
     var tag_id: Long = 0L,
 
-    var date: Date,
+    var date: Date? = null,
 
     var location: Location? = null,
 

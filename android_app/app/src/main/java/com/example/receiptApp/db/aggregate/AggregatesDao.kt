@@ -15,7 +15,7 @@ interface AggregatesDao
     // Insert queries
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(aggregate: Aggregate)
+    fun insert(aggregate: Aggregate)
 
     @Insert(onConflict = REPLACE)
     suspend fun insertList(aggregates: List<Aggregate>)
@@ -55,7 +55,7 @@ interface AggregatesDao
      * @return the aggregate with the largest id
      */
     @Query("SELECT * FROM aggregate ORDER BY id DESC LIMIT 1")
-    suspend fun getLastAggregate(): Aggregate
+    fun getLastAggregate(): Aggregate
 
     /**
      * Get all aggregates
@@ -64,6 +64,7 @@ interface AggregatesDao
      */
     @Query("SELECT * FROM aggregate")
     suspend fun getAllAggregates(): List<Aggregate>
+
 
     /**
      * Get all aggregates with elements

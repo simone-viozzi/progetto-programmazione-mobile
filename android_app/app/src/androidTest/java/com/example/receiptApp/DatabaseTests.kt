@@ -46,13 +46,12 @@ class DatabaseTests {
 
     @Test
     @Throws(Exception::class)
-    suspend fun insertAndGetAggregate() {
+    fun insertAndGetAggregate() {
 
-        val aggregate = Aggregate(tag_id = 1, date = Date())
+        val aggregate = Aggregate()
         aggregatesDao.insert(aggregate)
         val lastAggregate = aggregatesDao.getLastAggregate()
         print("TEST: insertAndGetAggregate()")
         Assert.assertEquals(lastAggregate.id, aggregate.id)
     }
-
 }

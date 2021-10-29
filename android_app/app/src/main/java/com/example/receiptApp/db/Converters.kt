@@ -68,14 +68,14 @@ class Converters
     }
 
     @TypeConverter
-    fun uriToString(uri: Uri): String
+    fun uriToString(uri: Uri?): String?
     {
-        return uri.toString();
+        return uri?.let{it -> it.toString()}
     }
 
     @TypeConverter
-    fun stringToUri(string: String): Uri
+    fun stringToUri(string: String?): Uri?
     {
-        return Uri.parse(string)
+        return string?.let{it -> Uri.parse(it)}
     }
 }
