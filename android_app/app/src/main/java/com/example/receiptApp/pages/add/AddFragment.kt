@@ -15,10 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.receiptApp.ActivityViewModel
-import com.example.receiptApp.App
-import com.example.receiptApp.MainActivity
-import com.example.receiptApp.R
+import com.example.receiptApp.*
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
@@ -58,8 +55,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
             lifecycleOwner = viewLifecycleOwner
         }
 
-        setAttachmentVisible(false)
-
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
         {
 
@@ -73,9 +68,10 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int)
             {
-                if (currentId == R.id.start)
+                when (currentId)
                 {
-                    setAttachmentVisible(false)
+                    R.id.start -> setAttachmentVisible(false)
+                    R.id.end -> setAttachmentVisible(true)
                 }
             }
 
@@ -87,7 +83,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
             ) {}
 
         })
-
 
         // set the toolbar for this fragment
         NavigationUI.setupWithNavController(binding.topAppBar, findNavController())
@@ -132,8 +127,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         }
 
         activityViewModel.setBABOnMenuItemClickListener {
-            setAttachmentVisible(true)
-            binding.addMotionLayout.transitionToEnd()
+            binding.addMotionLayout.transitionToState(R.id.end)
             true
         }
 
@@ -150,16 +144,19 @@ class AddFragment : Fragment(R.layout.add_fragment)
             Timber.d("\nlist -> \n${viewModel.rvList.value}")
         }
 
-
         binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(activity)
+            layoutManager = LinearLayoutManager(activity).also {  }
             adapter = addAdapter
         }
 
-
         binding.recyclerViewImgs.layoutManager = GridLayoutManager(activity, 3)
 
-        val galleryAdapter = GalleryAdapter()
+        val galleryAdapter = GalleryAdapter {
+            viewModel.setAttachment(it)
+            addAdapter.notifyItemChanged(0)
+
+            binding.addMotionLayout.transitionToState(R.id.start)
+        }
 
         binding.recyclerViewImgs.adapter = galleryAdapter
 
@@ -168,7 +165,10 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 galleryAdapter.submitData(pagingData)
             }
         }
+
+        setAttachmentVisible(false)
     }
+
 
     fun setAttachmentVisible(visible: Boolean)
     {
@@ -178,6 +178,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             recyclerViewImgs.visibility = if (visible)  View.VISIBLE else View.GONE
             scrim.isClickable = visible
             recyclerViewImgs.isClickable = visible
+
             recyclerView.isClickable = !visible
         }
 

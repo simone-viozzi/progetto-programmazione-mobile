@@ -1,12 +1,16 @@
 package com.example.receiptApp.pages.add.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddHeadBinding
 import com.example.receiptApp.databinding.AddSingleElementBinding
@@ -97,8 +101,36 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
 
             fun bind(header: AddDataModel.Header)
             {
-                binding.textFieldTag.editText?.text = header.tag?.toEditable()
-                binding.textFieldDate.editText?.text = header.date?.toEditable()
+                with(binding)
+                {
+                    textFieldTag.editText?.text = header.tag?.toEditable()
+                    textFieldDate.editText?.text = header.date?.toEditable()
+
+                    attachmentName.visibility = if (header.attachment_name != null) View.VISIBLE else View.GONE
+                    thumbnail.visibility = if (header.thumbnail != null) View.VISIBLE else View.GONE
+
+                    attachmentName.text = header.attachment_name
+
+                    Glide.with(binding.root.context)
+                        .load(header.thumbnail)
+                        .apply(
+                            RequestOptions
+                                .centerCropTransform()
+                                .override(thumbnail.width)
+                        )
+                        .apply(
+                            RequestOptions()
+                                .placeholder(
+                                    ContextCompat.getDrawable(
+                                        binding.root.context,
+                                        R.drawable.ic_baseline_image_24
+                                    )
+                                )
+                                .override(thumbnail.width)
+                                .dontAnimate()
+                        )
+                        .into(thumbnail)
+                }
             }
         }
 

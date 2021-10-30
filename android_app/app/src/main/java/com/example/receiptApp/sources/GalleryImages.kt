@@ -3,7 +3,6 @@ package com.example.receiptApp.sources
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.database.Cursor
-import android.database.DatabaseUtils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -11,11 +10,12 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Size
+import com.example.receiptApp.THUMBNAIL_SIZE
 import timber.log.Timber
 import java.io.FileNotFoundException
 
 
-data class MyImg(val name: String, val contentUri: Uri, val thumbnail: Bitmap)
+data class Attachment(val name: String, val contentUri: Uri, val thumbnail: Bitmap)
 
 class GalleryImages(private val contentResolver: ContentResolver)
 {
@@ -26,14 +26,14 @@ class GalleryImages(private val contentResolver: ContentResolver)
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             {
                 contentResolver.loadThumbnail(
-                    contentUri, Size(480, 480), null
+                    contentUri, Size(THUMBNAIL_SIZE, THUMBNAIL_SIZE), null
                 )
             } else
             {
                 MediaStore.Images.Thumbnails.getThumbnail(
                     contentResolver,
                     id,
-                    640,
+                    THUMBNAIL_SIZE,
                     BitmapFactory.Options()
                 )
             }
@@ -44,7 +44,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
         }
     }
 
-    fun getImages(limit: Int, offset: Int): List<MyImg>
+    fun getImages(limit: Int, offset: Int): List<Attachment>
     {
         val projection: Array<String> = arrayOf(
             MediaStore.Images.Media._ID,
@@ -73,7 +73,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
             "image/png"
         )
 
-        val list: MutableList<MyImg> = mutableListOf()
+        val list: MutableList<Attachment> = mutableListOf()
 
         val curr: Cursor? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
@@ -128,7 +128,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
                     //Timber.d("contentUri=$contentUri")
 
                     getThumbnail(contentUri, id)?.let { thumbnail ->
-                        list.add(MyImg(displayName, contentUri, thumbnail))
+                        list.add(Attachment(displayName, contentUri, thumbnail))
                     }
 
                 } while (cursor.moveToNext())

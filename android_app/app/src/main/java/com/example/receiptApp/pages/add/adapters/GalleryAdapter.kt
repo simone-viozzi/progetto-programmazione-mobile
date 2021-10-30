@@ -10,22 +10,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddImgBinding
-import com.example.receiptApp.sources.MyImg
+import com.example.receiptApp.sources.Attachment
 
-class GalleryAdapter(private val clickListener: ((MyImg) -> Unit)) : PagingDataAdapter<MyImg, GalleryAdapter.ImgViewHolder>(DiffCallback())
+class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : PagingDataAdapter<Attachment, GalleryAdapter.ImgViewHolder>(DiffCallback())
 {
-    class DiffCallback : DiffUtil.ItemCallback<MyImg>()
+    class DiffCallback : DiffUtil.ItemCallback<Attachment>()
     {
-        override fun areItemsTheSame(oldItem: MyImg, newItem: MyImg): Boolean = oldItem.contentUri == newItem.contentUri
-        override fun areContentsTheSame(oldItem: MyImg, newItem: MyImg): Boolean = oldItem == newItem
+        override fun areItemsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem.contentUri == newItem.contentUri
+        override fun areContentsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem == newItem
     }
 
     class ImgViewHolder(
         private val binding: AddImgBinding,
-        clickListener: ((MyImg) -> Unit)
+        clickListener: ((Attachment) -> Unit)
     ) : RecyclerView.ViewHolder(binding.root)
     {
-        private var img: MyImg? = null
+        private var img: Attachment? = null
 
         init
         {
@@ -34,7 +34,7 @@ class GalleryAdapter(private val clickListener: ((MyImg) -> Unit)) : PagingDataA
             }
         }
 
-        fun bind(item: MyImg)
+        fun bind(item: Attachment)
         {
             img = item
             val size = binding.imageView.width

@@ -4,12 +4,12 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import timber.log.Timber
 
-class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSource<Int, MyImg>()
+class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSource<Int, Attachment>()
 {
 
     private var initialLoadSize: Int = 0
 
-    override fun getRefreshKey(state: PagingState<Int, MyImg>): Int?
+    override fun getRefreshKey(state: PagingState<Int, Attachment>): Int?
     {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.prevKey?.plus(1)
@@ -18,7 +18,7 @@ class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSour
 
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MyImg>
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Attachment>
     {
         return try
         {

@@ -1,10 +1,12 @@
 package com.example.receiptApp.pages.add
 
+import android.net.Uri
 import android.text.format.DateFormat
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.example.receiptApp.sources.Attachment
 import com.example.receiptApp.sources.GalleryImagesPaginated
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -17,6 +19,7 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
     val rvList: LiveData<List<AddDataModel>>
         get() = _rvList
 
+    private var attachmentUri: Uri? = null
 
     // the callback used by every element of the views in the textWatcher to update the corresponding element in the
     // view model, it pass an element with only the updated field and the id != null
@@ -77,6 +80,18 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
     private fun getLastId(autoincrement: Boolean = true): Int
     {
         return if (autoincrement) ++lastId else lastId
+    }
+
+    fun setAttachment(attachment: Attachment)
+    {
+        _rvList.value = _rvList.value?.toMutableList().also { li ->
+            val header = li?.get(0) as AddDataModel.Header
+            li[0] = header.also {
+                it.attachment_name = attachment.name
+                it.thumbnail = attachment.thumbnail
+            }
+        }
+        attachmentUri = attachment.contentUri
     }
 
     init

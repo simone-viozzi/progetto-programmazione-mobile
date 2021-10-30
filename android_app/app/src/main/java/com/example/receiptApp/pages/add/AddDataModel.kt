@@ -1,5 +1,7 @@
 package com.example.receiptApp.pages.add
 
+import android.graphics.Bitmap
+
 
 /**
  * those are the data structures that will be displayed in the recyclerview
@@ -9,6 +11,8 @@ sealed class AddDataModel {
         var id: Int = 0,
         var tag: String? = null,
         var date: String? = null,
+        var thumbnail: Bitmap? = null,
+        var attachment_name: String? = null
     ) : AddDataModel()
 
     data class SingleElement(
