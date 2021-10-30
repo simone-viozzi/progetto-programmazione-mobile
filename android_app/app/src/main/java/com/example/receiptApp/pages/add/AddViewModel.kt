@@ -1,12 +1,16 @@
 package com.example.receiptApp.pages.add
 
 import android.text.format.DateFormat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import com.example.receiptApp.sources.GalleryImagesPaginated
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 
 
-class AddViewModel : ViewModel()
+class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewModel()
 {
     // the list observed by the recyclerview
     private val _rvList = MutableLiveData<List<AddDataModel>>()
@@ -81,5 +85,27 @@ class AddViewModel : ViewModel()
             AddDataModel.Header(id = 0),
             AddDataModel.SingleElement(id = getLastId())
         )
+    }
+
+    val flow = Pager(
+        PagingConfig(
+            pageSize = 24,
+            initialLoadSize = 6,
+            //jumpThreshold = 24
+        ),
+    ) { imagesPaginated }.flow.cachedIn(viewModelScope).flowOn(Dispatchers.IO)
+
+}
+
+class AddViewModelFactory(private val imagesPaginated: GalleryImagesPaginated) : ViewModelProvider.Factory
+{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T
+    {
+        if (modelClass.isAssignableFrom(AddViewModel::class.java))
+        {
+            @Suppress("UNCHECKED_CAST")
+            return AddViewModel(imagesPaginated) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

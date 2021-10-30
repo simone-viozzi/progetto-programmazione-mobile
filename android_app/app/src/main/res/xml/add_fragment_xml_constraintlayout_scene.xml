@@ -6,12 +6,21 @@
     <Transition
         motion:constraintSetEnd="@+id/end"
         motion:constraintSetStart="@id/start"
-        motion:duration="1000"
+        motion:duration="700"
         motion:autoTransition="none"
-        motion:pathMotionArc="none"
-        motion:motionInterpolator="cubic(0,2,0,2,0,84,0,38)">
+        motion:pathMotionArc="none">
        <KeyFrameSet>
        </KeyFrameSet>
+    </Transition>
+
+    <Transition
+        motion:constraintSetEnd="@+id/start"
+        motion:constraintSetStart="@id/end"
+        motion:duration="700"
+        motion:autoTransition="none"
+        motion:pathMotionArc="none">
+        <KeyFrameSet>
+        </KeyFrameSet>
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
@@ -21,7 +30,7 @@
     <ConstraintSet android:id="@+id/end">
         <Constraint
             android:id="@+id/guidelineImgs"
-            motion:layout_constraintGuide_percent="0.5"
+            motion:layout_constraintGuide_percent="0.3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Constraint

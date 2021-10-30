@@ -4,7 +4,7 @@ buildscript {
     ext {
         //room_version = '2.3.0'
         room_version = '2.4.0-beta01' // permette l'utilizzo del Map come return dal DAO
-
+        lifecycle_version = '2.4.0'
         coroutines = "1.5.2"
         //coroutines = "1.3.1"
     }

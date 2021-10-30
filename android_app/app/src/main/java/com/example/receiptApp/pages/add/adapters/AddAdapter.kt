@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.add
+package com.example.receiptApp.pages.add.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,6 +10,7 @@ import androidx.viewbinding.ViewBinding
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddHeadBinding
 import com.example.receiptApp.databinding.AddSingleElementBinding
+import com.example.receiptApp.pages.add.AddDataModel
 import com.example.receiptApp.toEditable
 
 class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarClick: (() -> Unit)) :
@@ -85,7 +86,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                     if (count > 0) textEditCallback.invoke(
                         // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
                         // TODO adapterPosition can be NO_POSITION, need to test for it!
-                        AddDataModel.Header(id = adapterPosition, tag = text.toString())
+                        AddDataModel.Header(id = bindingAdapterPosition, tag = text.toString())
                     )
                 }
 
@@ -113,28 +114,28 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                                                                   count: Int ->
                     // TODO adapterPosition can be NO_POSITION, need to test for it!
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = adapterPosition, name = text.toString())
+                        AddDataModel.SingleElement(id = bindingAdapterPosition, name = text.toString())
                     )
                 }
                 binding.textFieldNum.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = adapterPosition, num = text.toString().toIntOrNull())
+                        AddDataModel.SingleElement(id = bindingAdapterPosition, num = text.toString().toIntOrNull())
                     )
                 }
                 binding.textFieldTag.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = adapterPosition, tag = text.toString())
+                        AddDataModel.SingleElement(id = bindingAdapterPosition, tag = text.toString())
                     )
                 }
                 binding.textFieldCost.editText?.doOnTextChanged { text: CharSequence?,
                                                                   _, _,
                                                                   count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = adapterPosition, cost = text.toString().toDoubleOrNull())
+                        AddDataModel.SingleElement(id = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
                     )
                 }
             }

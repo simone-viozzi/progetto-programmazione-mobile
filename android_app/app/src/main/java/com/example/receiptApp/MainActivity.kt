@@ -31,13 +31,12 @@ class MainActivity : AppCompatActivity()
 {
     private lateinit var navController: NavController
     private val viewModel: ActivityViewModel by viewModels()
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-
-
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         // TODO this is needed?
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -64,12 +63,9 @@ class MainActivity : AppCompatActivity()
         // TODO maybe move this logic into the activity viewModel, so it can be changed dynamically
         // if i go to a specific route i need to do some specific actions.
         // the action are defined as attributes is the navigation xml
-        navController.addOnDestinationChangedListener {
-
-            // parameters
-            navController: NavController,
-            navDestination: NavDestination,
-            bundle: Bundle? ->
+        navController.addOnDestinationChangedListener { navController: NavController,
+                                                        navDestination: NavDestination,
+                                                        bundle: Bundle? ->
 
             // handle the fab gravity
             binding.bottomAppBar.fabAlignmentMode =

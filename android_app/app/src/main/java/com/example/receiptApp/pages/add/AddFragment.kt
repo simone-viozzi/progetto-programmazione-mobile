@@ -1,34 +1,39 @@
 package com.example.receiptApp.pages.add
 
-import android.content.ContentResolver
-import android.content.ContentUris
-import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.receiptApp.ActivityViewModel
+import com.example.receiptApp.App
+import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
+import com.example.receiptApp.pages.add.adapters.AddAdapter
+import com.example.receiptApp.pages.add.adapters.GalleryAdapter
 import com.google.android.material.datepicker.MaterialDatePicker
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
 class AddFragment : Fragment(R.layout.add_fragment)
 {
-    private val viewModel: AddViewModel by viewModels()
+    private val viewModel: AddViewModel by viewModels {
+        AddViewModelFactory((activity?.application as App).galleryImagesPaginated)
+    }
+
     private val activityViewModel: ActivityViewModel by activityViewModels()
     private lateinit var binding: AddFragmentBinding
 
@@ -51,12 +56,38 @@ class AddFragment : Fragment(R.layout.add_fragment)
             // this is needed for binding the view model to the binding
             viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
-
-
-            // this need to appear only if the user click on the attach button
-            scrim.visibility = View.GONE
-            recyclerViewImgs.visibility = View.GONE
         }
+
+        setAttachmentVisible(false)
+
+        binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
+        {
+
+            override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int)
+            {
+            }
+
+            override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float)
+            {
+            }
+
+            override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int)
+            {
+                if (currentId == R.id.start)
+                {
+                    setAttachmentVisible(false)
+                }
+            }
+
+            override fun onTransitionTrigger(
+                motionLayout: MotionLayout?,
+                triggerId: Int,
+                positive: Boolean,
+                progress: Float
+            ) {}
+
+        })
+
 
         // set the toolbar for this fragment
         NavigationUI.setupWithNavController(binding.topAppBar, findNavController())
@@ -100,22 +131,15 @@ class AddFragment : Fragment(R.layout.add_fragment)
             addAdapter.submitList(it)
         }
 
-
-        // TODO !!
         activityViewModel.setBABOnMenuItemClickListener {
-            Toast.makeText(activity, "halooo", Toast.LENGTH_SHORT).show()
-
-            with(binding)
-            {
-                scrim.visibility = View.VISIBLE
-                recyclerViewImgs.visibility = View.VISIBLE
-
-                addMotionLayout.transitionToEnd {
-                    // here can be specified the callback then the animation end
-                }
-            }
-
+            setAttachmentVisible(true)
+            binding.addMotionLayout.transitionToEnd()
             true
+        }
+
+
+        binding.scrim.setOnClickListener {
+            binding.addMotionLayout.transitionToState(R.id.start)
         }
 
 
@@ -132,5 +156,34 @@ class AddFragment : Fragment(R.layout.add_fragment)
             adapter = addAdapter
         }
 
+
+        binding.recyclerViewImgs.layoutManager = GridLayoutManager(activity, 3)
+
+        val galleryAdapter = GalleryAdapter()
+
+        binding.recyclerViewImgs.adapter = galleryAdapter
+
+        lifecycleScope.launch {
+            viewModel.flow.collectLatest { pagingData ->
+                galleryAdapter.submitData(pagingData)
+            }
+        }
+    }
+
+    fun setAttachmentVisible(visible: Boolean)
+    {
+        with(binding)
+        {
+            scrim.visibility = if (visible) View.VISIBLE else View.GONE
+            recyclerViewImgs.visibility = if (visible)  View.VISIBLE else View.GONE
+            scrim.isClickable = visible
+            recyclerViewImgs.isClickable = visible
+            recyclerView.isClickable = !visible
+        }
+
+        with((activity as MainActivity).binding)
+        {
+            if (visible) fab.hide() else fab.show()
+        }
     }
 }

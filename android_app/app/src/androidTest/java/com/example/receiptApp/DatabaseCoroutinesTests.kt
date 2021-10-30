@@ -20,7 +20,8 @@ import java.lang.StrictMath.sqrt
  */
 
 // Definizione del dispatcher
-interface DispatcherProvider {
+interface DispatcherProvider
+{
     fun main(): CoroutineDispatcher = Dispatchers.Main
     fun default(): CoroutineDispatcher = Dispatchers.Default
     fun io(): CoroutineDispatcher = Dispatchers.IO
@@ -31,21 +32,25 @@ class DefaultDispatcherProvider : DispatcherProvider
 
 // definition of test rule
 @ExperimentalCoroutinesApi
-class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) : TestWatcher() {
+class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) : TestWatcher()
+{
 
-    val testDispatcherProvider = object : DispatcherProvider {
+    val testDispatcherProvider = object : DispatcherProvider
+    {
         override fun default(): CoroutineDispatcher = testDispatcher
         override fun io(): CoroutineDispatcher = testDispatcher
         override fun main(): CoroutineDispatcher = testDispatcher
         override fun unconfined(): CoroutineDispatcher = testDispatcher
     }
 
-    override fun starting(description: Description?) {
+    override fun starting(description: Description?)
+    {
         super.starting(description)
         Dispatchers.setMain(testDispatcher)
     }
 
-    override fun finished(description: Description?) {
+    override fun finished(description: Description?)
+    {
         super.finished(description)
         Dispatchers.resetMain()
         testDispatcher.cleanupTestCoroutines()
@@ -53,18 +58,22 @@ class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCorout
 }
 
 // code to run inside the test
-class HeavyWorker(private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) {
+class HeavyWorker(private val dispatchers: DispatcherProvider = DefaultDispatcherProvider())
+{
 
-    suspend fun heavyOperation(): Long {
+    suspend fun heavyOperation(): Long
+    {
         return withContext(Dispatchers.Default) {
             return@withContext doHardMaths()
         }
     }
 
     // waste some CPU cycles
-    private fun doHardMaths(): Long {
+    private fun doHardMaths(): Long
+    {
         var count = 0.0
-        for (i in 1..100_000_000) {
+        for (i in 1..100_000_000)
+        {
             count += sqrt(i.toDouble())
         }
         return count.toLong()
@@ -73,7 +82,8 @@ class HeavyWorker(private val dispatchers: DispatcherProvider = DefaultDispatche
 
 // test code
 @ExperimentalCoroutinesApi
-class HeavyWorkerTest {
+class HeavyWorkerTest
+{
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()

@@ -12,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.util.*
 
 /**
  * This is not meant to be a full set of tests. For simplicity, most of your samples do not
@@ -21,13 +20,15 @@ import java.util.*
  */
 
 @RunWith(AndroidJUnit4::class)
-class DatabaseTests {
+class DatabaseTests
+{
 
     private lateinit var aggregatesDao: AggregatesDao
     private lateinit var db: AppDatabase
 
     @Before
-    fun createDb() {
+    fun createDb()
+    {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
@@ -40,13 +41,15 @@ class DatabaseTests {
 
     @After
     @Throws(IOException::class)
-    fun closeDb() {
+    fun closeDb()
+    {
         db.close()
     }
 
     @Test
     @Throws(Exception::class)
-    fun insertAndGetAggregate() {
+    fun insertAndGetAggregate()
+    {
 
         val aggregate = Aggregate()
         aggregatesDao.insert(aggregate)
