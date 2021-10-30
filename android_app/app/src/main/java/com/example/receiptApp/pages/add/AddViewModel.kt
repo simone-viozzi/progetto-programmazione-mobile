@@ -83,4 +83,11 @@ class AddViewModel : ViewModel()
             AddDataModel.SingleElement(id = getLastId())
         )
     }
+
+
+    fun loadPreviewsFromGalley()
+    {
+
+    }
+
 }

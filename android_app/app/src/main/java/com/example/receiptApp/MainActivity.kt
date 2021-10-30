@@ -1,7 +1,10 @@
 package com.example.receiptApp
 
+import android.database.Cursor
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -152,5 +155,8 @@ class MainActivity : AppCompatActivity()
     {
         Toast.makeText(this, "halooo", Toast.LENGTH_SHORT).show()
     }
+
+
+
 
 }

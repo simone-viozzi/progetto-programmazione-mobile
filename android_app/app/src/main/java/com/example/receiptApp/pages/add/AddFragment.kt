@@ -1,7 +1,13 @@
 package com.example.receiptApp.pages.add
 
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -12,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.receiptApp.ActivityViewModel
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
@@ -126,6 +133,4 @@ class AddFragment : Fragment(R.layout.add_fragment)
         }
 
     }
-
-
 }

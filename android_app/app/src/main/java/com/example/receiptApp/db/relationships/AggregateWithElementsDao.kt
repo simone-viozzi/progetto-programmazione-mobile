@@ -15,6 +15,7 @@ interface AggregateWithElementsDao
     @Query("SELECT * FROM Aggregate")
     fun getAggregateWithElements(): List<AggregateWithElements>
 
+
     @Transaction
     fun insert(aggregate: Aggregate?, elements: List<Element?>)
     {
@@ -30,6 +31,7 @@ interface AggregateWithElementsDao
             }
         }
     }
+
 
     // If the @Insert method receives only 1 parameter, it can return a long,
     // which is the new rowId for the inserted item.
