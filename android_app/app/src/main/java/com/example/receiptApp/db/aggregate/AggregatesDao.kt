@@ -63,7 +63,7 @@ interface AggregatesDao
      * @return a list of all the aggregates inside the table
      */
     @Query("SELECT * FROM aggregate")
-    suspend fun getAllAggregates(): List<Aggregate>
+    fun getAllAggregates(): LiveData<List<Aggregate>>
 
     /**
      * Get a list of aggregates by date
@@ -72,7 +72,7 @@ interface AggregatesDao
      * @return
      */
     @Query("SELECT * FROM aggregate WHERE aggregate.date = :date")
-    fun getAggregateByDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
+    fun getAggregateByDate(date: Date): LiveData<List<Aggregate>>
 
     /**
      * Get a list of aggregates until date
@@ -81,44 +81,44 @@ interface AggregatesDao
      * @return
      */
     @Query("SELECT * FROM aggregate WHERE aggregate.date = :date")
-    fun getAggregateUntilDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
+    fun getAggregateUntilDate(date: Date): LiveData<List<Aggregate>>
 
     /**
-     * Get aggregate after date
+     * Get a list of aggregates after date
      *
      * @param date
      * @return
      */
     @Query("SELECT * FROM aggregate WHERE aggregate.date = :date")
-    fun getAggregateAfterDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
+    fun getAggregateAfterDate(date: Date): LiveData<List<Aggregate>>
 
     /**
-     * Get aggregate between date
+     * Get a list of aggregates between date
      *
      * @param dstart
      * @param dend
      * @return
      */
     @Query("SELECT * FROM aggregate WHERE aggregate.date >= :dstart AND aggregate.date <= :dend")
-    fun getAggregateBetweenDate(dstart: Date, dend: Date): LiveData<Map<Aggregate, List<Element>>>
+    fun getAggregateBetweenDate(dstart: Date, dend: Date): LiveData<List<Aggregate>>
 
     /**
-     * Get aggregate by id
+     * Get a list of aggregates by id
      *
      * @param id
      * @return
      */
     @Query("SELECT * FROM aggregate WHERE aggregate.id = :id LIMIT 1")
-    fun getAggregateById(id: Long): LiveData<Map<Aggregate, List<Element>>>
+    fun getAggregateById(id: Long): LiveData<List<Aggregate>>
 
     /**
-     * Get aggregate by tag
+     * Get a list of aggregates by tag
      *
      * @param tag
      * @return
      */
     @Query("SELECT * from aggregate WHERE aggregate.tag_id = :tag")
-    fun getAggregateByTag(tag: Long): LiveData<Map<Aggregate, List<Element>>>
+    fun getAggregateByTag(tag: Long): LiveData<List<Aggregate>>
 
     /////////////////////////////////////////
     // Get queries aggregates with elements
