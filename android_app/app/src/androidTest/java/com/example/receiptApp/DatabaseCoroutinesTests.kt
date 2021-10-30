@@ -17,6 +17,7 @@ import java.lang.StrictMath.sqrt
 
 /**
  * Test for coroutines functions
+ * reference link: https://craigrussell.io/2019/11/unit-testing-coroutine-suspend-functions-using-testcoroutinedispatcher/
  */
 
 // Definizione del dispatcher
@@ -56,7 +57,7 @@ class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCorout
 class HeavyWorker(private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()) {
 
     suspend fun heavyOperation(): Long {
-        return withContext(Dispatchers.Default) {
+        return withContext(dispatchers.default()) {
             return@withContext doHardMaths()
         }
     }
