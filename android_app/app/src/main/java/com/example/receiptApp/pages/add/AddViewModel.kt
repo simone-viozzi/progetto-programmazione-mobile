@@ -58,7 +58,6 @@ class AddViewModel : ViewModel()
         }
     }
 
-
     // this get called when the date picker return
     fun setDate(millis: Long)
     {
@@ -83,11 +82,4 @@ class AddViewModel : ViewModel()
             AddDataModel.SingleElement(id = getLastId())
         )
     }
-
-
-    fun loadPreviewsFromGalley()
-    {
-
-    }
-
 }

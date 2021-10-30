@@ -44,7 +44,9 @@ Project
     - Folder that contain more complex widgets that could be compared to android fragments,
       those widgets should cover large parts of some page.
     - Files:
-        -
+        - main_fragment
+            -
+        
 - Database
     -Folder that contain classes for the management of the database.
     - Files:

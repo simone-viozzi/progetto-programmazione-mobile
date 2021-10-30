@@ -9,7 +9,7 @@
         motion:duration="1000"
         motion:autoTransition="none"
         motion:pathMotionArc="none"
-        motion:motionInterpolator="cubic(0.56,1,0.81,0.94)">
+        motion:motionInterpolator="cubic(0,2,0,2,0,84,0,38)">
        <KeyFrameSet>
        </KeyFrameSet>
     </Transition>

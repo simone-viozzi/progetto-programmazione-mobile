@@ -147,7 +147,6 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                 binding.textFieldCost.editText?.text = element.cost?.toString()?.toEditable()
             }
         }
-
     }
 
 

@@ -1,15 +1,15 @@
 // importing main components
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// import data widgets
+import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
+
 class HomeSettings extends StatelessWidget {
-
-  final changeModStateFun;
-
-  const HomeSettings({this.changeModStateFun});
+  const HomeSettings({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return PopupMenuButton(
       icon: const Icon(
         Icons.more_vert,
@@ -24,7 +24,7 @@ class HomeSettings extends StatelessWidget {
         ),
         PopupMenuItem(
           onTap:() {
-            changeModStateFun(true);
+            MainFragDataWidget.of(context).modifyDash(true);
           },
           child: const ListTile(
             leading: Icon(Icons.edit),
@@ -34,5 +34,6 @@ class HomeSettings extends StatelessWidget {
       ],
     );
   }
+
 }
 
