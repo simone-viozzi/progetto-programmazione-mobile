@@ -45,7 +45,7 @@ class Converters
     */
 
     @TypeConverter
-    fun locationStringToLocation(stringLocation: String): Location?
+    fun locationStringToLocation(stringLocation: String?): Location?
     {
         if (stringLocation != null && (stringLocation.contains(","))) {
             var result = Location("")
@@ -61,10 +61,15 @@ class Converters
     }
 
     @TypeConverter
-    fun locationToLocationString(location: Location?): String
+    fun locationToLocationString(location: Location?): String?
     {
-        if (location==null) return "not present";
-        return Location.convert(location.latitude, Location.FORMAT_DEGREES) + " " + Location.convert(location.longitude, Location.FORMAT_DEGREES);
+        if (location != null) {
+            return Location.convert(location.latitude, Location.FORMAT_DEGREES) +
+                    "," +
+                    Location.convert(location.longitude, Location.FORMAT_DEGREES)
+        }else{
+            return null
+        }
     }
 
     @TypeConverter

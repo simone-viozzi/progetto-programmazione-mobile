@@ -21,5 +21,5 @@ data class Aggregate(
 
     var attachment: Uri? = null,
 
-    var total_cost: Long = 0L,
+    var total_cost: Float = 0.0f,
 )
