@@ -30,7 +30,6 @@ import com.google.android.material.math.MathUtils
 class MainActivity : AppCompatActivity()
 {
     private lateinit var navController: NavController
-    private val viewModel: ActivityViewModel by viewModels()
     lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity()
         val theme = resources.newTheme()
         theme.applyStyle(applicationInfo.theme, true)
 
-
+        
         ////////////////////// init the navigation view behavior //////////////////////
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.navigationView)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -58,37 +57,6 @@ class MainActivity : AppCompatActivity()
         navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
 
-
-
-        // TODO maybe move this logic into the activity viewModel, so it can be changed dynamically
-        // if i go to a specific route i need to do some specific actions.
-        // the action are defined as attributes is the navigation xml
-        navController.addOnDestinationChangedListener { navController: NavController,
-                                                        navDestination: NavDestination,
-                                                        bundle: Bundle? ->
-
-            // handle the fab gravity
-            binding.bottomAppBar.fabAlignmentMode =
-                bundle?.getInt("FabGravity", R.integer.FabGravityCenter)?.let { resources.getInteger(it) }
-                    ?: BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-
-            // handle the fab hide / show
-            if (bundle?.getBoolean("FabShow", true) != false) binding.fab.show() else binding.fab.hide()
-
-
-            binding.bottomAppBar.replaceMenu(
-                bundle?.getInt("BottomBarMenu", R.menu.bottom_bar_menu_hide) ?:R.menu.bottom_bar_menu_hide
-            )
-
-            // Display / hide the hamburger menu TODO the theme doesn't work!
-            binding.bottomAppBar.navigationIcon = if (bundle?.getBoolean("NavigationIcon", true) == true)
-                ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_menu_24, theme) else null
-
-            // set the fab icon based on attributes
-            binding.fab.setImageResource(
-                bundle?.getInt("FabIcon", R.drawable.ic_baseline_add_24) ?: R.drawable.ic_baseline_add_24
-            )
-        }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // TODO there is a way to move this code into the viewModel? and observe the click listener?
@@ -118,16 +86,6 @@ class MainActivity : AppCompatActivity()
             binding.scrim.visibility = View.GONE
         }
         /////////////////////////////////////////////////////////////////////////////////////////////// TODO
-
-
-        viewModel.fabOnClickListener.observe(this) {
-            binding.fab.setOnClickListener(it)
-        }
-
-
-        viewModel.bABOnMenuItemClickListener.observe(this) {
-            binding.bottomAppBar.setOnMenuItemClickListener(it)
-        }
 
 
         // leave this method alone, it's doing it's job

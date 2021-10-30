@@ -5,18 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.example.receiptApp.ActivityViewModel
+import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.HomeFragmentBinding
+import com.google.android.material.bottomappbar.BottomAppBar
 
 class HomeFragment : Fragment()
 {
-
     private val viewModel: HomeViewModel by viewModels()
-    private val activityViewModel: ActivityViewModel by activityViewModels()
 
     private lateinit var binding: HomeFragmentBinding
 
@@ -38,27 +36,37 @@ class HomeFragment : Fragment()
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        with((activity as MainActivity).binding)
+        {
+            bottomAppBar.setFabAlignmentModeAndReplaceMenu(
+                BottomAppBar.FAB_ALIGNMENT_MODE_CENTER,
+                R.menu.bottom_bar_menu_main
+            )
+            fab.show()
+            fab.setImageResource(R.drawable.ic_baseline_add_24)
+            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
 
-        activityViewModel.setFabOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
-            findNavController().navigate(action)
-        }
+            fab.setOnClickListener {
+                val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
+                findNavController().navigate(action)
+            }
+            bottomAppBar.setOnMenuItemClickListener {
+                when (it.itemId)
+                {
+                    R.id.bottom_bar_menu_about -> {
+                        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
+                        true
+                    }
 
-        activityViewModel.setBABOnMenuItemClickListener {
-            when (it.itemId)
-            {
-                R.id.bottom_bar_menu_about -> {
-                    findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
-                    true
+                    R.id.bottom_bar_menu_edit -> {
+                        // TODO !!
+                        true
+                    }
+                    else -> false
                 }
-
-                R.id.bottom_bar_menu_edit -> {
-                    // TODO !!
-                    true
-                }
-                else -> false
             }
         }
+
     }
 
 }

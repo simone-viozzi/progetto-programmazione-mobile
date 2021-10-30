@@ -19,6 +19,7 @@ import com.example.receiptApp.*
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -31,7 +32,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
         AddViewModelFactory((activity?.application as App).galleryImagesPaginated)
     }
 
-    private val activityViewModel: ActivityViewModel by activityViewModels()
     private lateinit var binding: AddFragmentBinding
 
     override fun onCreateView(
@@ -53,6 +53,25 @@ class AddFragment : Fragment(R.layout.add_fragment)
             // this is needed for binding the view model to the binding
             viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
+        }
+
+        with((activity as MainActivity).binding)
+        {
+            bottomAppBar.setFabAlignmentModeAndReplaceMenu(
+                BottomAppBar.FAB_ALIGNMENT_MODE_END,
+                R.menu.bottom_bar_menu_add
+            )
+            bottomAppBar.navigationIcon = null
+            fab.setImageResource(R.drawable.ic_baseline_check_24)
+            fab.setOnClickListener {
+                Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
+                Timber.d("\nlist -> \n${viewModel.rvList.value}")
+            }
+            bottomAppBar.setOnMenuItemClickListener {
+                binding.addMotionLayout.transitionToState(R.id.end)
+                true
+            }
+
         }
 
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
@@ -126,26 +145,14 @@ class AddFragment : Fragment(R.layout.add_fragment)
             addAdapter.submitList(it)
         }
 
-        activityViewModel.setBABOnMenuItemClickListener {
-            binding.addMotionLayout.transitionToState(R.id.end)
-            true
-        }
-
 
         binding.scrim.setOnClickListener {
             binding.addMotionLayout.transitionToState(R.id.start)
         }
 
 
-        // TODO !!
-        //  here viewModel.rvList.value should be saved into the db
-        activityViewModel.setFabOnClickListener {
-            Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
-            Timber.d("\nlist -> \n${viewModel.rvList.value}")
-        }
-
         binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(activity).also {  }
+            layoutManager = LinearLayoutManager(activity)
             adapter = addAdapter
         }
 

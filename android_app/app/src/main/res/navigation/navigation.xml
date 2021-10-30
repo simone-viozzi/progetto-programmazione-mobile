@@ -39,40 +39,16 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:launchSingleTop="false" />
-        <argument
-            android:name="FabGravity"
-            android:defaultValue="@integer/FabGravityCenter"/>
-        <argument
-            android:name="FabIcon"
-            android:defaultValue="@drawable/ic_baseline_add_24" />
         <action
             android:id="@+id/action_homeFragment_to_aboutFragment"
             app:destination="@id/aboutFragment" />
-        <argument
-            android:name="BottomBarMenu"
-            android:defaultValue="@menu/bottom_bar_menu_main"/>
     </fragment>
 
     <fragment
         android:id="@+id/addFragment"
         android:name="com.example.receiptApp.pages.add.AddFragment"
         android:label="add_fragment"
-        tools:layout="@layout/add_fragment" >
-        <argument
-            android:name="FabGravity"
-            android:defaultValue="@integer/FabGravityEnd"/>
-        <argument
-            android:name="BottomBarMenu"
-            android:defaultValue="@menu/bottom_bar_menu_add"/>
-        <argument
-            android:name="FabShow"
-            android:defaultValue="true"/>
-        <argument
-            android:name="NavigationIcon"
-            android:defaultValue="false"/>
-        <argument
-            android:name="FabIcon"
-            android:defaultValue="@drawable/ic_baseline_check_24" />
+        tools:layout="@layout/add_fragment">
     </fragment>
 
     <fragment
@@ -80,17 +56,6 @@
         android:name="com.example.receiptApp.pages.about.AboutFragment"
         android:label="about_fragment"
         tools:layout="@layout/about_fragment">
-
-        <argument
-            android:name="FabShow"
-            android:defaultValue="false"/>
-        <argument
-            android:name="NavigationIcon"
-            android:defaultValue="false"/>
-        <argument
-            android:name="BottomBarMenu"
-            android:defaultValue="@menu/bottom_bar_menu_hide"/>
-
     </fragment>
 
 </navigation>

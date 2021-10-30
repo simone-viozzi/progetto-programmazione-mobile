@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.example.receiptApp.MainActivity
+import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AboutFragmentBinding
 
 
@@ -39,6 +41,13 @@ class AboutFragment : Fragment()
 
         binding.topAppBar.setNavigationOnClickListener {
             findNavController().navigateUp()
+        }
+
+        with((activity as MainActivity).binding)
+        {
+            fab.hide()
+            bottomAppBar.replaceMenu(R.menu.bottom_bar_menu_hide)
+            bottomAppBar.navigationIcon = null
         }
     }
 }
