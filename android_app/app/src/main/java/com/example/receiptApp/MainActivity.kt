@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity()
         val theme = resources.newTheme()
         theme.applyStyle(applicationInfo.theme, true)
 
-        
+
         ////////////////////// init the navigation view behavior //////////////////////
         val bottomSheetBehavior = BottomSheetBehavior.from(binding.navigationView)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN

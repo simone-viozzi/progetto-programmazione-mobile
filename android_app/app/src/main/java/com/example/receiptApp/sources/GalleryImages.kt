@@ -3,6 +3,7 @@ package com.example.receiptApp.sources
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.database.Cursor
+import android.database.DatabaseUtils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -33,7 +34,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
                 MediaStore.Images.Thumbnails.getThumbnail(
                     contentResolver,
                     id,
-                    THUMBNAIL_SIZE,
+                    MediaStore.Images.Thumbnails.MINI_KIND,
                     BitmapFactory.Options()
                 )
             }
@@ -107,7 +108,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
 
             if (cursor.moveToFirst())
             {
-                //DatabaseUtils.dumpCursor(cursor)
+                DatabaseUtils.dumpCursor(cursor)
 
                 val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
                 val displayNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
