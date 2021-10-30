@@ -150,16 +150,16 @@ class AddFragment : Fragment(R.layout.add_fragment)
             Timber.d("\nlist -> \n${viewModel.rvList.value}")
         }
 
-
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = addAdapter
         }
 
-
         binding.recyclerViewImgs.layoutManager = GridLayoutManager(activity, 3)
 
-        val galleryAdapter = GalleryAdapter()
+        val galleryAdapter = GalleryAdapter{
+
+        }
 
         binding.recyclerViewImgs.adapter = galleryAdapter
 
