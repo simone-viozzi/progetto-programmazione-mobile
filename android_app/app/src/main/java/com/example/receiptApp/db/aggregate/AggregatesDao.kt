@@ -57,22 +57,22 @@ interface AggregatesDao
     // Update queries
 
     @Update
-    suspend fun _update(aggregate: Aggregate): Long
+    suspend fun _update(aggregate: Aggregate): Int
 
     @Update
-    suspend fun _updateList(aggregates: List<Aggregate>): Long
+    suspend fun _updateList(aggregates: List<Aggregate>): Int
 
     @Query("UPDATE aggregate SET tag_id = :new_tag_id WHERE id = :id")
-    suspend fun _updateAgregateTag(id: Long, new_tag_id: Long): Long
+    suspend fun _updateAgregateTag(id: Long, new_tag_id: Long): Int
 
     @Query("UPDATE aggregate SET date = :date WHERE id = :id")
-    suspend fun _updateAgregateDate(id: Long, date: Date): Long
+    suspend fun _updateAgregateDate(id: Long, date: Date): Int
 
     @Query("UPDATE aggregate SET location = :location WHERE id = :id")
-    suspend fun _updateAgregateLocation(id: Long, location: Location): Long
+    suspend fun _updateAgregateLocation(id: Long, location: Location): Int
 
     @Query("UPDATE aggregate SET attachment = :attachment WHERE id = :id")
-    suspend fun _updateAgregateAttachment(id: Long, attachment: Uri): Long
+    suspend fun _updateAgregateAttachment(id: Long, attachment: Uri): Int
 
     @Transaction
     suspend fun updateAggregate(
@@ -80,9 +80,9 @@ interface AggregatesDao
         tag_id: Long? = null,
         date: Date? = null,
         location: Location? = null,
-        attachment: Uri? = null): Long{
+        attachment: Uri? = null): Int{
 
-        var succesUpdates: Long = 0
+        var succesUpdates: Int = 0
         if(tag_id != null)      succesUpdates += _updateAgregateTag(id,tag_id)
         if(date != null)        succesUpdates += _updateAgregateDate(id, date)
         if(location != null)    succesUpdates += _updateAgregateLocation(id, location)
