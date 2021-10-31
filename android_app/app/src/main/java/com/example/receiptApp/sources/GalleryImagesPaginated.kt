@@ -1,8 +1,10 @@
 package com.example.receiptApp.sources
 
+import android.provider.MediaStore
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import timber.log.Timber
+import java.io.FileNotFoundException
 
 class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSource<Int, Attachment>()
 {
@@ -38,10 +40,11 @@ class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSour
                 ((pageNumber - 1) * params.loadSize) + (initialLoadSize - params.loadSize)
             }
 
-            val images = dataSource.getImages(params.loadSize, offset)
+            val images = dataSource.getImages(params.loadSize, offset) ?: throw FileNotFoundException("images not found")
+
             val count = images.size
 
-            return LoadResult.Page(
+            LoadResult.Page(
                 data = images,
                 prevKey = if (pageNumber > 0) pageNumber - 1 else null,
                 // assume that if a full page is not loaded, that means the end of the data

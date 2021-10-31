@@ -1,26 +1,34 @@
 package com.example.receiptApp.pages.add
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.receiptApp.*
+import com.example.receiptApp.App
+import com.example.receiptApp.MainActivity
+import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -33,6 +41,86 @@ class AddFragment : Fragment(R.layout.add_fragment)
     }
 
     private lateinit var binding: AddFragmentBinding
+    private lateinit var addAdapter: AddAdapter
+
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        var isGranted = true
+        for (g in it.values)
+        {
+            isGranted = isGranted && g
+        }
+
+        if (isGranted)
+        {
+            Snackbar.make(
+                (activity as MainActivity).binding.coordinatorLayout,
+                "halooo dal fab",
+                Snackbar.LENGTH_SHORT
+            )
+                .setAnchorView((activity as MainActivity).binding.fab)
+                .show()
+            (activity as MainActivity)
+                .binding
+                .bottomAppBar
+                .replaceMenu(R.menu.bottom_bar_menu_add)
+
+            viewModel.galleryCollect()
+        } else
+        {
+            (activity as MainActivity)
+                .binding
+                .bottomAppBar
+                .replaceMenu(R.menu.bottom_bar_menu_hide)
+        }
+    }
+
+    private fun checkPermissions()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
+            if ((ContextCompat.checkSelfPermission(
+                    (activity as MainActivity),
+                    Manifest.permission.ACCESS_MEDIA_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED)
+                && ContextCompat.checkSelfPermission(
+                    (activity as MainActivity),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            )
+            {
+                requestPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_MEDIA_LOCATION
+                    )
+                )
+            } else
+            {
+                Snackbar.make(
+                    (activity as MainActivity).binding.coordinatorLayout,
+                    "permissions ok",
+                    Snackbar.LENGTH_SHORT
+                ).setAnchorView((activity as MainActivity).binding.fab)
+                    .show()
+
+                viewModel.galleryCollect()
+            }
+        } else
+        {
+            if (ContextCompat.checkSelfPermission(
+                    (activity as MainActivity),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            )
+            {
+                requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+            }
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,8 +159,11 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 binding.addMotionLayout.transitionToState(R.id.end)
                 true
             }
-
         }
+
+
+        checkPermissions()
+
 
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
         {
@@ -99,7 +190,9 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 triggerId: Int,
                 positive: Boolean,
                 progress: Float
-            ) {}
+            )
+            {
+            }
 
         })
 
@@ -123,7 +216,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
 
         // the adapter take the two callBacks, one is implemented in the View model the other here
-        val addAdapter = AddAdapter(viewModel.textEditCallback) {
+        addAdapter = AddAdapter(viewModel.textEditCallback) {
             // TODO use a constant tag in the constants
             // TODO if the user call this more than one  time the app crash, need to test if datePicker is visible
             datePicker.show(childFragmentManager, "tag")
@@ -167,11 +260,27 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         binding.recyclerViewImgs.adapter = galleryAdapter
 
-        lifecycleScope.launch {
-            viewModel.flow.collectLatest { pagingData ->
-                galleryAdapter.submitData(pagingData)
+        //        val galleryCollect = viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        //            withContext(Dispatchers.IO) {
+        //                viewModel.flow.collectLatest { pagingData ->
+        //                    galleryAdapter.submitData(pagingData)
+        //                }
+        //            }
+        //        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.galleryState.collectLatest { state ->
+                // New value received
+                when (state)
+                {
+                    is GalleryDataState.Idle -> {}
+                    is GalleryDataState.Error -> {}
+                    is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
+                }
             }
         }
+
+
 
         setAttachmentVisible(false)
     }
@@ -182,7 +291,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         with(binding)
         {
             scrim.visibility = if (visible) View.VISIBLE else View.GONE
-            recyclerViewImgs.visibility = if (visible)  View.VISIBLE else View.GONE
+            recyclerViewImgs.visibility = if (visible) View.VISIBLE else View.GONE
             scrim.isClickable = visible
             recyclerViewImgs.isClickable = visible
 

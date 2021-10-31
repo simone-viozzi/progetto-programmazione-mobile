@@ -9,7 +9,9 @@ import androidx.paging.cachedIn
 import com.example.receiptApp.sources.Attachment
 import com.example.receiptApp.sources.GalleryImagesPaginated
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewModel()
@@ -102,13 +104,26 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
         )
     }
 
-    val flow = Pager(
+    private val flow = Pager(
         PagingConfig(
             pageSize = 24,
             initialLoadSize = 6,
             //jumpThreshold = 24
         ),
     ) { imagesPaginated }.flow.cachedIn(viewModelScope).flowOn(Dispatchers.IO)
+
+    private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
+    val galleryState: StateFlow<GalleryDataState> = _galleryState
+
+    fun galleryCollect() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                flow.collectLatest { pagingData ->
+                    _galleryState.value = GalleryDataState.Data(pagingData)
+                }
+            }
+        }
+    }
 
 }
 
