@@ -47,11 +47,13 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
-        var isGranted = true
-        for (g in it.values)
-        {
-            isGranted = isGranted && g
-        }
+        //TODO("need testing!")
+        var isGranted = it.values.reduce{ b1, b2 -> b1 && b2 }
+
+//        for (g in it.values)
+//        {
+//            isGranted = isGranted && g
+//        }
 
         if (isGranted)
         {
