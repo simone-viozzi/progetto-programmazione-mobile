@@ -35,11 +35,11 @@ import com.example.receiptApp.db.aggregate.Aggregate
         childColumns = ["aggregate_id"],
         onDelete = CASCADE //A "CASCADE" action propagates the delete or update operation on the parent key to each dependent child
     )],
-    indices = [Index("id")]
+    indices = [Index("elem_id")]
 )
 data class Element(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    var elem_id: Long = 0L,
 
     var aggregate_id: Long = 0L,
 
@@ -49,7 +49,7 @@ data class Element(
 
     var parent_tag_id: Long = 0L,
 
-    var tag_id: Long = 0L,
+    var elem_tag_id: Long = 0L,
 
     var cost: Float = 0.0f
 

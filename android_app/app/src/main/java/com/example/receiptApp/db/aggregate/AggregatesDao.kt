@@ -166,7 +166,9 @@ interface AggregatesDao
      *
      * @return a map of aggregates with a list of elements foreach aggregate with the largest id
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.id = (SELECT max(id) FROM aggregate)")
+    @Query("SELECT * FROM aggregate JOIN element " +
+            "ON aggregate.id == element.aggregate_id " +
+            "WHERE aggregate.id = (SELECT max(id) FROM aggregate)")
     suspend fun getLastAggregateWithElements(): Map<Aggregate, List<Element>>
 
     /**
@@ -176,7 +178,7 @@ interface AggregatesDao
      * @param id the id of the selected aggregate
      * @return
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.id = :id LIMIT 1")
+    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.id = :id LIMIT 1")
     fun getAggregateWithElementsById(id: Long): LiveData<Map<Aggregate, List<Element>>>
 
     /**
@@ -185,7 +187,7 @@ interface AggregatesDao
      * @param date date of the selected aggregates
      * @return a map of aggregates with a list of elements foreach aggregate by date
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.date = :date")
+    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date = :date")
     fun getAggregateWithElementsByDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
 
     /**
@@ -193,8 +195,9 @@ interface AggregatesDao
      *
      * @return a Map with aggregates as keys and as values their elements as a list
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id")
-    suspend fun getAllAggregatesWithElements(): Map<Aggregate, List<Element>>
+    @MapInfo()
+    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id")
+    suspend fun getAllAggregatesWithElements(): LiveData<Map<Aggregate, List<Element>>>
 
     /**
      * Get a map of aggregates with a list of elements until date foreach aggregate
@@ -202,7 +205,7 @@ interface AggregatesDao
      * @param date
      * @return a map of
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.date = :date")
+    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date = :date")
     fun getAggregateWithElementsUntilDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
 
     /**
@@ -211,7 +214,7 @@ interface AggregatesDao
      * @param date
      * @return
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.date = :date")
+    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date = :date")
     fun getAggregateWithElementsAfterDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
 
     /**
@@ -221,7 +224,7 @@ interface AggregatesDao
      * @param dend
      * @return
      */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.date >= :dstart AND aggregate.date <= :dend")
+    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date >= :dstart AND aggregate.date <= :dend")
     fun getAggregateWithElementsBetweenDate(dstart: Date, dend: Date): LiveData<Map<Aggregate, List<Element>>>
 
     /**
@@ -230,6 +233,6 @@ interface AggregatesDao
      * @param tag
      * @return
      */
-    @Query("SELECT * from aggregate JOIN element ON aggregate.id == element.aggregate_id WHERE aggregate.tag_id = :tag")
+    @Query("SELECT * from aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.tag_id = :tag")
     fun getAggregateWithElementsByTag(tag: Long): LiveData<Map<Aggregate, List<Element>>>
 }
