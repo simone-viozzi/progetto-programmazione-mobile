@@ -7,6 +7,25 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.receiptApp.db.aggregate.Aggregate
 
+/**
+ * Element
+ *
+ * Clear explanation of relation between Entity and how to use it
+ * link: https://www.tutorialguruji.com/android/how-to-insert-entities-with-a-one-to-many-relationship-in-room/
+ *
+ * NOTE:    if this relation is established no elements can be added with
+ *          the field aggregate_id that not correspond to any aggregate
+ *
+ * @property id
+ * @property aggregate_id
+ * @property name
+ * @property num
+ * @property parent_tag_id
+ * @property tag_id
+ * @property cost
+ *
+ * @constructor Create empty Element
+ */
 
 @Entity(
     tableName = "element",
