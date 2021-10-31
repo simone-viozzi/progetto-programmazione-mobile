@@ -1,7 +1,8 @@
 package com.example.receiptApp.pages.add
 
 import android.Manifest
-import android.content.pm.PackageManager
+import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +11,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -21,21 +22,25 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
-import com.example.receiptApp.PermissionsHandling
 import com.example.receiptApp.R
+import com.example.receiptApp.Utils.PermissionsHandling
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import androidx.core.content.FileProvider
+import androidx.core.content.FileProvider.getUriForFile
+import java.io.File
 
 
 class AddFragment : Fragment(R.layout.add_fragment)
 {
+    private lateinit var permHandler: PermissionsHandling
+
     private val viewModel: AddViewModel by viewModels {
         AddViewModelFactory((activity?.application as App).galleryImagesPaginated)
     }
@@ -44,29 +49,11 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private lateinit var addAdapter: AddAdapter
 
     private val onPermissionGranted: () -> Unit = {
-        Snackbar.make(
-            (activity as MainActivity).binding.coordinatorLayout,
-            "permissions ok",
-            Snackbar.LENGTH_SHORT
-        ).setAnchorView((activity as MainActivity).binding.fab)
-            .show()
-
-        (activity as MainActivity)
-            .binding
-            .bottomAppBar
-            .replaceMenu(R.menu.bottom_bar_menu_add)
-
+        setAttachmentVisible(false)
         viewModel.galleryCollect()
     }
 
     private var onPermissionDenied: () -> Unit = {
-        Snackbar.make(
-            (activity as MainActivity).binding.coordinatorLayout,
-            "permission denied",
-            Snackbar.LENGTH_SHORT
-        ).setAnchorView((activity as MainActivity).binding.fab)
-            .show()
-
         (activity as MainActivity)
             .binding
             .bottomAppBar
@@ -96,51 +83,36 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         with((activity as MainActivity).binding)
         {
-            bottomAppBar.setFabAlignmentModeAndReplaceMenu(
-                BottomAppBar.FAB_ALIGNMENT_MODE_END,
-                R.menu.bottom_bar_menu_add
-            )
+            bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
 
             bottomAppBar.navigationIcon = null
+
             fab.setImageResource(R.drawable.ic_baseline_check_24)
             fab.setOnClickListener {
                 Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
             }
-
-            bottomAppBar.setOnMenuItemClickListener {
-                binding.addMotionLayout.transitionToState(R.id.end)
-                true
-            }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-        {
-            PermissionsHandling(
-                frag = this,
-                permissions = arrayOf(
+        permHandler = PermissionsHandling(frag = this)
+
+        permHandler.setCallbacksAndAsk(
+            permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            {
+                arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_MEDIA_LOCATION
-                ),
-                granted = onPermissionGranted,
-                denied = onPermissionDenied
-            )
-        }
-        else
-        {
-            PermissionsHandling(
-                frag = this,
-                permissions = arrayOf(
+                )
+            } else
+            {
+                arrayOf(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
-                ),
-                granted = onPermissionGranted,
-                denied = onPermissionDenied
-            )
-        }
-
-
-
+                )
+            },
+            granted = onPermissionGranted,
+            denied = onPermissionDenied
+        )
 
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
         {
@@ -199,7 +171,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
             datePicker.show(childFragmentManager, "tag")
         }
 
-
         // if the user select a date and press ok, set it into the view model
         datePicker.addOnPositiveButtonClickListener {
             datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
@@ -209,17 +180,14 @@ class AddFragment : Fragment(R.layout.add_fragment)
             addAdapter.notifyItemChanged(0)
         }
 
-
         // observe the list of elements and submit it to the adapter
         viewModel.rvList.observe(viewLifecycleOwner) {
             addAdapter.submitList(it)
         }
 
-
         binding.scrim.setOnClickListener {
             binding.addMotionLayout.transitionToState(R.id.start)
         }
-
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
@@ -237,14 +205,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         binding.recyclerViewImgs.adapter = galleryAdapter
 
-        //        val galleryCollect = viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-        //            withContext(Dispatchers.IO) {
-        //                viewModel.flow.collectLatest { pagingData ->
-        //                    galleryAdapter.submitData(pagingData)
-        //                }
-        //            }
-        //        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.galleryState.collectLatest { state ->
                 // New value received
@@ -257,11 +217,12 @@ class AddFragment : Fragment(R.layout.add_fragment)
                     {
                     }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
+                    GalleryDataState.Loading ->
+                    {
+                    }
                 }
             }
         }
-
-
 
         setAttachmentVisible(false)
     }
@@ -282,6 +243,63 @@ class AddFragment : Fragment(R.layout.add_fragment)
         with((activity as MainActivity).binding)
         {
             if (visible) fab.hide() else fab.show()
+
+            bottomAppBar.replaceMenu(if (visible) R.menu.bottom_bar_menu_attach else R.menu.bottom_bar_menu_add)
+
+            bottomAppBar.setOnMenuItemClickListener {
+                if (visible)
+                {
+                    when (it.itemId)
+                    {
+                        R.id.attach_camera ->
+                        {
+                            permHandler.setCallbacksAndAsk(
+                                permissions = arrayOf(Manifest.permission.CAMERA),
+                                granted = {
+                                    context?.let{ context ->
+
+                                        val imagePath = File(context.filesDir, "images/")
+                                        val newFile = File(imagePath, "default_image.jpg")
+                                        val contentUri: Uri = getUriForFile(
+                                            context,
+                                            "com.example.receiptApp",
+                                            newFile
+                                        )
+                                        Timber.d("contentUri -> $contentUri")
+                                        getCamera.launch(contentUri)
+                                    }
+                                },
+                                denied = {
+                                    Timber.d("permission denied")
+                                }
+                            )
+
+                            true
+                        }
+                        R.id.attach_file ->
+                        {
+                            getFile.launch("application/pdf")
+                            true
+                        }
+                        else -> false
+                    }
+                } else
+                {
+                    binding.addMotionLayout.transitionToState(R.id.end)
+                    true
+                }
+            }
         }
     }
+
+
+    private val getFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        Timber.d("$uri")
+    }
+
+    private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+        if (it) Timber.d("got camera") else Timber.e("no camera")
+    }
+
+
 }
