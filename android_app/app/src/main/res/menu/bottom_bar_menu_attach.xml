@@ -3,7 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="camera"
-        android:id="@+id/attach_camera"/>
+        android:id="@+id/attach_camera"
+        android:icon="@drawable/ic_baseline_camera_24"
+        app:showAsAction="always"/>
     <item android:title="file"
-        android:id="@+id/attach_file"/>
+        android:id="@+id/attach_file"
+        android:icon="@drawable/ic_baseline_insert_drive_file_24"
+        app:showAsAction="always"/>
 </menu>

@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Size
 import com.example.receiptApp.THUMBNAIL_SIZE
+import com.example.receiptApp.Utils.ImageUtils
 import timber.log.Timber
 import java.io.FileNotFoundException
 
@@ -20,30 +21,6 @@ data class Attachment(val name: String, val contentUri: Uri, val thumbnail: Bitm
 
 class GalleryImages(private val contentResolver: ContentResolver)
 {
-    private fun getThumbnail(contentUri: Uri, id: Long): Bitmap?
-    {
-        try
-        {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            {
-                contentResolver.loadThumbnail(
-                    contentUri, Size(THUMBNAIL_SIZE, THUMBNAIL_SIZE), null
-                )
-            } else
-            {
-                MediaStore.Images.Thumbnails.getThumbnail(
-                    contentResolver,
-                    id,
-                    MediaStore.Images.Thumbnails.MINI_KIND,
-                    BitmapFactory.Options()
-                )
-            }
-        } catch (e: FileNotFoundException)
-        {
-            Timber.e("displayName not found")
-            return null
-        }
-    }
 
     fun getImages(limit: Int, offset: Int): List<Attachment>?
     {
@@ -53,7 +30,8 @@ class GalleryImages(private val contentResolver: ContentResolver)
             MediaStore.Images.Media.MIME_TYPE,
             MediaStore.Images.Media.DATE_MODIFIED
         )
-        // content:// style URI for the "primary" external storage volume
+
+
         val images = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
         {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
@@ -109,7 +87,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
         curr?.use { cursor ->
             Timber.d("cursor.count = ${cursor.count}")
 
-            DatabaseUtils.dumpCursor(cursor)
+            //DatabaseUtils.dumpCursor(cursor)
 
             if (cursor.moveToFirst())
             {
@@ -134,7 +112,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
 
                     //Timber.d("contentUri=$contentUri")
 
-                    getThumbnail(contentUri, id)?.let { thumbnail ->
+                    ImageUtils.getThumbnail(contentResolver, contentUri, id)?.let { thumbnail ->
                         list.add(Attachment(displayName, contentUri, thumbnail))
                     }
 

@@ -17,7 +17,6 @@ class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSour
             state.closestPageToPosition(it)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
         }
-
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Attachment>
