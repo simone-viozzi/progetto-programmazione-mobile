@@ -56,7 +56,7 @@ interface ElementsDao
      * @return the number of all the elements inside the table
      */
     @Query("SELECT COUNT(*) FROM element")
-    suspend fun countAllElements(): Long
+    suspend fun countAll(): Long
 
     /////////////////////////////////////////
     // Get queries

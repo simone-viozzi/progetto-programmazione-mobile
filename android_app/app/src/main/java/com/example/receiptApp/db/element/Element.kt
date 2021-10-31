@@ -16,13 +16,14 @@ import com.example.receiptApp.db.aggregate.Aggregate
  * NOTE:    if this relation is established no elements can be added with
  *          the field aggregate_id that not correspond to any aggregate
  *
- * @property id
+ * @property elem_id
  * @property aggregate_id
  * @property name
  * @property num
  * @property parent_tag_id
- * @property tag_id
+ * @property elem_tag_id
  * @property cost
+ * @property cost_n
  *
  * @constructor Create empty Element
  */
@@ -51,6 +52,5 @@ data class Element(
 
     var elem_tag_id: Long = 0L,
 
-    var cost: Float = 0.0f
-
+    var cost: Float = 0.0f,
 )

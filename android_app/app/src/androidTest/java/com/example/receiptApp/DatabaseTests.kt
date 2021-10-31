@@ -86,19 +86,15 @@ class DatabaseTests
         val expectedListOfElements: List<Element> = listOf(exEement, exEement, exEement)
 
         // insert values to the database
-        aggregatesDao.insertWithElements(expectedAggregate, expectedListOfElements)
-        val result = aggregatesDao.getAllAggregatesWithElements()
+        val resultId = aggregatesDao.insertWithElements(expectedAggregate, expectedListOfElements)
+        val result = aggregatesDao.getAggregateWithElementsById(resultId)
 
         // check for result
         if (result == null) {
             Assert.fail("result is null")
         }
 
-        //result.observeForever{ }
-
-        // extract LiveData value
-        //var mapResult = result.value
-
+        //val mapResult = result.getOrAwaitValue()
         val mapResult = result
 
         // check if map is null
@@ -145,5 +141,4 @@ class DatabaseTests
         assertEquals(aggregatesCount, 0)
         assertEquals(elementsCount, 0)
     }*/
-
 }

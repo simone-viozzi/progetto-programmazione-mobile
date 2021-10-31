@@ -1,10 +1,11 @@
 package com.example.receiptApp.db.aggregate
 
-import androidx.lifecycle.LiveData
+import android.location.Location
+import android.net.Uri
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.example.receiptApp.db.element.Element
-import com.example.receiptApp.db.element.ElementsDao
+import com.example.receiptApp.sources.Attachment
 import java.util.*
 
 /**
@@ -12,6 +13,14 @@ import java.util.*
  *
  * Clear explanation of relation between Entity and how to use it
  * link: https://www.tutorialguruji.com/android/how-to-insert-entities-with-a-one-to-many-relationship-in-room/
+ *
+ *  Utilization policy:
+ *  - The aggregates must be ever inserted with their list of elements
+ *  - The deletion of one aggregate should be ever done with the managed method
+ *
+ *  NOTE: private methods seems can't be created so methods with this
+ *        form "_methodName()" shouldn't be touched, otherway it isn't
+ *        granted the correct behaviour of the db.
  *
  * @constructor Create empty Aggregates dao
  */
@@ -24,22 +33,22 @@ interface AggregatesDao
     // Insert queries
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(aggregate: Aggregate): Long
+    suspend fun _insert(aggregate: Aggregate): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertList(aggregates: List<Aggregate>): List<Long>
+    suspend fun _insertList(aggregates: List<Aggregate>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertElementList(elements: List<Element>)
+    suspend fun _insertElementList(elements: List<Element>)
 
     @Transaction
     suspend fun insertWithElements(aggregate: Aggregate, elements: List<Element>): Long {
 
-        val aggregateId = insert(aggregate)
+        val aggregateId = _insert(aggregate)
 
         elements.forEach { it.aggregate_id = aggregateId }
 
-        insertElementList(elements)
+        _insertElementList(elements)
 
         return aggregateId
     }
@@ -48,191 +57,273 @@ interface AggregatesDao
     // Update queries
 
     @Update
-    suspend fun update(aggregate: Aggregate)
+    suspend fun _update(aggregate: Aggregate): Long
 
     @Update
-    suspend fun updateList(aggregates: List<Aggregate>)
+    suspend fun _updateList(aggregates: List<Aggregate>): Long
+
+    @Query("UPDATE aggregate SET tag_id = :new_tag_id WHERE id = :id")
+    suspend fun _updateAgregateTag(id: Long, new_tag_id: Long): Long
+
+    @Query("UPDATE aggregate SET date = :date WHERE id = :id")
+    suspend fun _updateAgregateDate(id: Long, date: Date): Long
+
+    @Query("UPDATE aggregate SET location = :location WHERE id = :id")
+    suspend fun _updateAgregateLocation(id: Long, location: Location): Long
+
+    @Query("UPDATE aggregate SET attachment = :attachment WHERE id = :id")
+    suspend fun _updateAgregateAttachment(id: Long, attachment: Uri): Long
+
+    @Transaction
+    suspend fun updateAggregate(
+        id: Long,
+        tag_id: Long? = null,
+        date: Date? = null,
+        location: Location? = null,
+        attachment: Uri? = null): Long{
+
+        var succesUpdates: Long = 0
+        if(tag_id != null)      succesUpdates += _updateAgregateTag(id,tag_id)
+        if(date != null)        succesUpdates += _updateAgregateDate(id, date)
+        if(location != null)    succesUpdates += _updateAgregateLocation(id, location)
+        if(attachment != null)  succesUpdates += _updateAgregateAttachment(id, attachment)
+
+        return succesUpdates
+    }
 
     /////////////////////////////////////////
     // Delete queries
 
+    // delete aggregates queries
     @Delete
-    suspend fun delete(aggregate: Aggregate)
+    suspend fun _delete(aggregate: Aggregate)
 
     @Delete
-    suspend fun deleteList(aggregates: List<Aggregate>)
+    suspend fun _deleteList(aggregates: List<Aggregate>)
 
-    /**
-     * Delete all
-     *
-     * Delete all elements inside the table.
-     */
+    @Query("DELETE FROM aggregate WHERE aggregate.id = :id")
+    suspend fun _deleteAggregateById(id: Long)
+
     @Query("DELETE FROM aggregate")
-    suspend fun deleteAll()
+    suspend fun _deleteAll()
 
-    /////////////////////////////////////////
+    // delete elements queries
+
+    @Delete
+    suspend fun _deleteElement(element: Element)
+
+    @Query("DELETE FROM element WHERE element.aggregate_id = :aggregate_id")
+    suspend fun _deleteElementByAggregateId(aggregate_id: Long)
+
+    @Query("DELETE FROM element")
+    suspend fun _deleteAllElements()
+
+    // delete aggregates with elements queries
+
+    @Transaction
+    suspend fun deleteAggregateWithElements(aggregate: Aggregate){
+        _deleteElementByAggregateId(aggregate.id)
+        _delete(aggregate)
+    }
+
+    @Transaction
+    suspend fun deleteAggregateWithElementsById(id: Long){
+        _deleteAggregateById(id)
+        _deleteElementByAggregateId(id)
+    }
+
+    @Transaction
+    suspend fun deleteAllWithElements(){
+        _deleteAll()
+        _deleteAllElements()
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // Get count queries aggregates
 
-    /**
-     * Get the count of all aggregates inside the table
-     *
-     * @return the count of all aggregates inside the table
-     */
     @Query("SELECT COUNT(*) FROM aggregate")
     suspend fun countAllAggregates(): Long
+
+    @Query("SELECT COUNT(*) FROM element")
+    suspend fun countAllElements(): Long
+
+    @Query("SELECT SUM(element.num) FROM element")
+    suspend fun countAllSingleElements(): Long
+
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate")
+    suspend fun countAllExpenses(): Float
+
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date <= :date")
+    suspend fun countAllExpensesBeforeDate(date: Date): Float
+
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :date")
+    suspend fun countAllExpensesAfterDate(date: Date): Float
+
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date")
+    suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float
+
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.tag_id = :tag_id")
+    suspend fun countAllExpensesByTag(tag_id: Long): Float
+
+    @Query("SELECT SUM(element.cost * element.num) FROM element WHERE element.elem_tag_id = :elem_tag_id")
+    suspend fun countAllExpensesByElementTag(elem_tag_id: Long): Float
+
+    // TODO: aggiungere funzioni per filtraggio in base a data e tag
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Get queries aggregates
 
-    /**
-     * Get last aggregate
-     *
-     * @return the aggregate with the largest id
-     */
     @Query("SELECT * FROM aggregate ORDER BY id DESC LIMIT 1")
     suspend fun getLastAggregate(): Aggregate
 
-    /**
-     * Get an aggregate by id
-     *
-     * @param id the id of the selected aggregate
-     * @return
-     */
     @Query("SELECT * FROM aggregate WHERE aggregate.id = :id LIMIT 1")
     suspend fun getAggregateById(id: Long): Aggregate
 
-    /**
-     * Get all aggregates
-     *
-     * @return a list of all the aggregates inside the table
-     */
     @Query("SELECT * FROM aggregate")
-    fun getAllAggregates(): LiveData<List<Aggregate>>
+    suspend fun getAllAggregates(): List<Aggregate>
 
-    /**
-     * Get a list of aggregates by date
-     *
-     * @param date in which you want aggregates
-     * @return a list of aggregates with the given date
-     */
     @Query("SELECT * FROM aggregate WHERE aggregate.date = :date")
-    fun getAggregateByDate(date: Date): LiveData<List<Aggregate>>
+    suspend fun getAggregatesByDate(date: Date): List<Aggregate>
 
-    /**
-     * Get a list of aggregates until date
-     *
-     * @param date
-     * @return a list of aggregates with the date field until the given date
-     */
     @Query("SELECT * FROM aggregate WHERE aggregate.date <= :date")
-    fun getAggregateUntilDate(date: Date): LiveData<List<Aggregate>>
+    suspend fun getAggregatesUntilDate(date: Date): List<Aggregate>
 
-    /**
-     * Get a list of aggregates after date
-     *
-     * @param date
-     * @return a list of aggregates with the date field after the given date
-     */
     @Query("SELECT * FROM aggregate WHERE aggregate.date >= :date")
-    fun getAggregateAfterDate(date: Date): LiveData<List<Aggregate>>
+    suspend fun getAggregatesAfterDate(date: Date): List<Aggregate>
 
-    /**
-     * Get a list of aggregates between two dates
-     *
-     * @param dstart
-     * @param dend
-     * @return a list of aggregates with the date field between the given dates
-     */
     @Query("SELECT * FROM aggregate WHERE aggregate.date >= :dstart AND aggregate.date <= :dend")
-    fun getAggregateBetweenDate(dstart: Date, dend: Date): LiveData<List<Aggregate>>
+    suspend fun getAggregatesBetweenDate(dstart: Date, dend: Date): List<Aggregate>
 
-    /**
-     * Get a list of aggregates by tag
-     *
-     * @param tag
-     * @return
-     */
     @Query("SELECT * from aggregate WHERE aggregate.tag_id = :tag")
-    fun getAggregateByTag(tag: Long): LiveData<List<Aggregate>>
+    suspend fun getAggregatesByTag(tag: Long): List<Aggregate>
+
+    //TODO: aggiungere funzioni per fitraggio in base a data e tag
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    // Get queries elemnts
+
+    @Query("SELECT * FROM element ORDER BY elem_id DESC LIMIT 1")
+    suspend fun getLastElement(): Element
+
+    @Query("SELECT * FROM element WHERE element.elem_id = :elem_id LIMIT 1")
+    suspend fun getElementById(elem_id: Long): Element
+
+    @Query("SELECT * FROM element")
+    suspend fun getAllElements(): List<Element>
+
+    @Query("SELECT * FROM element WHERE element.aggregate_id = :aggregateId")
+    suspend fun getElementsByAggregateId(aggregateId: Long): List<Element>
+
+    @Transaction
+    suspend fun getElementsByAggregate(aggregate: Aggregate): List<Element>{
+        return getElementsByAggregateId(aggregate.id)
+    }
+
+    @Query("SELECT * FROM element WHERE element.name = :name")
+    suspend fun getElementsByName(name: String): List<Element>
+
+    @Query("SELECT * FROM element WHERE element.cost = :cost")
+    suspend fun getElementByCost(cost: Float): List<Element>
+
+    @Query("SELECT * FROM element WHERE element.cost >= :start_cost")
+    suspend fun getElementOverCost(start_cost: Float): List<Element>
+
+    @Query("SELECT * FROM element WHERE element.cost <= :end_cost")
+    suspend fun getElementUnderCost(end_cost: Float): List<Element>
+
+    @Query("SELECT * FROM element WHERE element.cost >= :start_cost AND element.cost <= :end_cost")
+    suspend fun getElementBetweenCosts(start_cost: Float, end_cost: Float): List<Element>
+
+    @Query("SELECT * from element WHERE element.parent_tag_id = :parent_tag_id")
+    suspend fun getElementByParentTag(parent_tag_id: Long): List<Element>
+
+    @Query("SELECT * from element WHERE element.elem_tag_id = :elem_tag_id")
+    suspend fun getElementByTag(elem_tag_id: Long): List<Element>
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Get queries aggregates with elements
 
-    /**
-     * Get a map of aggregates with a list of elements foreach aggregate
-     * in the return map will be only one aggregate with its elements
-     *
-     * @return a map of aggregates with a list of elements foreach aggregate with the largest id
-     */
-    @Query("SELECT * FROM aggregate JOIN element " +
-            "ON aggregate.id == element.aggregate_id " +
-            "WHERE aggregate.id = (SELECT max(id) FROM aggregate)")
-    suspend fun getLastAggregateWithElements(): Map<Aggregate, List<Element>>
+    @Transaction
+    suspend fun getLastAggregateWithElements(): Map<Aggregate, List<Element>> {
+        val lastAggregate: Aggregate = getLastAggregate()
+        val elementsList: List<Element> = getElementsByAggregateId(lastAggregate.id)
+        return mapOf(lastAggregate to elementsList)
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements foreach aggregate by id
-     * in the return map will be only one aggregate with its elements
-     *
-     * @param id the id of the selected aggregate
-     * @return
-     */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.id = :id LIMIT 1")
-    fun getAggregateWithElementsById(id: Long): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAggregateWithElementsById(id: Long): Map<Aggregate, List<Element>>{
+        val aggregate: Aggregate = getAggregateById(id)
+        val elementsList: List<Element> = getElementsByAggregateId(aggregate.id)
+        return mapOf(aggregate to elementsList)
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements foreach aggregate by date
-     *
-     * @param date date of the selected aggregates
-     * @return a map of aggregates with a list of elements foreach aggregate by date
-     */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date = :date")
-    fun getAggregateWithElementsByDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAggregateWithElementsByDate(date: Date): Map<Aggregate, List<Element>>{
+        val aggregatesList: List<Aggregate> = getAggregatesByDate(date)
+        val resultMap = mutableMapOf<Aggregate, List<Element>>()
+        for(aggregate in aggregatesList){
+            val listOfElements = getElementsByAggregateId(aggregate.id)
+            resultMap[aggregate] = listOfElements
+        }
+        return resultMap
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements foreach aggregate
-     *
-     * @return a Map with aggregates as keys and as values their elements as a list
-     */
-    @MapInfo()
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id")
-    suspend fun getAllAggregatesWithElements(): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAllAggregatesWithElements(): Map<Aggregate, List<Element>>{
+        val aggregatesList: List<Aggregate> = getAllAggregates()
+        val resultMap = mutableMapOf<Aggregate, List<Element>>()
+        for(aggregate in aggregatesList){
+            val listOfElements = getElementsByAggregateId(aggregate.id)
+            resultMap[aggregate] = listOfElements
+        }
+        return resultMap
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements until date foreach aggregate
-     *
-     * @param date
-     * @return a map of
-     */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date = :date")
-    fun getAggregateWithElementsUntilDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAggregateWithElementsUntilDate(date: Date): Map<Aggregate, List<Element>>{
+        val aggregatesList: List<Aggregate> = getAggregatesByDate(date)
+        val resultMap = mutableMapOf<Aggregate, List<Element>>()
+        for(aggregate in aggregatesList){
+            val listOfElements = getElementsByAggregateId(aggregate.id)
+            resultMap[aggregate] = listOfElements
+        }
+        return resultMap
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements after date foreach aggregate
-     *
-     * @param date
-     * @return
-     */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date = :date")
-    fun getAggregateWithElementsAfterDate(date: Date): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAggregateWithElementsAfterDate(date: Date): Map<Aggregate, List<Element>>{
+        val aggregatesList: List<Aggregate> = getAggregatesAfterDate(date)
+        val resultMap = mutableMapOf<Aggregate, List<Element>>()
+        for(aggregate in aggregatesList){
+            val listOfElements = getElementsByAggregateId(aggregate.id)
+            resultMap[aggregate] = listOfElements
+        }
+        return resultMap
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements between dates foreach aggregate
-     *
-     * @param dstart
-     * @param dend
-     * @return
-     */
-    @Query("SELECT * FROM aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.date >= :dstart AND aggregate.date <= :dend")
-    fun getAggregateWithElementsBetweenDate(dstart: Date, dend: Date): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAggregateWithElementsBetweenDate(start_date: Date, end_date: Date): Map<Aggregate, List<Element>>{
+        val aggregatesList: List<Aggregate> = getAggregatesBetweenDate(start_date, end_date)
+        val resultMap = mutableMapOf<Aggregate, List<Element>>()
+        for(aggregate in aggregatesList){
+            val listOfElements = getElementsByAggregateId(aggregate.id)
+            resultMap[aggregate] = listOfElements
+        }
+        return resultMap
+    }
 
-    /**
-     * Get a map of aggregates with a list of elements by tag foreach aggregate
-     *
-     * @param tag
-     * @return
-     */
-    @Query("SELECT * from aggregate JOIN element ON aggregate.id = element.aggregate_id WHERE aggregate.tag_id = :tag")
-    fun getAggregateWithElementsByTag(tag: Long): LiveData<Map<Aggregate, List<Element>>>
+    @Transaction
+    suspend fun getAggregateWithElementsByTag(tag_id: Long): Map<Aggregate, List<Element>>{
+        val aggregatesList: List<Aggregate> = getAggregatesByTag(tag_id)
+        val resultMap = mutableMapOf<Aggregate, List<Element>>()
+        for(aggregate in aggregatesList){
+            val listOfElements = getElementsByAggregateId(aggregate.id)
+            resultMap[aggregate] = listOfElements
+        }
+        return resultMap
+    }
 }
