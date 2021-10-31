@@ -20,7 +20,7 @@ class CustomAsserts{
             Assert.assertEquals(obj1.name, obj2.name)
             Assert.assertEquals(obj1.num, obj2.num)
             Assert.assertEquals(obj1.parent_tag_id, obj2.parent_tag_id)
-            Assert.assertEquals(obj1.tag_id, obj2.tag_id)
+            Assert.assertEquals(obj1.elem_tag_id, obj2.elem_tag_id)
             Assert.assertEquals(obj1.cost, obj2.cost)
         }
 

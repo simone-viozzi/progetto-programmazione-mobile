@@ -49,7 +49,7 @@ class DatabaseTests
         name = "test element",
         num = 3,
         parent_tag_id = 4,
-        tag_id = 3,
+        elem_tag_id = 3,
         cost = 34.6f
     )
 
@@ -87,7 +87,7 @@ class DatabaseTests
 
         // insert values to the database
         aggregatesDao.insertWithElements(expectedAggregate, expectedListOfElements)
-        val result = aggregatesDao.getLastAggregateWithElements()
+        val result = aggregatesDao.getAllAggregatesWithElements()
 
         // check for result
         if (result == null) {

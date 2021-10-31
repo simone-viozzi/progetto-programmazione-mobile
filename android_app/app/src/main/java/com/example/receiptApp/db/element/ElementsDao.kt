@@ -66,7 +66,7 @@ interface ElementsDao
      *
      * @return the element with the largest id
      */
-    @Query("SELECT * FROM element ORDER BY id DESC LIMIT 1")
+    @Query("SELECT * FROM element ORDER BY elem_id DESC LIMIT 1")
     suspend fun getLastElement(): Element
 
     /**
