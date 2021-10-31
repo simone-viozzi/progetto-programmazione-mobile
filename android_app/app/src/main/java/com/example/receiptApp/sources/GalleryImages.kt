@@ -45,7 +45,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
         }
     }
 
-    fun getImages(limit: Int, offset: Int): List<Attachment>
+    fun getImages(limit: Int, offset: Int): List<Attachment>?
     {
         val projection: Array<String> = arrayOf(
             MediaStore.Images.Media._ID,
@@ -104,10 +104,14 @@ class GalleryImages(private val contentResolver: ContentResolver)
             )
         }
 
+        Timber.d("curr = $curr")
+
         curr?.use { cursor ->
+            Timber.d("cursor = $cursor")
 
             if (cursor.moveToFirst())
             {
+                Timber.d("cursor = $cursor")
                 DatabaseUtils.dumpCursor(cursor)
 
                 val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
@@ -134,7 +138,8 @@ class GalleryImages(private val contentResolver: ContentResolver)
 
                 } while (cursor.moveToNext())
             }
-        }
-        return list
+            return list
+
+        } ?: return null
     }
 }
