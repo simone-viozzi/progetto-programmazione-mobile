@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
+import com.example.receiptApp.PermissionsHandling
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
@@ -28,7 +29,6 @@ import com.example.receiptApp.pages.add.adapters.GalleryAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -43,86 +43,35 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private lateinit var binding: AddFragmentBinding
     private lateinit var addAdapter: AddAdapter
 
+    private val onPermissionGranted: () -> Unit = {
+        Snackbar.make(
+            (activity as MainActivity).binding.coordinatorLayout,
+            "permissions ok",
+            Snackbar.LENGTH_SHORT
+        ).setAnchorView((activity as MainActivity).binding.fab)
+            .show()
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        //TODO("need testing!")
-        var isGranted = it.values.reduce{ b1, b2 -> b1 && b2 }
+        (activity as MainActivity)
+            .binding
+            .bottomAppBar
+            .replaceMenu(R.menu.bottom_bar_menu_add)
 
-//        for (g in it.values)
-//        {
-//            isGranted = isGranted && g
-//        }
-
-        if (isGranted)
-        {
-            Snackbar.make(
-                (activity as MainActivity).binding.coordinatorLayout,
-                "halooo dal fab",
-                Snackbar.LENGTH_SHORT
-            )
-                .setAnchorView((activity as MainActivity).binding.fab)
-                .show()
-            (activity as MainActivity)
-                .binding
-                .bottomAppBar
-                .replaceMenu(R.menu.bottom_bar_menu_add)
-
-            viewModel.galleryCollect()
-        } else
-        {
-            (activity as MainActivity)
-                .binding
-                .bottomAppBar
-                .replaceMenu(R.menu.bottom_bar_menu_hide)
-        }
+        viewModel.galleryCollect()
     }
 
-    private fun checkPermissions()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-        {
-            if ((ContextCompat.checkSelfPermission(
-                    (activity as MainActivity),
-                    Manifest.permission.ACCESS_MEDIA_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED)
-                && ContextCompat.checkSelfPermission(
-                    (activity as MainActivity),
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            )
-            {
-                requestPermissionLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_MEDIA_LOCATION
-                    )
-                )
-            } else
-            {
-                Snackbar.make(
-                    (activity as MainActivity).binding.coordinatorLayout,
-                    "permissions ok",
-                    Snackbar.LENGTH_SHORT
-                ).setAnchorView((activity as MainActivity).binding.fab)
-                    .show()
+    private var onPermissionDenied: () -> Unit = {
+        Snackbar.make(
+            (activity as MainActivity).binding.coordinatorLayout,
+            "permission denied",
+            Snackbar.LENGTH_SHORT
+        ).setAnchorView((activity as MainActivity).binding.fab)
+            .show()
 
-                viewModel.galleryCollect()
-            }
-        } else
-        {
-            if (ContextCompat.checkSelfPermission(
-                    (activity as MainActivity),
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            )
-            {
-                requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
-            }
-        }
+        (activity as MainActivity)
+            .binding
+            .bottomAppBar
+            .replaceMenu(R.menu.bottom_bar_menu_hide)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -151,20 +100,46 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 BottomAppBar.FAB_ALIGNMENT_MODE_END,
                 R.menu.bottom_bar_menu_add
             )
+
             bottomAppBar.navigationIcon = null
             fab.setImageResource(R.drawable.ic_baseline_check_24)
             fab.setOnClickListener {
                 Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
             }
+
             bottomAppBar.setOnMenuItemClickListener {
                 binding.addMotionLayout.transitionToState(R.id.end)
                 true
             }
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
+            PermissionsHandling(
+                frag = this,
+                permissions = arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_MEDIA_LOCATION
+                ),
+                granted = onPermissionGranted,
+                denied = onPermissionDenied
+            )
+        }
+        else
+        {
+            PermissionsHandling(
+                frag = this,
+                permissions = arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                ),
+                granted = onPermissionGranted,
+                denied = onPermissionDenied
+            )
+        }
 
-        checkPermissions()
+
 
 
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
@@ -275,8 +250,12 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 // New value received
                 when (state)
                 {
-                    is GalleryDataState.Idle -> {}
-                    is GalleryDataState.Error -> {}
+                    is GalleryDataState.Idle ->
+                    {
+                    }
+                    is GalleryDataState.Error ->
+                    {
+                    }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
                 }
             }
