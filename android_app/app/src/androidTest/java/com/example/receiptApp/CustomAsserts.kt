@@ -24,6 +24,18 @@ class CustomAsserts{
             Assert.assertEquals(obj1.cost, obj2.cost)
         }
 
+        fun elementsList(list1: List<Element>?, list2: List<Element>?){
 
+            if(list1 == null || list2 == null) {
+                Assert.fail("element list comparison failed due to null list.")
+                return
+            }
+
+            Assert.assertEquals(list1.size, list2.size)
+
+            for(i in list1.indices){
+                elements(list1[i], list2[i])
+            }
+        }
     }
 }

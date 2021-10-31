@@ -3,6 +3,11 @@ package com.example.receiptApp.db.element
 import androidx.room.*
 import com.example.receiptApp.db.aggregate.Aggregate
 
+/**
+ * Elements dao
+ *
+ * @constructor Create empty Elements dao
+ */
 
 @Dao
 interface ElementsDao
@@ -11,28 +16,28 @@ interface ElementsDao
     // Insert queries
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(aggregate: Element)
+    suspend fun insert(element: Element)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertList(aggregates: List<Element>)
+    suspend fun insertList(elements: List<Element>)
 
     /////////////////////////////////////////
     // Update queries
 
     @Update
-    suspend fun update(aggregate: Element)
+    suspend fun update(element: Element)
 
     @Update
-    suspend fun updateList(aggregates: List<Element>)
+    suspend fun updateList(elements: List<Element>)
 
     /////////////////////////////////////////
     // Delete queries
 
     @Delete
-    suspend fun delete(aggregate: Element)
+    suspend fun delete(element: Element)
 
     @Delete
-    suspend fun deleteList(aggregates: List<Element>)
+    suspend fun deleteList(elements: List<Element>)
 
     /**
      * Delete all
@@ -41,6 +46,17 @@ interface ElementsDao
      */
     @Query("DELETE FROM element")
     suspend fun deleteAll()
+
+    /////////////////////////////////////////
+    // Get count queries aggregates
+
+    /**
+     * Get the count of all elements inside the table
+     *
+     * @return the number of all the elements inside the table
+     */
+    @Query("SELECT COUNT(*) FROM element")
+    suspend fun countAllElements(): Long
 
     /////////////////////////////////////////
     // Get queries

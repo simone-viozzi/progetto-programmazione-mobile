@@ -8,6 +8,20 @@ import androidx.room.TypeConverters
 import com.example.receiptApp.db.Converters
 import java.util.*
 
+/**
+ * Aggregate
+ *
+ *
+ *
+ * @property id
+ * @property tag_id
+ * @property date
+ * @property location
+ * @property attachment
+ * @property total_cost
+ * @constructor Create empty Aggregate
+ */
+
 @Entity(tableName = "aggregate")
 data class Aggregate(
     @PrimaryKey(autoGenerate = true)
