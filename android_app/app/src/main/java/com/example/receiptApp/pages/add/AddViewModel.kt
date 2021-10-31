@@ -9,7 +9,10 @@ import androidx.paging.cachedIn
 import com.example.receiptApp.sources.Attachment
 import com.example.receiptApp.sources.GalleryImagesPaginated
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -20,6 +23,9 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
     private val _rvList = MutableLiveData<List<AddDataModel>>()
     val rvList: LiveData<List<AddDataModel>>
         get() = _rvList
+
+    private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
+    val galleryState: StateFlow<GalleryDataState> = _galleryState
 
     private var attachmentUri: Uri? = null
 
@@ -107,15 +113,12 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
     private val flow = Pager(
         PagingConfig(
             pageSize = 24,
-            initialLoadSize = 6,
-            //jumpThreshold = 24
         ),
-    ) { imagesPaginated }.flow.cachedIn(viewModelScope).flowOn(Dispatchers.IO)
+    ) { imagesPaginated }.flow.cachedIn(viewModelScope)
 
-    private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
-    val galleryState: StateFlow<GalleryDataState> = _galleryState
 
-    fun galleryCollect() {
+    fun galleryCollect()
+    {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 flow.collectLatest { pagingData ->

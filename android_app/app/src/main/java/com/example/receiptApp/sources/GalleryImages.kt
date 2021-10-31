@@ -62,11 +62,11 @@ class GalleryImages(private val contentResolver: ContentResolver)
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         }
 
-        val sortOrder = "${MediaStore.Images.Media.DATE_MODIFIED} DESC"
-
-        //Timber.d("$images")
+        Timber.d("images = $images")
 
         val selection = "${MediaStore.Images.Media.MIME_TYPE} IN (?,?,?)"
+
+        val sortOrder = "${MediaStore.Images.Media.DATE_MODIFIED} DESC LIMIT $limit OFFSET $offset"
 
         val selectionArgs = arrayOf(
             "image/jpeg",
@@ -76,7 +76,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
 
         val list: MutableList<Attachment> = mutableListOf()
 
-        val curr: Cursor? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        val curr: Cursor? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
         {
             val bundle = Bundle().apply {
                 putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection)
@@ -107,12 +107,14 @@ class GalleryImages(private val contentResolver: ContentResolver)
         Timber.d("curr = $curr")
 
         curr?.use { cursor ->
-            Timber.d("cursor = $cursor")
+            Timber.d("cursor.count = ${cursor.count}")
+
+            DatabaseUtils.dumpCursor(cursor)
 
             if (cursor.moveToFirst())
             {
                 Timber.d("cursor = $cursor")
-                DatabaseUtils.dumpCursor(cursor)
+
 
                 val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
                 val displayNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
