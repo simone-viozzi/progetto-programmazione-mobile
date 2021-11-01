@@ -4,7 +4,6 @@ import androidx.room.Dao
 
 
 @Dao
-interface TagsDao
-{
+interface TagsDao {
 
 }

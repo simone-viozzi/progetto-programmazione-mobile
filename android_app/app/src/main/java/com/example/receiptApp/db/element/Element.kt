@@ -1,11 +1,10 @@
 package com.example.receiptApp.db.element
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
-import androidx.room.Index
-import androidx.room.PrimaryKey
 import com.example.receiptApp.db.aggregate.Aggregate
+import com.example.receiptApp.pages.add.AddDataModel
+import com.example.receiptApp.pages.add.AddDataModel2
 
 /**
  * Element
@@ -53,4 +52,11 @@ data class Element(
     var elem_tag_id: Long = 0L,
 
     var cost: Float = 0.0f,
-)
+
+    // fields not used in the table
+    @Ignore
+    var elem_tag: String? = null,
+
+    @Ignore
+    var vId: Int? = null,
+): AddDataModel2()

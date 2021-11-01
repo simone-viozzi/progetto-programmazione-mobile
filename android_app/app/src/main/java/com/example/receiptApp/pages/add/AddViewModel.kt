@@ -39,7 +39,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
             {
                 val oldEl = _rvList.value?.get(0) as AddDataModel.Header
 
-                el.date?.let { oldEl.date = it }
+                el.str_date?.let { oldEl.str_date = it }
                 el.tag?.let { oldEl.tag = it }
 
                 // TODO update the list only if there was a change!
@@ -48,20 +48,20 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
 
             is AddDataModel.SingleElement ->
             {
-                val oldEl = _rvList.value?.get(el.id) as AddDataModel.SingleElement
+                val oldEl = _rvList.value?.get(el.vId) as AddDataModel.SingleElement
 
                 el.name?.let { oldEl.name = it }
-                el.tag?.let { oldEl.tag = it }
+                el.elem_tag?.let { oldEl.elem_tag = it }
                 el.num?.let { oldEl.num = it }
                 el.cost?.let { oldEl.cost = it }
 
-                val newList = _rvList.value?.toMutableList().also { it?.set(el.id, oldEl) }
+                val newList = _rvList.value?.toMutableList().also { it?.set(el.vId, oldEl) }
 
                 // TODO update the list only if there was a change!
                 _rvList.value = newList?.also {
-                    if (el.id == getLastId(false))
+                    if (el.vId == getLastId(false))
                     {
-                        it.add(AddDataModel.SingleElement(id = getLastId()))
+                        it.add(AddDataModel.SingleElement(vId = getLastId()))
                     }
                 }
             }
@@ -74,7 +74,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
         val date = DateFormat.format("dd/MM/yyyy", millis).toString()
         _rvList.value = _rvList.value?.toMutableList().also { li ->
             val header = li?.get(0) as AddDataModel.Header
-            li[0] = header.also { it.date = date }
+            li[0] = header.also { it.str_date = date }
         }
     }
 
@@ -90,7 +90,6 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
         _rvList.value = _rvList.value?.toMutableList().also { li ->
             val header = li?.get(0) as AddDataModel.Header
             li[0] = header.also {
-                it.attachment_name = attachment.name
                 it.thumbnail = attachment.thumbnail
             }
         }
@@ -100,8 +99,8 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
     init
     {
         _rvList.value = listOf(
-            AddDataModel.Header(id = 0),
-            AddDataModel.SingleElement(id = getLastId())
+            AddDataModel.Header(vId = 0),
+            AddDataModel.SingleElement(vId = getLastId())
         )
     }
 

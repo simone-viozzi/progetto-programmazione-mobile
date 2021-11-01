@@ -30,11 +30,11 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
         {
             if (oldItem is AddDataModel.Header && newItem is AddDataModel.Header)
             {
-                return oldItem.id == newItem.id
+                return oldItem.vId == newItem.vId
             }
             if (oldItem is AddDataModel.SingleElement && newItem is AddDataModel.SingleElement)
             {
-                return oldItem.id == newItem.id
+                return oldItem.vId == newItem.vId
             }
             return false
         }
@@ -90,7 +90,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                     if (count > 0) textEditCallback.invoke(
                         // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
                         // TODO adapterPosition can be NO_POSITION, need to test for it!
-                        AddDataModel.Header(id = bindingAdapterPosition, tag = text.toString())
+                        AddDataModel.Header(vId = bindingAdapterPosition, tag = text.toString())
                     )
                 }
 
@@ -104,12 +104,9 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                 with(binding)
                 {
                     textFieldTag.editText?.text = header.tag?.toEditable()
-                    textFieldDate.editText?.text = header.date?.toEditable()
+                    textFieldDate.editText?.text = header.str_date?.toEditable()
 
-                    attachmentName.visibility = if (header.attachment_name != null) View.VISIBLE else View.GONE
                     thumbnail.visibility = if (header.thumbnail != null) View.VISIBLE else View.GONE
-
-                    attachmentName.text = header.attachment_name
 
                     Glide.with(binding.root.context)
                         .load(header.thumbnail)
@@ -146,28 +143,28 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                                                                   count: Int ->
                     // TODO adapterPosition can be NO_POSITION, need to test for it!
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = bindingAdapterPosition, name = text.toString())
+                        AddDataModel.SingleElement(vId = bindingAdapterPosition, name = text.toString())
                     )
                 }
                 binding.textFieldNum.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = bindingAdapterPosition, num = text.toString().toIntOrNull())
+                        AddDataModel.SingleElement(vId = bindingAdapterPosition, num = text.toString().toIntOrNull())
                     )
                 }
                 binding.textFieldTag.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = bindingAdapterPosition, tag = text.toString())
+                        AddDataModel.SingleElement(vId = bindingAdapterPosition, elem_tag = text.toString())
                     )
                 }
                 binding.textFieldCost.editText?.doOnTextChanged { text: CharSequence?,
                                                                   _, _,
                                                                   count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(id = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
+                        AddDataModel.SingleElement(vId = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
                     )
                 }
             }
@@ -176,7 +173,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
             {
                 binding.textFieldName.editText?.text = element.name?.toEditable()
                 binding.textFieldNum.editText?.text = element.num?.toString()?.toEditable()
-                binding.textFieldTag.editText?.text = element.tag?.toEditable()
+                binding.textFieldTag.editText?.text = element.elem_tag?.toEditable()
                 binding.textFieldCost.editText?.text = element.cost?.toString()?.toEditable()
             }
         }
