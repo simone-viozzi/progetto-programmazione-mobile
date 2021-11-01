@@ -61,33 +61,88 @@ interface AggregatesDao
     @Update
     suspend fun _updateList(aggregates: List<Aggregate>): Int
 
-    @Query("UPDATE aggregate SET tag_id = :new_tag_id WHERE id = :id")
-    suspend fun _updateAgregateTag(id: Long, new_tag_id: Long): Int
+    @Update
+    suspend fun _updateElement(element: Element): Int
 
-    @Query("UPDATE aggregate SET date = :date WHERE id = :id")
-    suspend fun _updateAgregateDate(id: Long, date: Date): Int
-
-    @Query("UPDATE aggregate SET location = :location WHERE id = :id")
-    suspend fun _updateAgregateLocation(id: Long, location: Location): Int
-
-    @Query("UPDATE aggregate SET attachment = :attachment WHERE id = :id")
-    suspend fun _updateAgregateAttachment(id: Long, attachment: Uri): Int
+    @Update
+    suspend fun _updateElementsList(element: List<Element>): Int
 
     @Transaction
     suspend fun updateAggregate(
+        aggregate: Aggregate,
+        tag_id: Long? = null,
+        date: Date? = null,
+        location: Location? = null,
+        attachment: Uri? = null): Int{
+
+        if(tag_id != null){
+            aggregate.tag_id = tag_id
+            // each element must be updated
+            val elementsList: List<Element> = getElementsByAggregate(aggregate)
+            elementsList.forEach { it.parent_tag_id = tag_id }
+            _updateElementsList(elementsList)
+        }
+        if(date != null)        aggregate.date = date
+        if(location != null)    aggregate.location = location
+        if(attachment != null)  aggregate.attachment = attachment
+
+        return _update(aggregate)
+    }
+
+    @Transaction
+    suspend fun updateAggregateById(
         id: Long,
         tag_id: Long? = null,
         date: Date? = null,
         location: Location? = null,
         attachment: Uri? = null): Int{
 
-        var succesUpdates: Int = 0
-        if(tag_id != null)      succesUpdates += _updateAgregateTag(id,tag_id)
-        if(date != null)        succesUpdates += _updateAgregateDate(id, date)
-        if(location != null)    succesUpdates += _updateAgregateLocation(id, location)
-        if(attachment != null)  succesUpdates += _updateAgregateAttachment(id, attachment)
+        val aggregate = getAggregateById(id)
+        return updateAggregate(aggregate, tag_id, date, location, attachment)
+    }
 
-        return succesUpdates
+    @Transaction
+    suspend fun updateElement(
+        element: Element,
+        name: String? = null,
+        num: Long? = null,
+        elem_tag_id: Long? = null,
+        cost: Float? = null
+    ): Int{
+        var updateAggregateFlag = false
+        val oldNum = element.num
+        val oldCost = element.cost
+        val newNum = num ?: element.num
+        val newCost = cost ?: element.cost
+
+        if(name != null) element.name = name
+        if(num != null){
+            element.num = num
+            updateAggregateFlag = true
+        }
+        if(elem_tag_id != null) element.elem_tag_id = elem_tag_id
+        if(cost != null){
+            element.cost = cost
+            updateAggregateFlag = true
+        }
+        if(updateAggregateFlag){
+            val aggregate = getAggregateByElement(element)
+            aggregate.total_cost += ((newNum * newCost) - (oldNum * oldCost))
+            _update(aggregate)
+        }
+        return _updateElement(element)
+    }
+
+    @Transaction
+    suspend fun updateElementById(
+        id: Long,
+        name: String? = null,
+        num: Long? = null,
+        elem_tag_id: Long? = null,
+        cost: Float? = null
+    ): Int{
+        val element = getElementById(id)
+        return updateElement(element, name, num, elem_tag_id, cost)
     }
 
     /////////////////////////////////////////
@@ -109,26 +164,40 @@ interface AggregatesDao
     // delete elements queries
 
     @Delete
-    suspend fun _deleteElement(element: Element)
+    suspend fun _deleteElement(element: Element): Int
 
     @Query("DELETE FROM element WHERE element.aggregate_id = :aggregate_id")
-    suspend fun _deleteElementByAggregateId(aggregate_id: Long)
+    suspend fun _deleteElementsByAggregateId(aggregate_id: Long): Int
 
     @Query("DELETE FROM element")
-    suspend fun _deleteAllElements()
+    suspend fun _deleteAllElements(): Int
+
+    @Transaction
+    suspend fun deleteElement(element: Element): Int{
+        val aggregate = getAggregateByElement(element)
+        aggregate.total_cost = aggregate.total_cost - (element.cost * element.num)
+        _update(aggregate)
+        return _deleteElement(element)
+    }
+
+    @Transaction
+    suspend fun deleteElementById(elem_id: Long): Int{
+        val element: Element = getElementById(elem_id)
+        return deleteElement(element)
+    }
 
     // delete aggregates with elements queries
 
     @Transaction
     suspend fun deleteAggregateWithElements(aggregate: Aggregate){
-        _deleteElementByAggregateId(aggregate.id)
+        _deleteElementsByAggregateId(aggregate.id)
         _delete(aggregate)
     }
 
     @Transaction
     suspend fun deleteAggregateWithElementsById(id: Long){
         _deleteAggregateById(id)
-        _deleteElementByAggregateId(id)
+        _deleteElementsByAggregateId(id)
     }
 
     @Transaction
@@ -180,6 +249,11 @@ interface AggregatesDao
     @Query("SELECT * FROM aggregate WHERE aggregate.id = :id LIMIT 1")
     suspend fun getAggregateById(id: Long): Aggregate
 
+    @Transaction
+    suspend fun getAggregateByElement(element: Element): Aggregate{
+        return getAggregateById(element.aggregate_id)
+    }
+
     @Query("SELECT * FROM aggregate")
     suspend fun getAllAggregates(): List<Aggregate>
 
@@ -198,7 +272,7 @@ interface AggregatesDao
     @Query("SELECT * from aggregate WHERE aggregate.tag_id = :tag")
     suspend fun getAggregatesByTag(tag: Long): List<Aggregate>
 
-    //TODO: aggiungere funzioni per fitraggio in base a data e tag
+
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
