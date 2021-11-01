@@ -5,11 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Size
 import com.example.receiptApp.THUMBNAIL_SIZE
 import timber.log.Timber
-import java.io.FileNotFoundException
+import java.io.*
+import java.net.URI
 
 class ImageUtils
 {

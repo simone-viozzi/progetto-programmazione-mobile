@@ -10,7 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddImgBinding
-import com.example.receiptApp.sources.Attachment
+import com.example.receiptApp.repository.Attachment
+
 
 class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : PagingDataAdapter<Attachment, GalleryAdapter.ImgViewHolder>(DiffCallback())
 {

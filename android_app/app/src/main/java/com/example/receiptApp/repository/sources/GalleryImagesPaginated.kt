@@ -1,8 +1,8 @@
-package com.example.receiptApp.sources
+package com.example.receiptApp.repository.sources
 
-import android.provider.MediaStore
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.receiptApp.repository.Attachment
 import timber.log.Timber
 import java.io.FileNotFoundException
 

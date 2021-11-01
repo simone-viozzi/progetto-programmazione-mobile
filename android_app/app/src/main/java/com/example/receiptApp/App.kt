@@ -3,12 +3,9 @@ package com.example.receiptApp
 import android.app.Application
 import android.text.Editable
 import com.example.receiptApp.db.AppDatabase
-import com.example.receiptApp.sources.GalleryImages
-import com.example.receiptApp.sources.GalleryImagesPaginated
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import com.example.receiptApp.repository.AttachmentRepository
+import com.example.receiptApp.repository.sources.GalleryImages
+import com.example.receiptApp.repository.sources.GalleryImagesPaginated
 import timber.log.Timber
 
 
@@ -19,10 +16,7 @@ class App : Application()
 {
     val database by lazy { AppDatabase.getInstance(this) }
 
-    // TODO maybe maybe it would be better to pass galleryImagesPaginated into a repository
-    private val galleryImages by lazy { GalleryImages(contentResolver) }
-
-    val galleryImagesPaginated by lazy { GalleryImagesPaginated(galleryImages) }
+    val attachmentRepository by lazy { AttachmentRepository(this) }
 
 
     // TODO implement repositories

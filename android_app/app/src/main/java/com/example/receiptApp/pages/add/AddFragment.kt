@@ -1,18 +1,18 @@
 package com.example.receiptApp.pages.add
 
 import android.Manifest
-import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.content.FileProvider.getUriForFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
+import com.example.receiptApp.Utils.FileUtils
 import com.example.receiptApp.Utils.PermissionsHandling
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
@@ -32,9 +33,9 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import androidx.core.content.FileProvider
-import androidx.core.content.FileProvider.getUriForFile
+import java.io.BufferedInputStream
 import java.io.File
+import java.io.FileNotFoundException
 
 
 class AddFragment : Fragment(R.layout.add_fragment)
@@ -42,7 +43,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private lateinit var permHandler: PermissionsHandling
 
     private val viewModel: AddViewModel by viewModels {
-        AddViewModelFactory((activity?.application as App).galleryImagesPaginated)
+        AddViewModelFactory((activity?.application as App).attachmentRepository)
     }
 
     private lateinit var binding: AddFragmentBinding
@@ -207,7 +208,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.galleryState.collectLatest { state ->
-                // New value received
+
+                // TODO set the states of simplify this code
                 when (state)
                 {
                     is GalleryDataState.Idle ->
@@ -217,7 +219,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
                     {
                     }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
-                    GalleryDataState.Loading ->
+                    is GalleryDataState.Loading ->
                     {
                     }
                 }
@@ -246,34 +248,15 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
             bottomAppBar.replaceMenu(if (visible) R.menu.bottom_bar_menu_attach else R.menu.bottom_bar_menu_add)
 
-            bottomAppBar.setOnMenuItemClickListener {
-                if (visible)
-                {
+            val menuItemClickListener: (MenuItem) -> Boolean
+            if (visible)
+            {
+                menuItemClickListener = {
                     when (it.itemId)
                     {
                         R.id.attach_camera ->
                         {
-                            permHandler.setCallbacksAndAsk(
-                                permissions = arrayOf(Manifest.permission.CAMERA),
-                                granted = {
-                                    context?.let{ context ->
-
-                                        val imagePath = File(context.filesDir, "images/")
-                                        val newFile = File(imagePath, "default_image.jpg")
-                                        val contentUri: Uri = getUriForFile(
-                                            context,
-                                            "com.example.receiptApp",
-                                            newFile
-                                        )
-                                        Timber.d("contentUri -> $contentUri")
-                                        getCamera.launch(contentUri)
-                                    }
-                                },
-                                denied = {
-                                    Timber.d("permission denied")
-                                }
-                            )
-
+                            handleCamera()
                             true
                         }
                         R.id.attach_file ->
@@ -283,21 +266,60 @@ class AddFragment : Fragment(R.layout.add_fragment)
                         }
                         else -> false
                     }
-                } else
-                {
+                }
+
+            } else
+            {
+                menuItemClickListener = {
                     binding.addMotionLayout.transitionToState(R.id.end)
                     true
                 }
             }
+            bottomAppBar.setOnMenuItemClickListener(menuItemClickListener)
         }
     }
 
+    private fun handleCamera()
+    {
+        permHandler.setCallbacksAndAsk(
+            permissions = arrayOf(Manifest.permission.CAMERA),
+            granted = {
+                context?.let { context ->
 
-    private val getFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+                    val imagesPath = File(context.filesDir, "images/")
+                    val newFile = File(imagesPath, "default_image.jpg")
+                    val contentUri: Uri = getUriForFile(
+                        context,
+                        "com.example.receiptApp",
+                        newFile
+                    )
+                    Timber.d("contentUri -> $contentUri")
+                    getCamera.launch(contentUri)
+                }
+            },
+            denied = {
+                Timber.d("permission denied")
+            }
+        )
+    }
+
+
+    private val getFile = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri ->
         Timber.d("$uri")
+
+        binding.addMotionLayout.transitionToState(R.id.start)
+
+        TODO("this action need to be done when the user click OK! not right now")
+        viewModel.copyFile(uri)
     }
 
     private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+
+        binding.addMotionLayout.transitionToState(R.id.start)
+
+
         if (it) Timber.d("got camera") else Timber.e("no camera")
     }
 

@@ -1,23 +1,17 @@
-package com.example.receiptApp.sources
+package com.example.receiptApp.repository.sources
 
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.database.Cursor
-import android.database.DatabaseUtils
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Size
-import com.example.receiptApp.THUMBNAIL_SIZE
 import com.example.receiptApp.Utils.ImageUtils
+import com.example.receiptApp.repository.Attachment
 import timber.log.Timber
-import java.io.FileNotFoundException
 
-
-data class Attachment(val name: String, val contentUri: Uri, val thumbnail: Bitmap)
 
 class GalleryImages(private val contentResolver: ContentResolver)
 {
@@ -40,7 +34,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         }
 
-        Timber.d("images = $images")
+        //Timber.d("images = $images")
 
         val selection = "${MediaStore.Images.Media.MIME_TYPE} IN (?,?,?)"
 
@@ -82,7 +76,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
             )
         }
 
-        Timber.d("curr = $curr")
+        //Timber.d("curr = $curr")
 
         curr?.use { cursor ->
             Timber.d("cursor.count = ${cursor.count}")

@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.example.receiptApp.db.element.Element
-import com.example.receiptApp.sources.Attachment
 import java.util.*
 
 /**

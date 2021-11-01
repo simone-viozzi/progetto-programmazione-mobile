@@ -2,5 +2,6 @@
 <resources>
 
     <files-path name="Images" path="images/"/>
+    <files-path name="Files" path="files/"/>
 
 </resources>

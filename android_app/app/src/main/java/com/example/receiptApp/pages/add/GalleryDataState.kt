@@ -1,8 +1,7 @@
 package com.example.receiptApp.pages.add
 
 import androidx.paging.PagingData
-import com.example.receiptApp.sources.Attachment
-import kotlinx.coroutines.flow.Flow
+import com.example.receiptApp.repository.Attachment
 
 sealed class GalleryDataState
 {

@@ -6,18 +6,17 @@ import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.example.receiptApp.sources.Attachment
-import com.example.receiptApp.sources.GalleryImagesPaginated
+import com.example.receiptApp.repository.Attachment
+import com.example.receiptApp.repository.AttachmentRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewModel()
+class AddViewModel(private val attachmentRepository: AttachmentRepository) : ViewModel()
 {
     // the list observed by the recyclerview
     private val _rvList = MutableLiveData<List<AddDataModel>>()
@@ -27,7 +26,7 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
     private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
     val galleryState: StateFlow<GalleryDataState> = _galleryState
 
-    private var attachmentUri: Uri? = null
+    private var attachment: Attachment? = null
 
     // the callback used by every element of the views in the textWatcher to update the corresponding element in the
     // view model, it pass an element with only the updated field and the id != null
@@ -40,9 +39,8 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
             {
                 val oldEl = _rvList.value?.get(0) as AddDataModel.Header
 
-                // TODO (el... != "") in sill needed? need to test
-                if (el.date != null && el.date != "") oldEl.date = el.date
-                if (el.tag != null && el.tag != "") oldEl.tag = el.tag
+                el.date?.let { oldEl.date = it }
+                el.tag?.let { oldEl.tag = it }
 
                 // TODO update the list only if there was a change!
                 _rvList.value = _rvList.value?.toMutableList().also { it?.set(0, oldEl) }
@@ -52,22 +50,19 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
             {
                 val oldEl = _rvList.value?.get(el.id) as AddDataModel.SingleElement
 
-                // TODO (el... != "") in sill needed? need to test
-                if (el.name != null && el.name != "") oldEl.name = el.name
-                if (el.tag != null && el.tag != "") oldEl.tag = el.tag
-                if (el.num != null) oldEl.num = el.num
-                if (el.cost != null) oldEl.cost = el.cost
+                el.name?.let { oldEl.name = it }
+                el.tag?.let { oldEl.tag = it }
+                el.num?.let { oldEl.num = it }
+                el.cost?.let { oldEl.cost = it }
 
                 val newList = _rvList.value?.toMutableList().also { it?.set(el.id, oldEl) }
 
-                if (el.id == getLastId(false))
-                {
-                    // TODO update the list only if there was a change!
-                    _rvList.value = newList?.plus(listOf(AddDataModel.SingleElement(id = getLastId())))
-                } else
-                {
-                    // TODO update the list only if there was a change!
-                    _rvList.value = newList!!
+                // TODO update the list only if there was a change!
+                _rvList.value = newList?.also {
+                    if (el.id == getLastId(false))
+                    {
+                        it.add(AddDataModel.SingleElement(id = getLastId()))
+                    }
                 }
             }
         }
@@ -99,7 +94,7 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
                 it.thumbnail = attachment.thumbnail
             }
         }
-        attachmentUri = attachment.contentUri
+        this.attachment = attachment
     }
 
     init
@@ -112,9 +107,9 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
 
     private val flow = Pager(
         PagingConfig(
-            pageSize = 24,
+            pageSize = 32,
         ),
-    ) { imagesPaginated }.flow.cachedIn(viewModelScope)
+    ) { attachmentRepository.galleryImagesPaginated }.flow.cachedIn(viewModelScope)
 
 
     fun galleryCollect()
@@ -128,16 +123,31 @@ class AddViewModel(private val imagesPaginated: GalleryImagesPaginated) : ViewMo
         }
     }
 
+    // TODO this need refactor
+    fun copyFile(uri: Uri)
+    {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                attachmentRepository.copyAttachment(uri, AttachmentRepository.TYPE.PDF)
+            }
+        }
+    }
+
+    private fun saveToDb()
+    {
+
+    }
+
 }
 
-class AddViewModelFactory(private val imagesPaginated: GalleryImagesPaginated) : ViewModelProvider.Factory
+class AddViewModelFactory(private val repository: AttachmentRepository) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
     {
         if (modelClass.isAssignableFrom(AddViewModel::class.java))
         {
             @Suppress("UNCHECKED_CAST")
-            return AddViewModel(imagesPaginated) as T
+            return AddViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
