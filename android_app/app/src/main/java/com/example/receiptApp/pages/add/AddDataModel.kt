@@ -8,14 +8,14 @@ import android.graphics.Bitmap
  */
 
 sealed class AddDataModel {
-    data class Header(
+    data class Aggregate(
         var vId: Int = 0,
         var tag: String? = null,
         var str_date: String? = null,
         var thumbnail: Bitmap? = null
     ) : AddDataModel()
 
-    data class SingleElement(
+    data class Element(
         var vId: Int = -1,
         var name: String? = null,
         var num: Int? = null,
@@ -24,7 +24,3 @@ sealed class AddDataModel {
     ) : AddDataModel()
 }
 
-
-open class AddDataModel2(){
-
-}

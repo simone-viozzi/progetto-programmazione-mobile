@@ -3,13 +3,10 @@ package com.example.receiptApp.db.aggregate
 import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
+import androidx.room.*
 import com.example.receiptApp.db.Converters
-import com.example.receiptApp.pages.add.AddDataModel
-import com.example.receiptApp.pages.add.AddDataModel2
+import com.example.receiptApp.db.tag.Tag
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**
@@ -26,12 +23,22 @@ import java.util.*
  * @constructor Create empty Aggregate
  */
 
-@Entity(tableName = "aggregate")
-data class Aggregate(
+@Entity(
+    tableName = "aggregate",
+    foreignKeys = [
+        ForeignKey(
+            entity = Tag::class,
+            parentColumns = ["tag_id"],
+            childColumns = ["tag_id"]
+        ),
+    ],
+    indices = [Index("id")]
+)
+data class Aggregate @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    var id: Long = -1,
 
-    var tag_id: Long = 0L,
+    var tag_id: Long? = null,
 
     var date: Date? = null,
 
@@ -40,18 +47,9 @@ data class Aggregate(
     var attachment: Uri? = null,
 
     var total_cost: Float = 0.0f,
-
+){
     // fields not used in the table
-    @Ignore
-    var thumbnail: Bitmap? = null,
 
     @Ignore
-    var tag: String? = null,
-
-    @Ignore
-    var vId: Int? = null,
-
-    @Ignore
-    var str_date: String? = null,
-
-    ): AddDataModel2()
+    var tag: String? = null
+}

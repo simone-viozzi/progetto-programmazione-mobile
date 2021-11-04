@@ -87,7 +87,7 @@ class DatabaseTests
 
         // insert values to the database
         val resultId = aggregatesDao.insertAggregateWithElements(expectedAggregate, expectedListOfElements)
-        val result = aggregatesDao.getAggregateWithElementsById(resultId)
+        val result = aggregatesDao._getAggregateWithElementsById(resultId)
 
         // check for result
         if (result == null) {

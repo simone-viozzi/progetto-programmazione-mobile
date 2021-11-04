@@ -1,11 +1,9 @@
 package com.example.receiptApp.db.aggregate
 
-import android.location.Location
-import android.net.Uri
 import androidx.room.*
-import androidx.room.OnConflictStrategy.REPLACE
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.ElementsDao
+import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 import java.util.*
 
@@ -27,194 +25,230 @@ import java.util.*
  */
 
 @Dao
-interface AggregatesDao : BaseAggregateDao, ElementsDao, TagsDao {
+interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
 
-    /////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // Insert queries
 
     @Transaction
-    suspend fun insertAggregateWithElements(aggregate: Aggregate, elements: List<Element>): Long {
+    suspend fun _insertAggregateWithTag(aggregate: Aggregate): Long{
 
-        val aggregateId = _insertAggregate(aggregate)
+        val resultTag = getAggregateTagByName(aggregate.tag)
+        if(resultTag != null){
+            // se il tag specificato per l'aggregato è diverso da null allora è già contenuto nel db
+            aggregate.tag_id = resultTag.tag_id
 
-        elements.forEach { it.aggregate_id = aggregateId }
-
-        _insertElementsList(elements)
-
-        return aggregateId
+        }else{
+            // se il tag specificato per l'aggregato non è presente nel db lo aggiungo
+            val newTagId = _insertTag(Tag(tag_name = aggregate.tag, aggregate = true))
+            aggregate.tag_id = newTagId
+        }
+        // in fine aggiungo l'aggregato
+        return _insertAggregate(aggregate)
     }
 
-    /////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // Update queries
 
+    /**
+     * _update aggregate tag
+     *
+     * Private function used only inside updateAggregate()
+     * this function require as argument an instance of Aggregate that
+     * contain the field tag and tag_id not null, with values that dosen't match
+     * so the method apply the procedure for detaching the old tag refered by the tag_id field
+     * and attach or create the new tag specified by the tag field of the Aggregate instance
+     *
+     * @param aggregate an aggregate already present inside the database
+     * @return the id of the new tag for the aggregate passed as argument
+     */
     @Transaction
-    suspend fun updateAggregate(
-        aggregate: Aggregate,
-        tag_id: Long? = null,
-        date: Date? = null,
-        location: Location? = null,
-        attachment: Uri? = null
-    ): Int {
+    suspend fun _updateAggregateTag(aggregate: Aggregate): Long?{
 
-        if (tag_id != null) {
-            aggregate.tag_id = tag_id
-            // each element must be updated
-            val elementsList: List<Element> = getElementsByAggregate(aggregate)
-            elementsList.forEach { it.parent_tag_id = tag_id }
-            _updateElementsList(elementsList)
+        // if the keys are null the results are null, jump the query process
+        val new_tag = if(aggregate.tag == null) null else getAggregateTagByName(aggregate.tag)
+        val old_tag = if(aggregate.tag_id == null) null else getAggregateTagById(aggregate.tag_id)
+
+        // verify that the tags aren't the same
+        if (new_tag != null &&
+            old_tag != null &&
+            new_tag.tag_id == old_tag.tag_id
+            ) return old_tag.tag_id
+
+        if(old_tag != null) {
+            // if the old tag isn't null check if is bind only to this aggregate
+            if (_countAllAggregatesByTagId(old_tag.tag_id) <= 1) {
+                // se il tag ha solo un aggregato connesso lo cancello
+                _deleteTag(old_tag)
+            }
         }
 
-        if (date != null) aggregate.date = date
-        if (location != null) aggregate.location = location
-        if (attachment != null) aggregate.attachment = attachment
-
-        return _updateAggregate(aggregate)
+        // verify if the new tag should be created
+        if (new_tag != null) {
+            // if new tag isn't null the tag already exist
+            return new_tag.tag_id
+        } else {
+            // if new tag is null
+            if(aggregate.tag != null){
+                // and the new tag name passed isn't null it will be created
+                return _insertTag(Tag(tag_name = aggregate.tag, aggregate = true))
+            }else{
+                // otherwise there isn't a new tag
+                return null
+            }
+        }
     }
 
-    @Transaction
-    suspend fun updateAggregateById(
-        id: Long,
-        tag_id: Long? = null,
-        date: Date? = null,
-        location: Location? = null,
-        attachment: Uri? = null
-    ): Int {
-
-        val aggregate = getAggregateById(id)
-        return updateAggregate(aggregate, tag_id, date, location, attachment)
-    }
-
-    /////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // Delete queries
 
     // delete aggregates with elements queries
 
     @Transaction
-    suspend fun deleteAggregateWithElements(aggregate: Aggregate) {
-        _deleteElementsByAggregateId(aggregate.id)
+    suspend fun _deleteAggregateWithTag(aggregate: Aggregate){
+
+        if(aggregate.tag != null) {
+            val resultTag = getAggregateTagByName(aggregate.tag!!)
+            if (resultTag != null) {
+                // se il tag specificato per l'aggregato è diverso da null
+                // allora verifico se è collegato solo a questo agregato
+                if (_countAllAggregatesByTagId(resultTag.tag_id) <= 1) {
+                    // se il tag ha solo un aggregato connesso lo cancello
+                    _deleteTag(resultTag)
+                }
+            }
+        }
         _deleteAggregate(aggregate)
     }
 
     @Transaction
-    suspend fun deleteAggregateWithElementsById(id: Long) {
-        _deleteAggregateById(id)
-        _deleteElementsByAggregateId(id)
+    suspend fun _deleteAgregateWithTagById(aggregate_id: Long){
+        val aggregate = _getAggregateById(aggregate_id)
+        _deleteAggregateWithTag(aggregate)
     }
 
     @Transaction
-    suspend fun deleteAllWithElements() {
-        _deleteAllAggregates()
-        _deleteAllElements()
+    suspend fun _deleteAggregateWithElements(aggregate: Aggregate) {
+        _deleteElementsWithTagByAggregateId(aggregate.id)
+        _deleteAggregateWithTag(aggregate)
+    }
+
+    @Transaction
+    suspend fun _deleteAggregateWithElementsById(id: Long) {
+        _deleteElementsWithTagByAggregateId(id)
+        _deleteAgregateWithTagById(id)
     }
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Get count queries aggregates
 
-    @Query("SELECT COUNT(*) FROM aggregate")
-    suspend fun countAllAggregates(): Long
-
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate")
-    suspend fun countAllExpenses(): Float
-
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date <= :date")
-    suspend fun countAllExpensesBeforeDate(date: Date): Float
-
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :date")
-    suspend fun countAllExpensesAfterDate(date: Date): Float
-
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date")
-    suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float
-
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.tag_id = :tag_id")
-    suspend fun countAllExpensesByTag(tag_id: Long): Float
-
-    // TODO: aggiungere funzioni per filtraggio in base a data e tag
+    @Query("SELECT COUNT(*) FROM aggregate WHERE aggregate.tag_id = :tag_id")
+    suspend fun _countAllAggregatesByTagId(tag_id: Long?): Long
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Get queries aggregates with elements
 
     @Transaction
-    suspend fun getLastAggregateWithElements(): Map<Aggregate, List<Element>> {
-        val lastAggregate: Aggregate = getLastAggregate()
-        val elementsList: List<Element> = getElementsByAggregateId(lastAggregate.id)
+    suspend fun _getLastAggregateWithElements(): Map<Aggregate, List<Element>> {
+        val lastAggregate: Aggregate = _getLastAggregate()
+        val elementsList: List<Element> = _getElementsByAggregateId(lastAggregate.id)
         return mapOf(lastAggregate to elementsList)
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsById(id: Long): Map<Aggregate, List<Element>> {
-        val aggregate: Aggregate = getAggregateById(id)
-        val elementsList: List<Element> = getElementsByAggregateId(aggregate.id)
+    suspend fun _getAggregateWithElementsById(id: Long): Map<Aggregate, List<Element>> {
+        val aggregate: Aggregate = _getAggregateById(id)
+        val elementsList: List<Element> = _getElementsByAggregateId(aggregate.id)
         return mapOf(aggregate to elementsList)
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsByDate(date: Date): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = getAggregatesByDate(date)
+    suspend fun _getAggregateWithElementsByDate(date: Date): Map<Aggregate, List<Element>> {
+        val aggregatesList: List<Aggregate> = _getAggregatesByDate(date)
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
-            val listOfElements = getElementsByAggregateId(aggregate.id)
+            val listOfElements = _getElementsByAggregateId(aggregate.id)
             resultMap[aggregate] = listOfElements
         }
         return resultMap
     }
 
     @Transaction
-    suspend fun getAllAggregatesWithElements(): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = getAllAggregates()
+    suspend fun _getAllAggregatesWithElements(): Map<Aggregate, List<Element>> {
+        val aggregatesList: List<Aggregate> = _getAllAggregates()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
-            val listOfElements = getElementsByAggregateId(aggregate.id)
+            val listOfElements = _getElementsByAggregateId(aggregate.id)
             resultMap[aggregate] = listOfElements
         }
         return resultMap
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsUntilDate(date: Date): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = getAggregatesByDate(date)
+    suspend fun _getAggregateWithElementsUntilDate(date: Date): Map<Aggregate, List<Element>> {
+        val aggregatesList: List<Aggregate> = _getAggregatesByDate(date)
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
-            val listOfElements = getElementsByAggregateId(aggregate.id)
+            val listOfElements = _getElementsByAggregateId(aggregate.id)
             resultMap[aggregate] = listOfElements
         }
         return resultMap
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsAfterDate(date: Date): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = getAggregatesAfterDate(date)
+    suspend fun _getAggregateWithElementsAfterDate(date: Date): Map<Aggregate, List<Element>> {
+        val aggregatesList: List<Aggregate> = _getAggregatesAfterDate(date)
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
-            val listOfElements = getElementsByAggregateId(aggregate.id)
+            val listOfElements = _getElementsByAggregateId(aggregate.id)
             resultMap[aggregate] = listOfElements
         }
         return resultMap
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsBetweenDate(
+    suspend fun _getAggregateWithElementsBetweenDate(
         start_date: Date,
         end_date: Date
     ): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = getAggregatesBetweenDate(start_date, end_date)
+        val aggregatesList: List<Aggregate> = _getAggregatesBetweenDate(start_date, end_date)
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
-            val listOfElements = getElementsByAggregateId(aggregate.id)
+            val listOfElements = _getElementsByAggregateId(aggregate.id)
             resultMap[aggregate] = listOfElements
         }
         return resultMap
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsByTag(tag_id: Long): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = getAggregatesByTag(tag_id)
+    suspend fun _getAggregateWithElementsByTag(tag_id: Long): Map<Aggregate, List<Element>> {
+        val aggregatesList: List<Aggregate> = _getAggregatesByTag(tag_id)
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
-            val listOfElements = getElementsByAggregateId(aggregate.id)
+            val listOfElements = _getElementsByAggregateId(aggregate.id)
             resultMap[aggregate] = listOfElements
         }
         return resultMap
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    // query helpers
+
+    @Transaction
+    suspend fun _addTagNameToAggregatesListWithElements(mapWithoutTags: Map<Aggregate, List<Element>>): Map<Aggregate, List<Element>>{
+        var resultWithTags = mutableMapOf<Aggregate, List<Element>>()
+        for((key, value) in mapWithoutTags){
+            val aggregateWithTags = _addTagNameToAggregate(key)
+            val elementsListWithTags = _addTagNameToElementsList(value)
+            resultWithTags[aggregateWithTags] = elementsListWithTags
+        }
+        return resultWithTags
+    }
+
 }

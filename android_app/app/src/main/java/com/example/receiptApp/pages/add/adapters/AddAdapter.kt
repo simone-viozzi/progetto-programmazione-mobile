@@ -28,11 +28,11 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
     {
         override fun areItemsTheSame(oldItem: AddDataModel, newItem: AddDataModel): Boolean
         {
-            if (oldItem is AddDataModel.Header && newItem is AddDataModel.Header)
+            if (oldItem is AddDataModel.Aggregate && newItem is AddDataModel.Aggregate)
             {
                 return oldItem.vId == newItem.vId
             }
-            if (oldItem is AddDataModel.SingleElement && newItem is AddDataModel.SingleElement)
+            if (oldItem is AddDataModel.Element && newItem is AddDataModel.Element)
             {
                 return oldItem.vId == newItem.vId
             }
@@ -41,11 +41,11 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
 
         override fun areContentsTheSame(oldItem: AddDataModel, newItem: AddDataModel): Boolean
         {
-            if (oldItem is AddDataModel.Header && newItem is AddDataModel.Header)
+            if (oldItem is AddDataModel.Aggregate && newItem is AddDataModel.Aggregate)
             {
                 return oldItem == newItem
             }
-            if (oldItem is AddDataModel.SingleElement && newItem is AddDataModel.SingleElement)
+            if (oldItem is AddDataModel.Element && newItem is AddDataModel.Element)
             {
                 return oldItem == newItem
             }
@@ -90,7 +90,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                     if (count > 0) textEditCallback.invoke(
                         // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
                         // TODO adapterPosition can be NO_POSITION, need to test for it!
-                        AddDataModel.Header(vId = bindingAdapterPosition, tag = text.toString())
+                        AddDataModel.Aggregate(vId = bindingAdapterPosition, tag = text.toString())
                     )
                 }
 
@@ -99,17 +99,17 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                 }
             }
 
-            fun bind(header: AddDataModel.Header)
+            fun bind(aggregate: AddDataModel.Aggregate)
             {
                 with(binding)
                 {
-                    textFieldTag.editText?.text = header.tag?.toEditable()
-                    textFieldDate.editText?.text = header.str_date?.toEditable()
+                    textFieldTag.editText?.text = aggregate.tag?.toEditable()
+                    textFieldDate.editText?.text = aggregate.str_date?.toEditable()
 
-                    thumbnail.visibility = if (header.thumbnail != null) View.VISIBLE else View.GONE
+                    thumbnail.visibility = if (aggregate.thumbnail != null) View.VISIBLE else View.GONE
 
                     Glide.with(binding.root.context)
-                        .load(header.thumbnail)
+                        .load(aggregate.thumbnail)
                         .apply(
                             RequestOptions
                                 .centerCropTransform()
@@ -143,33 +143,33 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                                                                   count: Int ->
                     // TODO adapterPosition can be NO_POSITION, need to test for it!
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(vId = bindingAdapterPosition, name = text.toString())
+                        AddDataModel.Element(vId = bindingAdapterPosition, name = text.toString())
                     )
                 }
                 binding.textFieldNum.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(vId = bindingAdapterPosition, num = text.toString().toIntOrNull())
+                        AddDataModel.Element(vId = bindingAdapterPosition, num = text.toString().toIntOrNull())
                     )
                 }
                 binding.textFieldTag.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(vId = bindingAdapterPosition, elem_tag = text.toString())
+                        AddDataModel.Element(vId = bindingAdapterPosition, elem_tag = text.toString())
                     )
                 }
                 binding.textFieldCost.editText?.doOnTextChanged { text: CharSequence?,
                                                                   _, _,
                                                                   count: Int ->
                     if (count > 0) textEditCallback.invoke(
-                        AddDataModel.SingleElement(vId = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
+                        AddDataModel.Element(vId = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
                     )
                 }
             }
 
-            fun bind(element: AddDataModel.SingleElement)
+            fun bind(element: AddDataModel.Element)
             {
                 binding.textFieldName.editText?.text = element.name?.toEditable()
                 binding.textFieldNum.editText?.text = element.num?.toString()?.toEditable()
@@ -216,8 +216,8 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
         // depending on the type of the holder i need to bind the corresponding view
         when (holder)
         {
-            is AddViewHolder.HeaderViewHolder -> holder.bind(getItem(position) as AddDataModel.Header)
-            is AddViewHolder.ElementViewHolder -> holder.bind(getItem(position) as AddDataModel.SingleElement)
+            is AddViewHolder.HeaderViewHolder -> holder.bind(getItem(position) as AddDataModel.Aggregate)
+            is AddViewHolder.ElementViewHolder -> holder.bind(getItem(position) as AddDataModel.Element)
         }
     }
 
@@ -231,8 +231,8 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
     {
         return when (getItem(position))
         {
-            is AddDataModel.Header -> R.layout.add_head
-            is AddDataModel.SingleElement -> R.layout.add_single_element
+            is AddDataModel.Aggregate -> R.layout.add_head
+            is AddDataModel.Element -> R.layout.add_single_element
         }
     }
 

@@ -2,8 +2,8 @@ package com.example.receiptApp.db.element
 
 import androidx.room.*
 import com.example.receiptApp.db.aggregate.Aggregate
-import com.example.receiptApp.db.aggregate.AggregatesDao
-import com.example.receiptApp.db.aggregate.BaseAggregateDao
+import com.example.receiptApp.db.aggregate.BaseAggregatesDao
+import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 
 /**
@@ -13,149 +13,153 @@ import com.example.receiptApp.db.tag.TagsDao
  */
 
 @Dao
-interface ElementsDao : BaseAggregateDao, TagsDao {
-    /////////////////////////////////////////
+interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // Insert queries
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun _insertElement(element: Element)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun _insertElementsList(elements: List<Element>)
-
-    /////////////////////////////////////////
-    // Update queries
-
-    @Update
-    suspend fun _updateElement(element: Element): Int
-
-    @Update
-    suspend fun _updateElementsList(element: List<Element>): Int
-
     @Transaction
-    suspend fun updateElement(
-        element: Element,
-        name: String? = null,
-        num: Long? = null,
-        elem_tag_id: Long? = null,
-        cost: Float? = null
-    ): Int {
-        var updateAggregateFlag = false
-        val oldNum = element.num
-        val oldCost = element.cost
-        val newNum = num ?: element.num
-        val newCost = cost ?: element.cost
+    suspend fun _insertElementWithTag(element: Element): Long{
 
-        if (name != null) element.name = name
-        if (num != null) {
-            element.num = num
-            updateAggregateFlag = true
+        val resultTag = getElementTagByName(element.elem_tag)
+        if(resultTag != null){
+            element.elem_tag_id = resultTag.tag_id
+        }else{
+            val newTagId = _insertTag(Tag(tag_name = element.elem_tag, aggregate = false))
+            element.elem_tag_id = newTagId
         }
-        if (elem_tag_id != null) element.elem_tag_id = elem_tag_id
-        if (cost != null) {
-            element.cost = cost
-            updateAggregateFlag = true
-        }
-        if (updateAggregateFlag) {
-            val aggregate = getAggregateByElement(element)
-            aggregate.total_cost += ((newNum * newCost) - (oldNum * oldCost))
-            _updateAggregate(aggregate)
-        }
-        return _updateElement(element)
+        return _insertElement(element)
     }
 
     @Transaction
-    suspend fun updateElementById(
-        id: Long,
-        name: String? = null,
-        num: Long? = null,
-        elem_tag_id: Long? = null,
-        cost: Float? = null
-    ): Int {
-        val element = getElementById(id)
-        return updateElement(element, name, num, elem_tag_id, cost)
+    suspend fun _insertElementsListWithTag(elementList: List<Element>): List<Long>{
+
+        var resultList = mutableListOf<Long>()
+        elementList.forEach {
+            resultList.add(_insertElementWithTag(it))
+        }
+        return resultList
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    // Update queries
+
+    @Transaction
+    suspend fun _updateElementTag(element: Element): Long?{
+
+        // if the keys are null the results are null, jump the query process
+        val new_tag = if(element.elem_tag == null) null else getElementTagByName(element.elem_tag)
+        val old_tag = if(element.elem_tag_id == null) null else getElementTagById(element.elem_tag_id)
+
+        // verify that the tags aren't the same
+        if (new_tag != null &&
+            old_tag != null &&
+            new_tag.tag_id == old_tag.tag_id
+        ) return old_tag.tag_id
+
+        if(old_tag != null) {
+            // if the old tag isn't null check if is bind only to this aggregate
+            if (countAllElementsByTagId(old_tag.tag_id) <= 1) {
+                // se il tag ha solo un aggregato connesso lo cancello
+                _deleteTag(old_tag)
+            }
+        }
+
+        // verify if the new tag should be created
+        if (new_tag != null) {
+            // if new tag isn't null the tag already exist
+            return new_tag.tag_id
+        } else {
+            // if new tag is null
+            if(element.elem_tag != null){
+                // and the new tag name passed isn't null it will be created
+                return _insertTag(Tag(tag_name = element.elem_tag, aggregate = false))
+            }else{
+                // otherwise there isn't a new tag
+                return null
+            }
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // delete elements queries
 
-    @Delete
-    suspend fun _deleteElement(element: Element): Int
+    @Transaction
+    suspend fun _deleteElementWithTag(element: Element): Int{
 
-    @Query("DELETE FROM element WHERE element.aggregate_id = :aggregate_id")
-    suspend fun _deleteElementsByAggregateId(aggregate_id: Long): Int
+        if(element.elem_tag != null){
+            val resultTag = getElementTagByName(element.elem_tag!!)
+            if(resultTag != null){
+                if(countAllElementsByTagId(resultTag.tag_id) <= 1){
+                    // se il numero di elementi associti al tag collegato
+                    // all'elemento da eliminare è 1 allora lo elimino
+                    _deleteTag(resultTag)
+                }
+            }
+        }
+        return _deleteElement(element)
+    }
+
+    /**
+     * delete elements list with tag
+     *
+     * Attenzione utilizzare questa funzione esclusivamente per l'eliminazione
+     * di un aggregato e la sua intera lista di elementi, se devono esser
+     * eliminati solo una parte degli elementi di un aggregato utilizzare @deleteElement(element: Element): Int
+     *
+     * @param elementsList
+     */
+    @Transaction
+    suspend fun _deleteElementsListWithTag(elementsList: List<Element>){
+
+        var tagIdsList = mutableListOf<Long?>()
+
+        // scorre la lista di elementi da eliminare
+        elementsList.forEach {
+            tagIdsList.add(it.elem_tag_id) // raccoglie gli id dei tag negli elementi
+        }
+
+        // effettua il conteggio del numero di id uguali e restituisce un map<id, id_count>
+        val tagIdsCountMap = tagIdsList.filterNotNull().groupingBy { it }.eachCount()
+
+        if(tagIdsCountMap.isNotEmpty()) {
+            // score i tag_id unici nella lista verifica
+            tagIdsList.filterNotNull().distinct().forEach {
+                val tagIdCount = tagIdsCountMap[it]
+                if(tagIdCount != null) {
+                    if (tagIdCount >= countAllElementsByTagId(it)) {
+                        // se tutti gli elementi con il tag che ha l'id sotto esame
+                        // appartengono alla lista allra il tag viene cancellato
+                        _deleteTagById(it)
+                    }
+                }
+            }
+        }
+
+        _deleteElementsList(elementsList)
+    }
+
+    @Transaction
+    suspend fun _deleteElementsWithTagByAggregateId(aggregateId: Long){
+        val elementsList = _getElementsByAggregateId(aggregateId)
+        _deleteElementsListWithTag(elementsList)
+    }
 
     @Query("DELETE FROM element")
     suspend fun _deleteAllElements(): Int
 
-    @Transaction
-    suspend fun deleteElement(element: Element): Int {
-        val aggregate = getAggregateByElement(element) //TODO ricreare il metodo accessibile dal elements dao
-        aggregate.total_cost = aggregate.total_cost - (element.cost * element.num)
-        _updateAggregate(aggregate)
-        return _deleteElement(element)
-    }
-
-    @Transaction
-    suspend fun deleteElementById(elem_id: Long): Int {
-        val element: Element = getElementById(elem_id)
-        return deleteElement(element)
-    }
-
-    /////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // Get count queries aggregates
 
-    @Query("SELECT COUNT(*) FROM element")
-    suspend fun countAllElements(): Long
 
-    @Query("SELECT SUM(element.num) FROM element")
-    suspend fun countAllSingleElements(): Long
-
-    @Query("SELECT SUM(element.cost * element.num) FROM element WHERE element.elem_tag_id = :elem_tag_id")
-    suspend fun countAllExpensesByElementTag(elem_tag_id: Long): Float
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // Get queries elemnts
-
-    @Query("SELECT * FROM element ORDER BY elem_id DESC LIMIT 1")
-    suspend fun getLastElement(): Element
-
-    @Query("SELECT * FROM element WHERE element.elem_id = :elem_id LIMIT 1")
-    suspend fun getElementById(elem_id: Long): Element
-
-    @Query("SELECT * FROM element")
-    suspend fun getAllElements(): List<Element>
-
-    @Query("SELECT * FROM element WHERE element.aggregate_id = :aggregateId")
-    suspend fun getElementsByAggregateId(aggregateId: Long): List<Element>
-
-    @Transaction
-    suspend fun getElementsByAggregate(aggregate: Aggregate): List<Element> {
-        return getElementsByAggregateId(aggregate.id)
-    }
-
-    @Query("SELECT * FROM element WHERE element.name = :name")
-    suspend fun getElementsByName(name: String): List<Element>
-
-    @Query("SELECT * FROM element WHERE element.cost = :cost")
-    suspend fun getElementByCost(cost: Float): List<Element>
-
-    @Query("SELECT * FROM element WHERE element.cost >= :start_cost")
-    suspend fun getElementOverCost(start_cost: Float): List<Element>
-
-    @Query("SELECT * FROM element WHERE element.cost <= :end_cost")
-    suspend fun getElementUnderCost(end_cost: Float): List<Element>
-
-    @Query("SELECT * FROM element WHERE element.cost >= :start_cost AND element.cost <= :end_cost")
-    suspend fun getElementBetweenCosts(start_cost: Float, end_cost: Float): List<Element>
-
-    @Query("SELECT * from element WHERE element.parent_tag_id = :parent_tag_id")
-    suspend fun getElementByParentTag(parent_tag_id: Long): List<Element>
-
-    @Query("SELECT * from element WHERE element.elem_tag_id = :elem_tag_id")
-    suspend fun getElementByTag(elem_tag_id: Long): List<Element>
+    // Get queries elements
 
 
 

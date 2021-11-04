@@ -3,8 +3,8 @@ package com.example.receiptApp.db.element
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import com.example.receiptApp.db.aggregate.Aggregate
-import com.example.receiptApp.pages.add.AddDataModel
-import com.example.receiptApp.pages.add.AddDataModel2
+import com.example.receiptApp.db.tag.Tag
+import com.google.gson.annotations.SerializedName
 
 /**
  * Element
@@ -29,34 +29,41 @@ import com.example.receiptApp.pages.add.AddDataModel2
 
 @Entity(
     tableName = "element",
-    foreignKeys = [ForeignKey(
+    foreignKeys = [
+        ForeignKey(
         entity = Aggregate::class,
         parentColumns = ["id"],
-        childColumns = ["aggregate_id"],
-        onDelete = CASCADE //A "CASCADE" action propagates the delete or update operation on the parent key to each dependent child
-    )],
+        childColumns = ["aggregate_id"]
+        ),
+        ForeignKey(
+            entity = Tag::class,
+            parentColumns = ["tag_id"],
+            childColumns = ["elem_tag_id"]
+        ),
+    ],
     indices = [Index("elem_id")]
 )
-data class Element(
+data class Element @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
-    var elem_id: Long = 0L,
+    var elem_id: Long = -1,
 
-    var aggregate_id: Long = 0L,
+    var aggregate_id: Long? = null,
 
-    var name: String,
+    var name: String? = null,
 
     var num: Long = 0L,
 
-    var parent_tag_id: Long = 0L,
+    var parent_tag_id: Long? = null,
 
-    var elem_tag_id: Long = 0L,
+    var elem_tag_id: Long? = null,
 
     var cost: Float = 0.0f,
-
+){
     // fields not used in the table
-    @Ignore
-    var elem_tag: String? = null,
 
     @Ignore
-    var vId: Int? = null,
-): AddDataModel2()
+    var parent_tag: String? = null
+
+    @Ignore
+    var elem_tag: String? = null
+}
