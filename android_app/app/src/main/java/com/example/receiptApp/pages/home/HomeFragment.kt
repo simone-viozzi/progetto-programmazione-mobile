@@ -7,14 +7,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.HomeFragmentBinding
 import com.google.android.material.bottomappbar.BottomAppBar
 
+
 class HomeFragment : Fragment()
 {
-    private val viewModel: HomeViewModel by viewModels()
+    val viewModel: HomeViewModel by viewModels {
+        HomeViewModelFactory((activity?.application as App).sharedPrefRepository)
+    }
 
     private lateinit var binding: HomeFragmentBinding
 
@@ -53,13 +59,25 @@ class HomeFragment : Fragment()
             bottomAppBar.setOnMenuItemClickListener {
                 when (it.itemId)
                 {
-                    R.id.bottom_bar_menu_about -> {
+                    R.id.bottom_bar_menu_about ->
+                    {
                         findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
                         true
                     }
 
-                    R.id.bottom_bar_menu_edit -> {
+                    R.id.bottom_bar_menu_edit ->
+                    {
                         // TODO !!
+                        true
+                    }
+                    R.id.bottom_bar_menu_save ->
+                    {
+                        viewModel.save()
+                        true
+                    }
+                    R.id.bottom_bar_menu_load ->
+                    {
+                        viewModel.load()
                         true
                     }
                     else -> false
@@ -67,6 +85,26 @@ class HomeFragment : Fragment()
             }
         }
 
-    }
+        val dashAdapter = DashboardAdapter(viewModel.onItemMove)
+        val rvLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
+
+        val callback = DragManageAdapter(viewModel, dashAdapter)
+
+
+        val helper = ItemTouchHelper(callback)
+
+        helper.attachToRecyclerView(binding.recyclerView)
+
+        binding.recyclerView.apply {
+            adapter = dashAdapter
+            layoutManager = rvLayoutManager
+        }
+
+        viewModel.list.observe(viewLifecycleOwner) {
+            dashAdapter.submitList(it)
+        }
+
+    }
 }

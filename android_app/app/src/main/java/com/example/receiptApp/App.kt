@@ -4,8 +4,7 @@ import android.app.Application
 import android.text.Editable
 import com.example.receiptApp.db.AppDatabase
 import com.example.receiptApp.repository.AttachmentRepository
-import com.example.receiptApp.repository.sources.GalleryImages
-import com.example.receiptApp.repository.sources.GalleryImagesPaginated
+import com.example.receiptApp.repository.SharedPrefRepository
 import timber.log.Timber
 
 
@@ -18,6 +17,7 @@ class App : Application()
 
     val attachmentRepository by lazy { AttachmentRepository(this) }
 
+    val sharedPrefRepository by lazy { SharedPrefRepository(this) }
 
     // TODO implement repositories
     // val repository by lazy { ColorRepository(database.colorDao()) }

@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.receiptApp.pages.home.HomeViewModel" />
     </data>
 
-
-    <com.example.receiptApp.layouts.DraggableCoordinatorLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/parentContainer"
-        tools:context=".pages.home.HomeFragment">
-        
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content">
-
-        </com.google.android.material.card.MaterialCardView>
-
-    </com.example.receiptApp.layouts.DraggableCoordinatorLayout>
+        android:padding="16dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/dashboard_element_test" />
 
 </layout>
 

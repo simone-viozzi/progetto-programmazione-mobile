@@ -10,7 +10,6 @@ import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.AggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.ElementsDao
-import com.example.receiptApp.db.relationships.AggregateWithElementsDao
 import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 
@@ -24,7 +23,7 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun aggregateDao(): AggregatesDao
     abstract fun elementsDao(): ElementsDao
     abstract fun tagsDao(): TagsDao
-    abstract fun aggregateWithElementsDao(): AggregateWithElementsDao
+    //abstract fun aggregateWithElementsDao(): AggregateWithElementsDao
 
     companion object
     {
