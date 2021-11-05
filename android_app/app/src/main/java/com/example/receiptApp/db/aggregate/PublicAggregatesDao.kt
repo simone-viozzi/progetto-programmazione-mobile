@@ -177,8 +177,6 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
         _deleteAllTags()
     }
 
-    // TODO: aggiungere il metodo pubblico per eliminare un elemento da un aggregato
-
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Get count queries aggregates
@@ -238,13 +236,13 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
 
     @Transaction
     suspend fun getAggregateWithElementsUntilDate(date: Date): Map<Aggregate, List<Element>> {
-        val resultWithoutTags = _getAggregateWithElementsUntilDate()
+        val resultWithoutTags = _getAggregateWithElementsUntilDate(date)
         return _addTagNameToAggregatesListWithElements(resultWithoutTags)
     }
 
     @Transaction
     suspend fun getAggregateWithElementsAfterDate(date: Date): Map<Aggregate, List<Element>> {
-        val resultWithoutTags = _getAggregateWithElementsAfterDate()
+        val resultWithoutTags = _getAggregateWithElementsAfterDate(date)
         return _addTagNameToAggregatesListWithElements(resultWithoutTags)
     }
 

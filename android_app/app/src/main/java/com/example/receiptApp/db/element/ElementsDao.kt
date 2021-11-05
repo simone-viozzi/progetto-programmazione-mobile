@@ -138,7 +138,7 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
                 }
             }
         }
-
+        
         _deleteElementsList(elementsList)
     }
 
