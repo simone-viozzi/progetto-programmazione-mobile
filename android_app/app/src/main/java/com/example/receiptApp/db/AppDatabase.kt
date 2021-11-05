@@ -23,7 +23,6 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun aggregateDao(): AggregatesDao
     abstract fun elementsDao(): ElementsDao
     abstract fun tagsDao(): TagsDao
-    //abstract fun aggregateWithElementsDao(): AggregateWithElementsDao
 
     companion object
     {

@@ -2,7 +2,6 @@ package com.example.receiptApp
 
 import android.location.Location
 import android.net.Uri
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -12,10 +11,9 @@ import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.AggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.ElementsDao
+import com.example.receiptApp.db.tag.TagsDao
 import kotlinx.coroutines.runBlocking
 import org.junit.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
 import org.junit.runner.RunWith
 import java.io.IOException
 import java.util.*
@@ -33,6 +31,7 @@ class DatabaseTests
 
     private lateinit var aggregatesDao: AggregatesDao
     private lateinit var elementsDao: ElementsDao
+    private lateinit var tagsDao: TagsDao
     private lateinit var db: AppDatabase
     private var tag = "DB_TEST"
 
@@ -69,6 +68,7 @@ class DatabaseTests
             .build()
         aggregatesDao = db.aggregateDao()
         elementsDao = db.elementsDao()
+        tagsDao = db.tagsDao()
     }
 
     @After
@@ -86,8 +86,8 @@ class DatabaseTests
         val expectedListOfElements: List<Element> = listOf(exEement, exEement, exEement)
 
         // insert values to the database
-        val resultId = aggregatesDao.insertWithElements(expectedAggregate, expectedListOfElements)
-        val result = aggregatesDao.getAggregateWithElementsById(resultId)
+        val resultId = aggregatesDao.insertAggregateWithElements(expectedAggregate, expectedListOfElements)
+        val result = aggregatesDao._getAggregateWithElementsById(resultId)
 
         // check for result
         if (result == null) {
