@@ -11,21 +11,26 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
     private val _list: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val list: LiveData<List<DashboardDataModel>> = _list
 
+    private val _editMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val editMode: LiveData<Boolean> = _editMode
+
     init
     {
-        val list: MutableList<DashboardDataModel> = (1..20).map { DashboardDataModel.Test(it) }.toMutableList()
+        _editMode.value = false
 
-        list += (1..5).map { DashboardDataModel.TestBig(it) }
-
-        _list.value = list.also { it.shuffle() }
+        loadDashboard()
     }
 
     val onItemMove: ((List<DashboardDataModel>) -> Unit) = {
         _list.value = it
     }
 
+    val onLongClick: () -> Unit = {
+        _editMode.value = true
+    }
 
-    fun save()
+
+    fun saveDashboard()
     {
         val needToSave: MutableMap<Int, DashboardElement> = mutableMapOf()
 
@@ -38,9 +43,10 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 
         repository.writeDashboard(needToSave)
 
+        _editMode.value = false
     }
 
-    fun load()
+    fun loadDashboard()
     {
         val dashboard: Map<Int, DashboardElement> = repository.readDashboard()
 

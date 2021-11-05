@@ -35,6 +35,13 @@ import timber.log.Timber
 import java.io.File
 
 
+/**
+ * TODO -> WARNING: rotating the phone with the attachment is visible bring the UI to an unstable state
+ */
+
+
+
+
 class AddFragment : Fragment(R.layout.add_fragment)
 {
     private lateinit var permHandler: PermissionsHandling

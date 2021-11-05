@@ -14,27 +14,49 @@ import com.example.receiptApp.databinding.DashboardElementTestBinding
 import java.util.*
 
 
-class DashboardAdapter(private val onItemMove: ((List<DashboardDataModel>) -> Unit)) : ListAdapter<DashboardDataModel, DashboardAdapter.DashboardViewHolder>(DashboardDiffCallback())
+class DashboardAdapter(
+    private val onItemMove: ((List<DashboardDataModel>) -> Unit),
+    private val onLongClickListener: (() -> Unit)
+) : ListAdapter<DashboardDataModel, DashboardAdapter.DashboardViewHolder>(DashboardDiffCallback())
 {
-    sealed class DashboardViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.root)
+
+    sealed class DashboardViewHolder(
+        binding: ViewBinding
+    ) : RecyclerView.ViewHolder(binding.root)
     {
-        class TestViewHolder(private val binding: DashboardElementTestBinding) : DashboardViewHolder(binding)
+        class TestViewHolder(
+            private val binding: DashboardElementTestBinding,
+            private val onLongClickListener: (() -> Unit)
+            ) : DashboardViewHolder(binding)
         {
             fun bind(holder: DashboardDataModel.Test)
             {
-                (binding.cardView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = binding.cardView.isBig
+                (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
 
                 binding.textView1.text = holder.id.toString()
+
+                binding.cardView.setOnLongClickListener {
+                    onLongClickListener.invoke()
+                    true
+                }
             }
         }
 
-        class TestBigViewHolder(private val binding: DashboardElementTestBigBinding) : DashboardViewHolder(binding)
+        class TestBigViewHolder(
+            private val binding: DashboardElementTestBigBinding,
+            private val onLongClickListener: (() -> Unit)
+            ) : DashboardViewHolder(binding)
         {
             fun bind(holder: DashboardDataModel.TestBig)
             {
-                (binding.cardView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = binding.cardView.isBig
+                (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
 
                 binding.textView1.text = holder.id.toString()
+
+                binding.cardView.setOnLongClickListener {
+                    onLongClickListener.invoke()
+                    true
+                }
             }
         }
     }
@@ -62,6 +84,7 @@ class DashboardAdapter(private val onItemMove: ((List<DashboardDataModel>) -> Un
                     parent,
                     false
                 ),
+                onLongClickListener
             )
             R.layout.dashboard_element_test_big -> DashboardViewHolder.TestBigViewHolder(
                 DashboardElementTestBigBinding.inflate(
@@ -69,6 +92,7 @@ class DashboardAdapter(private val onItemMove: ((List<DashboardDataModel>) -> Un
                     parent,
                     false
                 ),
+                onLongClickListener
             )
             else -> throw IllegalStateException("the view type in the RecyclerView is wrongggg! ")
         }

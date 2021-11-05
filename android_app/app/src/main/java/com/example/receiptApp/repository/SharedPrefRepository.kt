@@ -29,8 +29,6 @@ class SharedPrefRepository(applicationContext: Context)
 
             apply()
         }
-
-
     }
 
     private fun writeDashboardElement(index: Int, element: DashboardElement, editor: SharedPreferences.Editor)

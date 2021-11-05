@@ -44,18 +44,18 @@ class HomeFragment : Fragment()
 
         with((activity as MainActivity).binding)
         {
-            bottomAppBar.setFabAlignmentModeAndReplaceMenu(
-                BottomAppBar.FAB_ALIGNMENT_MODE_CENTER,
-                R.menu.bottom_bar_menu_main
-            )
+//            bottomAppBar.setFabAlignmentModeAndReplaceMenu(
+//                BottomAppBar.FAB_ALIGNMENT_MODE_CENTER,
+//                R.menu.bottom_bar_menu_main
+//            )
             fab.show()
-            fab.setImageResource(R.drawable.ic_baseline_add_24)
-            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
+//            fab.setImageResource(R.drawable.ic_baseline_add_24)
+//            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
 
-            fab.setOnClickListener {
-                val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
-                findNavController().navigate(action)
-            }
+//            fab.setOnClickListener {
+//                val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
+//                findNavController().navigate(action)
+//            }
             bottomAppBar.setOnMenuItemClickListener {
                 when (it.itemId)
                 {
@@ -72,12 +72,12 @@ class HomeFragment : Fragment()
                     }
                     R.id.bottom_bar_menu_save ->
                     {
-                        viewModel.save()
+                        viewModel.saveDashboard()
                         true
                     }
                     R.id.bottom_bar_menu_load ->
                     {
-                        viewModel.load()
+                        viewModel.loadDashboard()
                         true
                     }
                     else -> false
@@ -85,7 +85,10 @@ class HomeFragment : Fragment()
             }
         }
 
-        val dashAdapter = DashboardAdapter(viewModel.onItemMove)
+        val dashAdapter = DashboardAdapter(viewModel.onItemMove, viewModel.onLongClick)
+
+
+
         val rvLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
@@ -95,7 +98,36 @@ class HomeFragment : Fragment()
 
         val helper = ItemTouchHelper(callback)
 
-        helper.attachToRecyclerView(binding.recyclerView)
+        viewModel.editMode.observe(viewLifecycleOwner) {
+            helper.attachToRecyclerView(if (it) binding.recyclerView else null)
+
+            with((activity as MainActivity).binding)
+            {
+                bottomAppBar.setFabAlignmentModeAndReplaceMenu(
+                    if (it) BottomAppBar.FAB_ALIGNMENT_MODE_END else BottomAppBar.FAB_ALIGNMENT_MODE_CENTER,
+                    if (it) R.menu.bottom_bar_menu_hide else R.menu.bottom_bar_menu_main
+                )
+
+                fab.setImageResource(if (it) R.drawable.ic_baseline_check_24 else R.drawable.ic_baseline_add_24)
+
+                if (it) bottomAppBar.navigationIcon = null else bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
+
+                val fabClickListener: (View) -> Unit
+                if (!it)
+                {
+                    fabClickListener = {
+                        val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
+                        findNavController().navigate(action)
+                    }
+                }
+                else
+                {
+                    fabClickListener = { viewModel.saveDashboard() }
+                }
+
+                fab.setOnClickListener(fabClickListener)
+            }
+        }
 
         binding.recyclerView.apply {
             adapter = dashAdapter
@@ -105,6 +137,8 @@ class HomeFragment : Fragment()
         viewModel.list.observe(viewLifecycleOwner) {
             dashAdapter.submitList(it)
         }
-
     }
+
+
+
 }
