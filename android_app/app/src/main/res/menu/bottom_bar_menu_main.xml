@@ -4,17 +4,20 @@
 
     <item
         android:id="@+id/bottom_bar_menu_about"
-        android:icon="@drawable/ic_baseline_help_24"
-        android:iconTint="@color/black"
-        android:orderInCategory="100"
         android:title="About"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/bottom_bar_menu_edit"
-        android:icon="@drawable/ic_baseline_edit_24"
-        android:orderInCategory="100"
         android:title="Edit"
+        app:showAsAction="never" />
+
+    <item android:title="save"
+        android:id="@+id/bottom_bar_menu_save"
+        app:showAsAction="never" />
+
+    <item android:title="load"
+        android:id="@+id/bottom_bar_menu_load"
         app:showAsAction="never" />
 
 </menu>

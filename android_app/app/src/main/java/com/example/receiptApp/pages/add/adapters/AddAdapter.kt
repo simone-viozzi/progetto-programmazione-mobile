@@ -58,7 +58,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
      *
      * @constructor
      *
-     * @param binding -> the view binding
+     * @param binding the view binding
      */
     sealed class AddViewHolder(binding: ViewBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -69,8 +69,8 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
          * @property binding
          * @constructor
          *
-         * @param textEditCallback -> the callback for extracting the text from the text edit when the user modify it
-         * @param calendarClick -> callback to open the date picker
+         * @param textEditCallback the callback for extracting the text from the text edit when the user modify it
+         * @param calendarClick callback to open the date picker
          */
         class HeaderViewHolder(
             private val binding: AddHeadBinding,

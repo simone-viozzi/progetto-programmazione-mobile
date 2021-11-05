@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
-import com.example.receiptApp.Utils.FileUtils
 import com.example.receiptApp.Utils.PermissionsHandling
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
@@ -33,9 +32,14 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.BufferedInputStream
 import java.io.File
-import java.io.FileNotFoundException
+
+
+/**
+ * TODO -> WARNING: rotating the phone with the attachment is visible bring the UI to an unstable state
+ */
+
+
 
 
 class AddFragment : Fragment(R.layout.add_fragment)
