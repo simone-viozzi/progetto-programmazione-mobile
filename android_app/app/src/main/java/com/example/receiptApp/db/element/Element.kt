@@ -45,7 +45,7 @@ import com.google.gson.annotations.SerializedName
 )
 data class Element @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
-    var elem_id: Long = -1,
+    var elem_id: Long? = null,
 
     var aggregate_id: Long? = null,
 

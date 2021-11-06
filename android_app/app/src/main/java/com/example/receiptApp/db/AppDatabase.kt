@@ -8,8 +8,10 @@ import androidx.room.TypeConverters
 import com.example.receiptApp.DATABASE_NAME
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.AggregatesDao
+import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.ElementsDao
+import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 
@@ -20,8 +22,8 @@ import com.example.receiptApp.db.tag.TagsDao
 abstract class AppDatabase : RoomDatabase()
 {
     // all the daos need to be declared here
-    abstract fun aggregateDao(): AggregatesDao
-    abstract fun elementsDao(): ElementsDao
+    abstract fun aggregateDao(): PublicAggregatesDao
+    abstract fun elementsDao(): PublicElementsDao
     abstract fun tagsDao(): TagsDao
 
     companion object

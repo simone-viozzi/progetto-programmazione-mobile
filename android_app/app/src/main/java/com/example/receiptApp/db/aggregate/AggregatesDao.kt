@@ -101,6 +101,14 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
         }
     }
 
+    @Transaction
+    suspend fun _updateAggregateTotalCostById(aggregateId: Long, totalCost: Float){
+
+        var aggregate = _getAggregateById(aggregateId)
+        aggregate.total_cost = totalCost
+        _updateAggregate(aggregate)
+    }
+
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Delete queries
@@ -245,7 +253,7 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
         var resultWithTags = mutableMapOf<Aggregate, List<Element>>()
         for((key, value) in mapWithoutTags){
             val aggregateWithTags = _addTagNameToAggregate(key)
-            val elementsListWithTags = _addTagNameToElementsList(value)
+            val elementsListWithTags = _addTagNameToElementsList(value, aggregateWithTags.tag)
             resultWithTags[aggregateWithTags] = elementsListWithTags
         }
         return resultWithTags

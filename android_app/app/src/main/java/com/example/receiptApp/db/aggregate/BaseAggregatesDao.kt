@@ -5,6 +5,7 @@ import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.tag.TagsDao
 import java.util.*
 
+@Dao
 interface BaseAggregatesDao : TagsDao{
 
     //////////////////////////////////////////////////////////////////////////////////

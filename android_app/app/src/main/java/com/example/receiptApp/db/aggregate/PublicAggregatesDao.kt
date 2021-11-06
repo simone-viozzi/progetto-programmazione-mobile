@@ -2,13 +2,14 @@ package com.example.receiptApp.db.aggregate
 
 import android.location.Location
 import android.net.Uri
+import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.receiptApp.db.element.BaseElementsDao
 import com.example.receiptApp.db.element.Element
-import com.example.receiptApp.db.tag.Tag
 import java.util.*
 
+@Dao
 interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDao {
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20,20 +21,24 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
      *
      * @param aggregate <Aggregate>
      * @param elements <List<Element>>
-     * @return
+     * @return the aggregate id after the insertion inside the database
      */
 
     @Transaction
     suspend fun insertAggregateWithElements(aggregate: Aggregate, elements: List<Element>): Long {
 
+        aggregate.id = null // if the id isn't null reset it
         val aggregateId = _insertAggregateWithTag(aggregate)
         val newAggregate = _getAggregateById(aggregateId)
+        var total_cost: Float = 0.0f
         elements.forEach {
             it.aggregate_id = aggregateId
             it.parent_tag_id = newAggregate.tag_id
+            total_cost += it.cost * it.num
         }
 
         _insertElementsListWithTag(elements)
+        _updateAggregateTotalCostById(aggregateId, total_cost)
 
         return aggregateId
     }
@@ -54,7 +59,7 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
      */
 
     @Transaction
-    suspend fun addElementToAggregateById(element: Element, aggregateId: Long){
+    suspend fun addElementToAggregateById(element: Element, aggregateId: Long?){
 
         val newNum = if(element.num >= 0) element.num else 0
         val newCost = if(element.cost >= 0) element.cost else 0.0f
@@ -63,9 +68,10 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
         var aggregate = _getAggregateById(aggregateId)
         if(aggregate != null){
             // if the aggregate exist
-            aggregate.total_cost += (((newNum as Float) * newCost))
+            aggregate.total_cost += newNum * newCost
             _updateAggregate(aggregate)
 
+            element.elem_id = null // the id isn't null reset it
             element.parent_tag_id = aggregate.tag_id
 
             _insertElementWithTag(element)
@@ -172,8 +178,10 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
 
     @Transaction
     suspend fun deleteAll() {
-        _deleteAllAggregates()
+        // elements must be deletted before aggregates because can't
+        // exist element child of any aggregate
         _deleteAllElements()
+        _deleteAllAggregates()
         _deleteAllTags()
     }
 

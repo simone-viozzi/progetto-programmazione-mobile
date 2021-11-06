@@ -10,7 +10,7 @@ import com.example.receiptApp.db.element.Element
 @Entity(tableName = "tag")
 data class Tag(
     @PrimaryKey(autoGenerate = true)
-    var tag_id: Long = -1,
+    var tag_id: Long? = null,
 
     var tag_name: String? = null,
 

@@ -1,9 +1,11 @@
 package com.example.receiptApp.db.element
 
+import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.receiptApp.db.aggregate.Aggregate
 
+@Dao
 interface PublicElementsDao : ElementsDao{
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +90,7 @@ interface PublicElementsDao : ElementsDao{
     @Transaction
     suspend fun deleteElement(element: Element): Int {
         val aggregate = _getAggregateByElement(element)
-        val elementsCount = countAllElementsByParentId(aggregate.id)
+        val elementsCount = _countAllElementsByParentId(aggregate.id)
         // if there is only one element attached to the aggregate do nothing
         if(elementsCount <= 1) return 0
         // if there is more than one element attached to this aggregate update it and delete the element
@@ -107,6 +109,40 @@ interface PublicElementsDao : ElementsDao{
     //////////////////////////////////////////////////////////////////////////////////
     // Get count queries aggregates
 
+    @Transaction
+    suspend fun countAllElements(): Long{
+        return _countAllElements()
+    }
+
+    @Transaction
+    suspend fun countAllElementsByParentId(parent_id: Long): Long{
+        return _countAllElementsByParentId(parent_id)
+    }
+
+    @Transaction
+    suspend fun countAllSingleElements(): Long{
+        return _countAllSingleElements()
+    }
+
+    @Transaction
+    suspend fun countAllElementsByTagId(elem_tag_id: Long): Long{
+        return _countAllElementsByTagId(elem_tag_id)
+    }
+
+    @Transaction
+    suspend fun countAllElementsByParentTagId(parent_tag_id: Long): Long{
+        return _countAllElementsByParentTagId(parent_tag_id)
+    }
+
+    @Transaction
+    suspend fun countAllExpensesByParentTagId(parent_tag_id: Long): Float{
+        return _countAllExpensesByParentTagId(parent_tag_id)
+    }
+
+    @Transaction
+    suspend fun countAllExpensesByElementTagId(elem_tag_id: Long): Float{
+        return _countAllExpensesByElementTagId(elem_tag_id)
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////////
