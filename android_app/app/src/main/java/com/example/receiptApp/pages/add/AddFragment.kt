@@ -40,8 +40,6 @@ import java.io.File
  */
 
 
-
-
 class AddFragment : Fragment(R.layout.add_fragment)
 {
     private lateinit var permHandler: PermissionsHandling

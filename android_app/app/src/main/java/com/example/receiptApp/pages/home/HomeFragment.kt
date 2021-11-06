@@ -2,7 +2,6 @@ package com.example.receiptApp.pages.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -27,6 +26,7 @@ class HomeFragment : Fragment()
 
     private lateinit var binding: HomeFragmentBinding
 
+    var transitionEndCallback: (() -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +46,7 @@ class HomeFragment : Fragment()
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        //binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
+        binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
 
         val dashAdapter = DashboardAdapter()
 
@@ -123,7 +123,6 @@ class HomeFragment : Fragment()
                     with(binding)
                     {
                         scrim.visibility = View.GONE
-                        recyclerViewStore.visibility = View.VISIBLE
                         scrim.isClickable = false
                         recyclerViewStore.isClickable = false
 
@@ -170,7 +169,6 @@ class HomeFragment : Fragment()
                     with(binding)
                     {
                         scrim.visibility = View.GONE
-                        recyclerViewStore.visibility = View.VISIBLE
                         scrim.isClickable = false
                         recyclerViewStore.isClickable = false
 
@@ -196,16 +194,17 @@ class HomeFragment : Fragment()
                     with(binding)
                     {
                         scrim.visibility = View.VISIBLE
-                        recyclerViewStore.visibility = View.VISIBLE
                         scrim.isClickable = true
                         recyclerViewStore.isClickable = true
 
                         recyclerView.isClickable = false
 
                         scrim.setOnClickListener {
-                            viewModel?.setEditMode?.invoke()
-
                             binding.homeMotionLayout.transitionToState(R.id.start)
+
+                            transitionEndCallback = {
+                                viewModel!!.setEditMode.invoke()
+                            }
                         }
                     }
 
@@ -224,4 +223,36 @@ class HomeFragment : Fragment()
 
     }
 
+    private val motionLayoutListener = object: MotionLayout.TransitionListener
+    {
+        override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int)
+        {
+
+        }
+
+        override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float)
+        {
+
+        }
+
+        override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int)
+        {
+            transitionEndCallback?.invoke()
+            transitionEndCallback = null
+        }
+
+        override fun onTransitionTrigger(
+            motionLayout: MotionLayout?,
+            triggerId: Int,
+            positive: Boolean,
+            progress: Float
+        )
+        {
+
+        }
+
+    }
+
 }
+
+
