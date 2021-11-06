@@ -173,14 +173,16 @@ class AddFragment : Fragment(R.layout.add_fragment)
         addAdapter = AddAdapter(viewModel.textEditCallback) {
             // TODO use a constant tag in the constants
             // TODO if the user call this more than one  time the app crash, need to test if datePicker is visible
-            datePicker.show(childFragmentManager, "tag")
+            if (!datePicker.isVisible)
+            {
+                datePicker.show(childFragmentManager, "tag")
+            }
         }
 
         // if the user select a date and press ok, set it into the view model
         datePicker.addOnPositiveButtonClickListener {
             datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
 
-            // TODO, there is a way to avoid this? --> prof!
             // need to notify that this element changed otherwise it doesn't update the value
             addAdapter.notifyItemChanged(0)
         }
@@ -221,6 +223,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
                     }
                     is GalleryDataState.Error ->
                     {
+                        Toast.makeText(activity, "there was an error with the attachments", Toast.LENGTH_SHORT).show()
+                        binding.addMotionLayout.transitionToState(R.id.start)
                     }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
                     is GalleryDataState.Loading ->

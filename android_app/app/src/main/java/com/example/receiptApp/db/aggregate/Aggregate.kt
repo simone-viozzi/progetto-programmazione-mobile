@@ -1,12 +1,9 @@
 package com.example.receiptApp.db.aggregate
 
-import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
 import androidx.room.*
-import com.example.receiptApp.db.Converters
 import com.example.receiptApp.db.tag.Tag
-import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**

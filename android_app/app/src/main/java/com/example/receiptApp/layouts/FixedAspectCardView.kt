@@ -4,7 +4,6 @@ package com.example.receiptApp.layouts
 import android.content.Context
 import android.util.AttributeSet
 import com.example.receiptApp.R
-import com.example.receiptApp.dp
 import com.example.receiptApp.px
 import com.google.android.material.card.MaterialCardView
 

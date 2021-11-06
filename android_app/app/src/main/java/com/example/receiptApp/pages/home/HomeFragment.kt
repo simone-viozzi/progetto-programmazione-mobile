@@ -2,8 +2,10 @@ package com.example.receiptApp.pages.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -13,6 +15,7 @@ import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.HomeFragmentBinding
+import com.example.receiptApp.pages.home.adapters.DashboardAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
 
 
@@ -23,6 +26,7 @@ class HomeFragment : Fragment()
     }
 
     private lateinit var binding: HomeFragmentBinding
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,92 +46,16 @@ class HomeFragment : Fragment()
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        with((activity as MainActivity).binding)
-        {
-//            bottomAppBar.setFabAlignmentModeAndReplaceMenu(
-//                BottomAppBar.FAB_ALIGNMENT_MODE_CENTER,
-//                R.menu.bottom_bar_menu_main
-//            )
-            fab.show()
-//            fab.setImageResource(R.drawable.ic_baseline_add_24)
-//            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
+        //binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
 
-//            fab.setOnClickListener {
-//                val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
-//                findNavController().navigate(action)
-//            }
-            bottomAppBar.setOnMenuItemClickListener {
-                when (it.itemId)
-                {
-                    R.id.bottom_bar_menu_about ->
-                    {
-                        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
-                        true
-                    }
-
-                    R.id.bottom_bar_menu_edit ->
-                    {
-                        // TODO !!
-                        true
-                    }
-                    R.id.bottom_bar_menu_save ->
-                    {
-                        viewModel.saveDashboard()
-                        true
-                    }
-                    R.id.bottom_bar_menu_load ->
-                    {
-                        viewModel.loadDashboard()
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }
-
-        val dashAdapter = DashboardAdapter(viewModel.onItemMove, viewModel.onLongClick)
-
-
+        val dashAdapter = DashboardAdapter()
 
         val rvLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
-
         val callback = DragManageAdapter(viewModel, dashAdapter)
 
-
         val helper = ItemTouchHelper(callback)
-
-        viewModel.editMode.observe(viewLifecycleOwner) {
-            helper.attachToRecyclerView(if (it) binding.recyclerView else null)
-
-            with((activity as MainActivity).binding)
-            {
-                bottomAppBar.setFabAlignmentModeAndReplaceMenu(
-                    if (it) BottomAppBar.FAB_ALIGNMENT_MODE_END else BottomAppBar.FAB_ALIGNMENT_MODE_CENTER,
-                    if (it) R.menu.bottom_bar_menu_hide else R.menu.bottom_bar_menu_main
-                )
-
-                fab.setImageResource(if (it) R.drawable.ic_baseline_check_24 else R.drawable.ic_baseline_add_24)
-
-                if (it) bottomAppBar.navigationIcon = null else bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
-
-                val fabClickListener: (View) -> Unit
-                if (!it)
-                {
-                    fabClickListener = {
-                        val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
-                        findNavController().navigate(action)
-                    }
-                }
-                else
-                {
-                    fabClickListener = { viewModel.saveDashboard() }
-                }
-
-                fab.setOnClickListener(fabClickListener)
-            }
-        }
 
         binding.recyclerView.apply {
             adapter = dashAdapter
@@ -137,8 +65,163 @@ class HomeFragment : Fragment()
         viewModel.list.observe(viewLifecycleOwner) {
             dashAdapter.submitList(it)
         }
+
+
+        val dashStoreAdapter = DashboardAdapter()
+
+        val rvStoreLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+
+        binding.recyclerViewStore.apply {
+            adapter = dashStoreAdapter
+            layoutManager = rvStoreLayoutManager
+        }
+
+        viewModel.homeState.observe(viewLifecycleOwner) { state ->
+
+            when (state)
+            {
+                is HomeViewModel.HomeState.NormalMode ->
+                {
+                    helper.attachToRecyclerView(null)
+
+                    with((activity as MainActivity).binding)
+                    {
+                        fab.show()
+
+                        bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
+                        bottomAppBar.replaceMenu(R.menu.bottom_bar_menu_main)
+
+                        fab.setImageResource(R.drawable.ic_baseline_add_24)
+
+                        bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
+
+
+                        fab.setOnClickListener {
+                            val action = HomeFragmentDirections.actionHomeFragmentToAddFragment()
+                            findNavController().navigate(action)
+                        }
+
+                        bottomAppBar.setOnMenuItemClickListener {
+                            when (it.itemId)
+                            {
+                                R.id.bottom_bar_menu_about ->
+                                {
+                                    findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAboutFragment())
+                                    true
+                                }
+                                R.id.bottom_bar_menu_edit ->
+                                {
+                                    viewModel.setEditMode()
+                                    true
+                                }
+                                else -> false
+                            }
+                        }
+                    }
+
+                    with(binding)
+                    {
+                        scrim.visibility = View.GONE
+                        recyclerViewStore.visibility = View.VISIBLE
+                        scrim.isClickable = false
+                        recyclerViewStore.isClickable = false
+
+                        recyclerView.isClickable = true
+
+                        scrim.setOnClickListener(null)
+                    }
+
+                    viewModel.store.removeObservers(viewLifecycleOwner)
+
+                    dashAdapter.onItemMove = null
+                    dashAdapter.onLongClickListener = viewModel.setEditMode
+                }
+                is HomeViewModel.HomeState.EditMode ->
+                {
+                    helper.attachToRecyclerView(binding.recyclerView)
+
+                    with((activity as MainActivity).binding)
+                    {
+                        fab.show()
+
+                        bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
+                        bottomAppBar.replaceMenu(R.menu.bottom_bar_munu_home_add_widget)
+
+                        fab.setImageResource(R.drawable.ic_baseline_check_24)
+
+                        bottomAppBar.navigationIcon = null
+
+                        fab.setOnClickListener { viewModel.saveDashboard() }
+
+                        bottomAppBar.setOnMenuItemClickListener {
+                            when (it.itemId)
+                            {
+                                R.id.bottom_bar_menu_add ->
+                                {
+                                    viewModel.setStoreMode.invoke()
+                                    true
+                                }
+                                else -> false
+                            }
+                        }
+                    }
+
+                    with(binding)
+                    {
+                        scrim.visibility = View.GONE
+                        recyclerViewStore.visibility = View.VISIBLE
+                        scrim.isClickable = false
+                        recyclerViewStore.isClickable = false
+
+                        recyclerView.isClickable = true
+
+                        scrim.setOnClickListener(null)
+                    }
+
+                    dashAdapter.onItemMove = viewModel.onItemMove
+                    dashAdapter.onLongClickListener = null
+
+
+                }
+                is HomeViewModel.HomeState.StoreMode ->
+                {
+                    with((activity as MainActivity).binding)
+                    {
+                        fab.hide()
+
+                        bottomAppBar.replaceMenu(R.menu.bottom_bar_menu_hide)
+                    }
+
+                    with(binding)
+                    {
+                        scrim.visibility = View.VISIBLE
+                        recyclerViewStore.visibility = View.VISIBLE
+                        scrim.isClickable = true
+                        recyclerViewStore.isClickable = true
+
+                        recyclerView.isClickable = false
+
+                        scrim.setOnClickListener {
+                            viewModel?.setEditMode?.invoke()
+
+                            binding.homeMotionLayout.transitionToState(R.id.start)
+                        }
+                    }
+
+                    viewModel.store.observe(viewLifecycleOwner) {
+                        dashStoreAdapter.submitList(it)
+                    }
+
+                    binding.homeMotionLayout.transitionToState(R.id.end)
+                }
+                HomeViewModel.HomeState.NullState ->
+                {
+
+                }
+            }
+        }
+
     }
-
-
 
 }

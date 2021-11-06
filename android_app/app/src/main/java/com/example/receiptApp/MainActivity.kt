@@ -1,13 +1,9 @@
 package com.example.receiptApp
 
-import android.database.Cursor
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.res.ResourcesCompat
@@ -16,13 +12,10 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.receiptApp.databinding.ActivityMainBinding
-import com.example.receiptApp.pages.home.HomeFragmentDirections
-import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
 
@@ -35,14 +28,7 @@ class MainActivity : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-
-        // TODO this is needed?
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
-        // TODO it doesn't serve the purpose!
-        val theme = resources.newTheme()
-        theme.applyStyle(applicationInfo.theme, true)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
 
         ////////////////////// init the navigation view behavior //////////////////////
@@ -58,9 +44,7 @@ class MainActivity : AppCompatActivity()
         binding.navigationView.setupWithNavController(navController)
 
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////
-        // TODO there is a way to move this code into the viewModel? and observe the click listener?
-        //   this code is only valid for the 3 top level destination
+
         // callBack for then the user click on the hamburger icon
         binding.bottomAppBar.setNavigationOnClickListener {
             // open the navigation drawer
@@ -85,7 +69,6 @@ class MainActivity : AppCompatActivity()
             binding.fab.show()
             binding.scrim.visibility = View.GONE
         }
-        /////////////////////////////////////////////////////////////////////////////////////////////// TODO
 
 
         // leave this method alone, it's doing it's job

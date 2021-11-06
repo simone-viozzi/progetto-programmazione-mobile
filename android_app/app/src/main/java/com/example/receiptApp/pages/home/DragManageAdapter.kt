@@ -2,6 +2,7 @@ package com.example.receiptApp.pages.home
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.receiptApp.pages.home.adapters.DashboardAdapter
 import com.google.android.material.card.MaterialCardView
 
 

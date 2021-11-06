@@ -12,12 +12,4 @@
         android:title="Edit"
         app:showAsAction="never" />
 
-    <item android:title="save"
-        android:id="@+id/bottom_bar_menu_save"
-        app:showAsAction="never" />
-
-    <item android:title="load"
-        android:id="@+id/bottom_bar_menu_load"
-        app:showAsAction="never" />
-
 </menu>

@@ -56,7 +56,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation 'androidx.databinding:databinding-runtime:7.0.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.firebase:firebase-firestore:23.0.4'
 
     // Testing
     testImplementation 'junit:junit:4.12'
@@ -98,8 +97,6 @@ dependencies {
 
 
     implementation  "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-
-
 
     //implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     //implementation "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
@@ -149,6 +146,5 @@ dependencies {
     // Testing
     androidTestImplementation "androidx.arch.core:core-testing:$coreTestingVersion"
 
-    implementation "androidx.gridlayout:gridlayout:1.0.0"
 
 }

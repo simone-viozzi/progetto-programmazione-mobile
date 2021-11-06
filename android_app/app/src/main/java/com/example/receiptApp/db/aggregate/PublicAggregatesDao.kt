@@ -6,7 +6,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.receiptApp.db.element.BaseElementsDao
 import com.example.receiptApp.db.element.Element
-import com.example.receiptApp.db.tag.Tag
 import java.util.*
 
 interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDao {
@@ -238,13 +237,13 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
 
     @Transaction
     suspend fun getAggregateWithElementsUntilDate(date: Date): Map<Aggregate, List<Element>> {
-        val resultWithoutTags = _getAggregateWithElementsUntilDate()
+        val resultWithoutTags = _getAggregateWithElementsUntilDate(date)
         return _addTagNameToAggregatesListWithElements(resultWithoutTags)
     }
 
     @Transaction
     suspend fun getAggregateWithElementsAfterDate(date: Date): Map<Aggregate, List<Element>> {
-        val resultWithoutTags = _getAggregateWithElementsAfterDate()
+        val resultWithoutTags = _getAggregateWithElementsAfterDate(date)
         return _addTagNameToAggregatesListWithElements(resultWithoutTags)
     }
 

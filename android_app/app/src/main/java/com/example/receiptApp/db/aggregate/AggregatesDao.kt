@@ -1,6 +1,8 @@
 package com.example.receiptApp.db.aggregate
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.ElementsDao
 import com.example.receiptApp.db.tag.Tag

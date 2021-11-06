@@ -14,7 +14,7 @@
         android:id="@+id/addMotionLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutDescription="@xml/add_fragment_xml_constraintlayout_scene">
+        app:layoutDescription="@xml/add_fragment_scene">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"

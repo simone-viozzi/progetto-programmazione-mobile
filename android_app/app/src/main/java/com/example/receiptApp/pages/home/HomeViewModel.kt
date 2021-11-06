@@ -1,37 +1,61 @@
 package com.example.receiptApp.pages.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.example.receiptApp.repository.SharedPrefRepository
+import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 {
     private val _list: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val list: LiveData<List<DashboardDataModel>> = _list
 
-    private val _editMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
-    val editMode: LiveData<Boolean> = _editMode
+    private val _store: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
+    val store: LiveData<List<DashboardDataModel>> = _store
+
+    sealed class HomeState
+    {
+        object NullState : HomeState()
+        data class NormalMode(val list: List<DashboardDataModel>): HomeState()
+        data class EditMode(val onItemMove: (List<DashboardDataModel>) -> Unit): HomeState()
+        data class StoreMode(val store: List<DashboardDataModel>): HomeState()
+    }
+
+    private val _homeState: MutableLiveData<HomeState> = MutableLiveData<HomeState>()
+    val homeState: LiveData<HomeState> = _homeState
 
     init
     {
-        _editMode.value = false
-
         loadDashboard()
     }
 
-    val onItemMove: ((List<DashboardDataModel>) -> Unit) = {
+    val onItemMove: (List<DashboardDataModel>) -> Unit = {
         _list.value = it
     }
 
-    val onLongClick: () -> Unit = {
-        _editMode.value = true
+    val setEditMode: () -> Unit = {
+        _homeState.value = HomeState.EditMode(onItemMove)
+
+        if (store.value == null)
+        {
+            loadStore()
+        }
+    }
+
+    val setStoreMode: () -> Unit = {
+        _homeState.value = HomeState.StoreMode(store.value!!)
+    }
+
+    private fun loadStore() = viewModelScope.launch {
+
+        val list = (0..20).map {
+            arrayOf (DashboardDataModel.Test(id=it), DashboardDataModel.TestBig(id=it)).random()
+        }.toMutableList()
+
+        _store.value = list
     }
 
 
-    fun saveDashboard()
-    {
+    fun saveDashboard() = viewModelScope.launch {
         val needToSave: MutableMap<Int, DashboardElement> = mutableMapOf()
 
         _list.value?.let {
@@ -43,14 +67,14 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 
         repository.writeDashboard(needToSave)
 
-        _editMode.value = false
+        _homeState.value = HomeState.NormalMode(_list.value!!)
     }
 
-    fun loadDashboard()
-    {
+    private fun loadDashboard() = viewModelScope.launch {
+
         val dashboard: Map<Int, DashboardElement> = repository.readDashboard()
 
-        val list: MutableList<DashboardDataModel> = mutableListOf()
+        var list: MutableList<DashboardDataModel> = mutableListOf()
 
         dashboard.entries.forEach {
             when (it.value)
@@ -59,7 +83,15 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
                 is DashboardDataModel.TestBig -> list.add(it.value as DashboardDataModel.TestBig)
             }
         }
+
+        if (list.isEmpty()) {
+            list = (0..20).map {
+                arrayOf (DashboardDataModel.Test(id=it), DashboardDataModel.TestBig(id=it)).random()
+            }.toMutableList()
+        }
+
         _list.value = list
+        _homeState.value = HomeState.NormalMode(list)
     }
 }
 

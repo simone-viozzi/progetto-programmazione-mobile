@@ -1,6 +1,5 @@
 package com.example.receiptApp.db.element
 
-import androidx.room.Query
 import androidx.room.Transaction
 import com.example.receiptApp.db.aggregate.Aggregate
 

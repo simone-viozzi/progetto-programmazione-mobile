@@ -1,7 +1,6 @@
 package com.example.receiptApp.db.tag
 
 import androidx.room.*
-import com.example.receiptApp.db.aggregate.Aggregate
 
 
 @Dao

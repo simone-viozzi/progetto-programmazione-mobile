@@ -3,8 +3,6 @@ package com.example.receiptApp.db
 import android.location.Location
 import android.net.Uri
 import androidx.room.TypeConverter
-import com.google.firebase.firestore.GeoPoint
-import com.google.gson.Gson
 import java.util.*
 
 

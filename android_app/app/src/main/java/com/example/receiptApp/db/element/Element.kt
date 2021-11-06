@@ -1,10 +1,8 @@
 package com.example.receiptApp.db.element
 
 import androidx.room.*
-import androidx.room.ForeignKey.CASCADE
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.tag.Tag
-import com.google.gson.annotations.SerializedName
 
 /**
  * Element

@@ -11,7 +11,7 @@ class SharedPrefRepository(applicationContext: Context)
 {
     private val sharedPrefDash = applicationContext.getSharedPreferences(SHARED_PREF_DASHBOARD, Context.MODE_PRIVATE)
 
-    fun writeDashboard(dashboard: Map<Int, DashboardElement>)
+    suspend fun writeDashboard(dashboard: Map<Int, DashboardElement>)
     {
         with (sharedPrefDash.edit())
         {
@@ -31,7 +31,7 @@ class SharedPrefRepository(applicationContext: Context)
         }
     }
 
-    private fun writeDashboardElement(index: Int, element: DashboardElement, editor: SharedPreferences.Editor)
+    private suspend fun writeDashboardElement(index: Int, element: DashboardElement, editor: SharedPreferences.Editor)
     {
         val base = "el_$index"
 
@@ -42,7 +42,7 @@ class SharedPrefRepository(applicationContext: Context)
     }
 
 
-    fun readDashboard(): Map<Int, DashboardElement>
+    suspend fun readDashboard(): Map<Int, DashboardElement>
     {
         val size = sharedPrefDash.getInt("n_elements", -1) - 1
 
@@ -55,7 +55,7 @@ class SharedPrefRepository(applicationContext: Context)
         return dashboard
     }
 
-    private fun readDashboardElement(index: Int): DashboardElement
+    private suspend fun readDashboardElement(index: Int): DashboardElement
     {
         var element: DashboardElement
 

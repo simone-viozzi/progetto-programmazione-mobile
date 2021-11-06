@@ -3,8 +3,6 @@ package com.example.receiptApp.repository.sources
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
