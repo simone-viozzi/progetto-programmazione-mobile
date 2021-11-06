@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.tag.TagsDao
 
+@Dao
 interface BaseElementsDao : TagsDao {
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -44,25 +45,25 @@ interface BaseElementsDao : TagsDao {
     // Get count queries aggregates
 
     @Query("SELECT COUNT(*) FROM element")
-    suspend fun countAllElements(): Long
+    suspend fun _countAllElements(): Long
 
     @Query("SELECT COUNT(*) FROM element WHERE element.aggregate_id = :parent_id")
-    suspend fun countAllElementsByParentId(parent_id: Long): Long
+    suspend fun _countAllElementsByParentId(parent_id: Long?): Long
 
     @Query("SELECT SUM(element.num) FROM element")
-    suspend fun countAllSingleElements(): Long
+    suspend fun _countAllSingleElements(): Long
 
     @Query("SELECT COUNT(*) FROM element WHERE element.elem_tag_id = :elem_tag_id")
-    suspend fun countAllElementsByTagId(elem_tag_id: Long): Long
+    suspend fun _countAllElementsByTagId(elem_tag_id: Long?): Long
 
     @Query("SELECT COUNT(*) FROM element WHERE element.parent_tag_id = :parent_tag_id")
-    suspend fun countAllElementsByParentTagId(parent_tag_id: Long): Long
+    suspend fun _countAllElementsByParentTagId(parent_tag_id: Long): Long
 
     @Query("SELECT SUM(element.cost * element.num) FROM element WHERE element.parent_tag_id = :parent_tag_id")
-    suspend fun countAllExpensesByParentTagId(parent_tag_id: Long): Float
+    suspend fun _countAllExpensesByParentTagId(parent_tag_id: Long): Float
 
     @Query("SELECT SUM(element.cost * element.num) FROM element WHERE element.elem_tag_id = :elem_tag_id")
-    suspend fun countAllExpensesByElementTagId(elem_tag_id: Long): Float
+    suspend fun _countAllExpensesByElementTagId(elem_tag_id: Long): Float
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
@@ -120,12 +121,13 @@ interface BaseElementsDao : TagsDao {
     }
 
     @Transaction
-    suspend fun _addTagNameToElementsList(elementsList: List<Element>): List<Element>{
+    suspend fun _addTagNameToElementsList(elementsList: List<Element>, parentTag: String? = null): List<Element>{
 
         val tagList = getElementTags()?.groupBy{it.tag_id}
 
         elementsList.forEach {
             if(it.elem_tag_id != null) it.elem_tag = tagList?.get(it.elem_tag_id)?.get(0)?.tag_name
+            if(parentTag != null) it.parent_tag = parentTag
         }
 
         return elementsList

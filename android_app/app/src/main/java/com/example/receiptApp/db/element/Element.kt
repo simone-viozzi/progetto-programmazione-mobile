@@ -43,7 +43,7 @@ import com.example.receiptApp.db.tag.Tag
 )
 data class Element @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
-    var elem_id: Long = -1,
+    var elem_id: Long? = null,
 
     var aggregate_id: Long? = null,
 

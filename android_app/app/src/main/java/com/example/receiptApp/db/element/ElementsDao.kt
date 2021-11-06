@@ -1,8 +1,6 @@
 package com.example.receiptApp.db.element
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import com.example.receiptApp.db.aggregate.BaseAggregatesDao
 import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
@@ -53,6 +51,7 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
         // if the keys are null the results are null, jump the query process
         val new_tag = if(element.elem_tag == null) null else getElementTagByName(element.elem_tag)
         val old_tag = if(element.elem_tag_id == null) null else getElementTagById(element.elem_tag_id)
+        var new_tag_id: Long? = null
 
         // verify that the tags aren't the same
         if (new_tag != null &&
@@ -60,28 +59,33 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
             new_tag.tag_id == old_tag.tag_id
         ) return old_tag.tag_id
 
-        if(old_tag != null) {
-            // if the old tag isn't null check if is bind only to this aggregate
-            if (countAllElementsByTagId(old_tag.tag_id) <= 1) {
-                // se il tag ha solo un aggregato connesso lo cancello
-                _deleteTag(old_tag)
-            }
-        }
-
         // verify if the new tag should be created
         if (new_tag != null) {
             // if new tag isn't null the tag already exist
-            return new_tag.tag_id
+            new_tag_id = new_tag.tag_id
         } else {
             // if new tag is null
             if(element.elem_tag != null){
                 // and the new tag name passed isn't null it will be created
-                return _insertTag(Tag(tag_name = element.elem_tag, aggregate = false))
-            }else{
-                // otherwise there isn't a new tag
-                return null
+                new_tag_id = _insertTag(Tag(tag_name = element.elem_tag, aggregate = false))
             }
         }
+
+        // if the tag isn't the same delete the old one
+        if(old_tag != null) {
+            // if the old tag isn't null check if is bind only to this aggregate
+            if (_countAllElementsByTagId(old_tag.tag_id) <= 1) {
+                // se il tag ha solo un elemento connesso lo cancello
+                // in tal caso però devo prima effettuare l'aggiornamento dell'elemento
+                // per evitre che l' elem_tag_id punti ad un tag inesistente contraddicendo
+                // la relazione della chiave.
+                element.elem_tag_id = new_tag_id
+                _updateElement(element)
+                _deleteTag(old_tag)
+            }
+        }
+
+        return new_tag_id
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -91,17 +95,26 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
     @Transaction
     suspend fun _deleteElementWithTag(element: Element): Int{
 
+        var deleteTag = false
+        var resultTag: Tag? = null
+
         if(element.elem_tag != null){
-            val resultTag = getElementTagByName(element.elem_tag!!)
+            resultTag = getElementTagByName(element.elem_tag!!)
             if(resultTag != null){
-                if(countAllElementsByTagId(resultTag.tag_id) <= 1){
+                if(_countAllElementsByTagId(resultTag.tag_id) <= 1){
                     // se il numero di elementi associti al tag collegato
                     // all'elemento da eliminare è 1 allora lo elimino
-                    _deleteTag(resultTag)
+                    deleteTag = true
                 }
             }
         }
-        return _deleteElement(element)
+
+        val deleteResult = _deleteElement(element)
+
+        // tag should be deletted after element due to key relation
+        if(deleteTag) resultTag?.let { _deleteTag(it) }
+
+        return deleteResult
     }
 
     /**
@@ -117,6 +130,7 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
     suspend fun _deleteElementsListWithTag(elementsList: List<Element>){
 
         var tagIdsList = mutableListOf<Long?>()
+        var tagToDelete = mutableListOf<Tag>()
 
         // scorre la lista di elementi da eliminare
         elementsList.forEach {
@@ -131,20 +145,23 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
             tagIdsList.filterNotNull().distinct().forEach {
                 val tagIdCount = tagIdsCountMap[it]
                 if(tagIdCount != null) {
-                    if (tagIdCount >= countAllElementsByTagId(it)) {
+                    if (tagIdCount >= _countAllElementsByTagId(it)) {
                         // se tutti gli elementi con il tag che ha l'id sotto esame
                         // appartengono alla lista allra il tag viene cancellato
-                        _deleteTagById(it)
+                        getElementTagById(it)?.let { it1 -> tagToDelete.add(it1) }
                     }
                 }
             }
         }
 
         _deleteElementsList(elementsList)
+
+        // tag should be deletted after element due to key relation
+        _deleteTagsList(tagToDelete)
     }
 
     @Transaction
-    suspend fun _deleteElementsWithTagByAggregateId(aggregateId: Long){
+    suspend fun _deleteElementsWithTagByAggregateId(aggregateId: Long?){
         val elementsList = _getElementsByAggregateId(aggregateId)
         _deleteElementsListWithTag(elementsList)
     }

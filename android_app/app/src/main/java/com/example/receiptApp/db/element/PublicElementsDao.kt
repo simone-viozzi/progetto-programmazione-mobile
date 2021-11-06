@@ -1,8 +1,11 @@
 package com.example.receiptApp.db.element
 
+import androidx.room.Dao
+import androidx.room.Query
 import androidx.room.Transaction
 import com.example.receiptApp.db.aggregate.Aggregate
 
+@Dao
 interface PublicElementsDao : ElementsDao{
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -36,35 +39,46 @@ interface PublicElementsDao : ElementsDao{
         elem_tag: String? = null,
         cost: Float? = null
     ): Int {
+
         var updateAggregateFlag = false
         val oldNum = element.num
         val oldCost = element.cost
         val newNum = num ?: element.num
         val newCost = cost ?: element.cost
 
+        // get the parent aggregate
+        val aggregate = _getAggregateByElement(element)
+
+        // this check is needed for secure fields integrity
+        // if element is passed with wrong parent_tag_id this field
+        // is overwritten with the correct one
+        element.parent_tag_id = aggregate.tag_id
+
         if (name != null) element.name = name
+
         if (num != null && num >= 1) {
             element.num = num
             updateAggregateFlag = true
         }
+
         if (elem_tag != null) {
             // if an empty string is passed as new value delete the tag from the aggregate
             element.elem_tag = if(elem_tag == "") null else elem_tag
 
             // procedure of tag updating
-            val tag_id = _updateElementTag(element)
-
-            element.elem_tag_id = tag_id
+            _updateElementTag(element)
         }
+
         if (cost != null && cost >= 0) {
             element.cost = cost
             updateAggregateFlag = true
         }
+
         if (updateAggregateFlag) {
-            val aggregate = _getAggregateByElement(element)
-            aggregate.total_cost += (((newNum as Float) * newCost) - ((oldNum as Float) * oldCost))
+            aggregate.total_cost += ((newNum * newCost) - (oldNum * oldCost))
             _updateAggregate(aggregate)
         }
+
         return _updateElement(element)
     }
 
@@ -87,7 +101,7 @@ interface PublicElementsDao : ElementsDao{
     @Transaction
     suspend fun deleteElement(element: Element): Int {
         val aggregate = _getAggregateByElement(element)
-        val elementsCount = countAllElementsByParentId(aggregate.id)
+        val elementsCount = _countAllElementsByParentId(aggregate.id)
         // if there is only one element attached to the aggregate do nothing
         if(elementsCount <= 1) return 0
         // if there is more than one element attached to this aggregate update it and delete the element
@@ -105,6 +119,41 @@ interface PublicElementsDao : ElementsDao{
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // Get count queries aggregates
+
+    @Transaction
+    suspend fun countAllElements(): Long{
+        return _countAllElements()
+    }
+
+    @Transaction
+    suspend fun countAllElementsByParentId(parent_id: Long): Long{
+        return _countAllElementsByParentId(parent_id)
+    }
+
+    @Transaction
+    suspend fun countAllSingleElements(): Long{
+        return _countAllSingleElements()
+    }
+
+    @Transaction
+    suspend fun countAllElementsByTagId(elem_tag_id: Long): Long{
+        return _countAllElementsByTagId(elem_tag_id)
+    }
+
+    @Transaction
+    suspend fun countAllElementsByParentTagId(parent_tag_id: Long): Long{
+        return _countAllElementsByParentTagId(parent_tag_id)
+    }
+
+    @Transaction
+    suspend fun countAllExpensesByParentTagId(parent_tag_id: Long): Float{
+        return _countAllExpensesByParentTagId(parent_tag_id)
+    }
+
+    @Transaction
+    suspend fun countAllExpensesByElementTagId(elem_tag_id: Long): Float{
+        return _countAllExpensesByElementTagId(elem_tag_id)
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////////

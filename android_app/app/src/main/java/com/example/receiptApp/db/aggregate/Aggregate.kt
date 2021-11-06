@@ -33,7 +33,7 @@ import java.util.*
 )
 data class Aggregate @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = -1,
+    var id: Long? = null,
 
     var tag_id: Long? = null,
 
