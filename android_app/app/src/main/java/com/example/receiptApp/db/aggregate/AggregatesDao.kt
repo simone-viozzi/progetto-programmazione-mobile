@@ -70,6 +70,7 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
         // if the keys are null the results are null, jump the query process
         val new_tag = if(aggregate.tag == null) null else getAggregateTagByName(aggregate.tag)
         val old_tag = if(aggregate.tag_id == null) null else getAggregateTagById(aggregate.tag_id)
+        var new_tag_id: Long? = null
 
         // verify that the tags aren't the same
         if (new_tag != null &&
@@ -77,28 +78,33 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
             new_tag.tag_id == old_tag.tag_id
             ) return old_tag.tag_id
 
-        if(old_tag != null) {
-            // if the old tag isn't null check if is bind only to this aggregate
-            if (_countAllAggregatesByTagId(old_tag.tag_id) <= 1) {
-                // se il tag ha solo un aggregato connesso lo cancello
-                _deleteTag(old_tag)
-            }
-        }
-
         // verify if the new tag should be created
         if (new_tag != null) {
             // if new tag isn't null the tag already exist
-            return new_tag.tag_id
+            new_tag_id = new_tag.tag_id
         } else {
             // if new tag is null
             if(aggregate.tag != null){
                 // and the new tag name passed isn't null it will be created
-                return _insertTag(Tag(tag_name = aggregate.tag, aggregate = true))
-            }else{
-                // otherwise there isn't a new tag
-                return null
+                new_tag_id = _insertTag(Tag(tag_name = aggregate.tag, aggregate = true))
             }
         }
+
+        // if the tag isn't the same delete the old one
+        if(old_tag != null) {
+            // if the old tag isn't null check if is bind only to this aggregate
+            if (_countAllAggregatesByTagId(old_tag.tag_id) <= 1) {
+                // se il tag ha solo un aggregato connesso lo cancello
+                // in tal caso però devo prima effettuare l'aggiornamento dell'aggregato
+                // per evitre che il tag_id punti ad un tag inesistente contraddicendo
+                // la relazione della chiave.
+                aggregate.tag_id = new_tag_id
+                _updateAggregate(aggregate)
+                _deleteTag(old_tag)
+            }
+        }
+
+        return new_tag_id
     }
 
     @Transaction

@@ -19,7 +19,7 @@ class CustomAsserts{
             Assert.assertTrue(obj1.date == obj2.date)
             Assert.assertTrue(obj1.location.toString() == obj2.location.toString())
             Assert.assertTrue(obj1.attachment == obj2.attachment)
-            if(checkCost)Assert.assertTrue(abs(obj1.total_cost - obj2.total_cost) < 0.001f)
+            if(checkCost)assertEqualFloats(obj1.total_cost, obj2.total_cost)
         }
 
         fun elements(
@@ -88,7 +88,13 @@ class CustomAsserts{
                 Assert.assertEquals(aggregate.tag, it.parent_tag)
                 expectdTotalCost += it.cost * it.num
             }
-            Assert.assertTrue(abs(aggregate.total_cost - expectdTotalCost) < 0.001f)
+            assertEqualFloats(aggregate.total_cost, expectdTotalCost)
+        }
+
+        fun assertEqualFloats(val1: Float, val2: Float, halfInterval: Float = 0.001f){
+            val error = abs(val1 - val2)
+            if(error > halfInterval)
+                Assert.fail("assert Float Equals FAIL: expected max error ${halfInterval}, founded error ${error}")
         }
     }
 }

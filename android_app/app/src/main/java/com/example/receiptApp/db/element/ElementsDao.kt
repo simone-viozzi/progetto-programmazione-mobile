@@ -51,6 +51,7 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
         // if the keys are null the results are null, jump the query process
         val new_tag = if(element.elem_tag == null) null else getElementTagByName(element.elem_tag)
         val old_tag = if(element.elem_tag_id == null) null else getElementTagById(element.elem_tag_id)
+        var new_tag_id: Long? = null
 
         // verify that the tags aren't the same
         if (new_tag != null &&
@@ -58,28 +59,33 @@ interface ElementsDao : BaseElementsDao, BaseAggregatesDao, TagsDao {
             new_tag.tag_id == old_tag.tag_id
         ) return old_tag.tag_id
 
-        if(old_tag != null) {
-            // if the old tag isn't null check if is bind only to this aggregate
-            if (_countAllElementsByTagId(old_tag.tag_id) <= 1) {
-                // se il tag ha solo un aggregato connesso lo cancello
-                _deleteTag(old_tag)
-            }
-        }
-
         // verify if the new tag should be created
         if (new_tag != null) {
             // if new tag isn't null the tag already exist
-            return new_tag.tag_id
+            new_tag_id = new_tag.tag_id
         } else {
             // if new tag is null
             if(element.elem_tag != null){
                 // and the new tag name passed isn't null it will be created
-                return _insertTag(Tag(tag_name = element.elem_tag, aggregate = false))
-            }else{
-                // otherwise there isn't a new tag
-                return null
+                new_tag_id = _insertTag(Tag(tag_name = element.elem_tag, aggregate = false))
             }
         }
+
+        // if the tag isn't the same delete the old one
+        if(old_tag != null) {
+            // if the old tag isn't null check if is bind only to this aggregate
+            if (_countAllElementsByTagId(old_tag.tag_id) <= 1) {
+                // se il tag ha solo un elemento connesso lo cancello
+                // in tal caso però devo prima effettuare l'aggiornamento dell'elemento
+                // per evitre che l' elem_tag_id punti ad un tag inesistente contraddicendo
+                // la relazione della chiave.
+                element.elem_tag_id = new_tag_id
+                _updateElement(element)
+                _deleteTag(old_tag)
+            }
+        }
+
+        return new_tag_id
     }
 
     //////////////////////////////////////////////////////////////////////////////////

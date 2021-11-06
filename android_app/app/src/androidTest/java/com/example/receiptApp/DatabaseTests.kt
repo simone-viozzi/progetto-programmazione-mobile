@@ -35,23 +35,19 @@ class DatabaseTests
     private lateinit var elementsDao: PublicElementsDao
     private lateinit var tagsDao: TagsDao
     private lateinit var db: AppDatabase
+
     private var tag = "DB_TEST"
 
     val exAggregate = Aggregate(
-        tag_id = 5,
         date = Date(),
-        location = Location("").also{it.latitude=0.0; it.longitude=0.0},
+        location = Location("").also{it.latitude=10.0; it.longitude=10.0},
         attachment = Uri.parse("/test"),
-        total_cost = 16.8f
     )
 
     val exEement = Element(
-        aggregate_id = 0,
         name = "test element",
         num = 3,
-        parent_tag_id = 4,
-        elem_tag_id = 3,
-        cost = 34.6f
+        cost = 10.0f
     )
 
     val aggregateTagsList = listOf<String>("alimentari", "banca", "macchina", "bollette", "viaggi")
@@ -280,5 +276,118 @@ class DatabaseTests
 
             idx++
         }
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun insertAndUpdateAggregatesAndElements() = runBlocking{
+
+        val new_aggr = Aggregate(
+            date = Date(1000),
+            attachment = Uri.parse("/test_1")
+        )
+
+        new_aggr.tag = "test_tag_1"
+
+        val new_elem_list = listOf<Element>(
+            Element(
+                name = "test element 1",
+                num = 1,
+                cost = 10.0f
+            ),
+            Element(
+                name = "test element 2",
+                num = 2,
+                cost = 10.0f
+            ),
+            Element(
+                name = "test element 3",
+                num = 3,
+                cost = 10.0f
+            )
+        )
+
+        var idx = 0
+        new_elem_list.forEach {
+            it.elem_tag = elementTagsList[idx]
+            idx++
+        }
+
+        aggregatesDao.insertAggregateWithElements(new_aggr, new_elem_list)
+
+        // getting back all the values
+        val result = aggregatesDao.getAllAggregatesWithElements()
+
+        // check for result
+        if (result == null) Assert.fail("getAllAggregatesWithElements result is null")
+        if (result.size != 1) Assert.fail("getAllAggregatesWithElements result has unexpected size = ${result.size}, expected = ${1}" )
+
+        // check if all the values are correct
+        result.forEach{
+            if(it.value.size !=  3) Assert.fail("elements list has unexpected size = ${it.value.size}, expected = ${3}")
+            CustomAsserts.compareAggregateAndElements(it.key, it.value)
+            CustomAsserts.assertEqualFloats(
+                it.key.total_cost,
+                60.0f
+            )
+        }
+
+        result.forEach{
+            // update aggregate
+            aggregatesDao.updateAggregate(
+                it.key,
+                tag_name = "updated_tag",
+                date = Date(100_000),
+                location = Location("").also{
+                    it.latitude=45.0
+                    it.longitude=45.0
+                },
+                attachment = Uri.parse("/test_2")
+            )
+
+            //update elements list
+            it.value.forEach{ elem ->
+                elementsDao.updateElement(
+                    elem,
+                    name = "updated_elem_" + elem.elem_id,
+                    num = elem.num + 1,
+                    cost = elem.cost * 2.0f,
+                    elem_tag = "updated_elem_tag_" + elem.elem_id
+                )
+            }
+        }
+
+        // getting back all the values
+        val result_2 = aggregatesDao.getAllAggregatesWithElements()
+
+        // check for result
+        if (result_2 == null) Assert.fail("getAllAggregatesWithElements result is null")
+        if (result_2.size != 1) Assert.fail("getAllAggregatesWithElements result has unexpected size = ${result_2.size}, expected = ${1}" )
+
+        // check if it happened correctly
+        result_2.forEach{
+            CustomAsserts.compareAggregateAndElements(it.key, it.value)
+
+            // total cost must be checked manualy bea
+            CustomAsserts.assertEqualFloats(
+                it.key.total_cost,
+                180.0f
+            )
+            Assert.assertEquals("updated_tag", it.key.tag)
+            it.value.forEach { elem ->
+                Assert.assertEquals("updated_elem_tag_" + elem.elem_id, elem.elem_tag)
+            }
+
+            CustomAsserts.aggregates(it.key, result.keys.first())
+            CustomAsserts.elementsList(it.value, result.values.first())
+
+            /*
+            Assert.assertEquals(it.key.tag, "updated_tag")
+            Assert.assertEquals(it.key.date, Date(100_000))
+            Assert.assertEquals(it.key.location, Location("").also{ loc -> loc.latitude=45.0; loc.longitude=45.0 })
+            Assert.assertEquals(it.key.attachment, Uri.parse("/test_2"))
+            */
+        }
+
     }
 }

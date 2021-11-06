@@ -125,9 +125,9 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
             aggregate.tag = if(tag_name == "") null else tag_name
 
             // procedure of tag updating
-            val tag_id = _updateAggregateTag(aggregate)
+            // in this process the aggregate update the tag_id field
+            val tag_id = _updateAggregateTag(aggregate) // NOTE: aggregate is passed by reference
 
-            aggregate.tag_id = tag_id
             // each element must be updated
             val elementsList: List<Element> = _getElementsByAggregate(aggregate)
             elementsList.forEach { it.parent_tag_id = tag_id }
