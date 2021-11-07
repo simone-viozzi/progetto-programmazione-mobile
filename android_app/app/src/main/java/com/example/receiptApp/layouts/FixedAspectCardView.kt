@@ -16,7 +16,6 @@ class FixedAspectCardView(
     private var widthRatio: Float = 2.0F
     var isBig: Boolean = false
 
-
     init
     {
         context.theme.obtainStyledAttributes(

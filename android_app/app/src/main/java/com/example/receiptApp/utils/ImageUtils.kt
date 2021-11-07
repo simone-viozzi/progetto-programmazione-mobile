@@ -1,4 +1,4 @@
-package com.example.receiptApp.Utils
+package com.example.receiptApp.utils
 
 import android.content.ContentResolver
 import android.graphics.Bitmap

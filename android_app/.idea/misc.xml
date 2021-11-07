@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../../layout/custom_preview.xml" value="0.33177083333333335" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_circle_outline_24.xml" value="0.3271794871794872" />
         <entry key="app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/drawable/ic_baseline_help_24.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/drawable/ic_baseline_insert_drive_file_24.xml" value="0.37552083333333336" />
@@ -20,6 +21,8 @@
         <entry key="app/src/main/res/layout/dashboard_element_test.xml" value="0.3383152173913043" />
         <entry key="app/src/main/res/layout/dashboard_element_test2.xml" value="0.33967391304347827" />
         <entry key="app/src/main/res/layout/dashboard_element_test_big.xml" value="0.17477203647416414" />
+        <entry key="app/src/main/res/layout/dashboard_element_test_square.xml" value="0.3496376811594203" />
+        <entry key="app/src/main/res/layout/dashboard_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/graphs_fragment.xml" value="0.31666666666666665" />
         <entry key="app/src/main/res/layout/home_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/menu/bottom_bar_menu.xml" value="0.35989583333333336" />

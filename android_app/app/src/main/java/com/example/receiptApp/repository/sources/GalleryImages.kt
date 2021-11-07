@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import com.example.receiptApp.Utils.ImageUtils
+import com.example.receiptApp.utils.ImageUtils
 import com.example.receiptApp.repository.Attachment
 import timber.log.Timber
 

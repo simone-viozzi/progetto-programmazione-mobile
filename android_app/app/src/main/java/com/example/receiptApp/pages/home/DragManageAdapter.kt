@@ -27,11 +27,9 @@ class DragManageAdapter(
         val from = viewHolder.bindingAdapterPosition
         val to = target.bindingAdapterPosition
 
-        //viewModel.swapItems(from, to)
-
         (viewHolder.itemView as? MaterialCardView)?.isDragged = true
 
-        adapter.swapItems(from, to)
+        viewModel.swapItems(from, to)
         return true
     }
 

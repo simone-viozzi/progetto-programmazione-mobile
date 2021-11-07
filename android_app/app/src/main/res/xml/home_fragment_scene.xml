@@ -2,7 +2,21 @@
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ConstraintSet android:id="@+id/start">
+
+    <ConstraintSet android:id="@+id/welcomeScreenConstraint" >
+        <Constraint
+            android:id="@+id/recyclerViewDashboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
         <Constraint
             android:id="@+id/scrim"
             android:elevation="7dp"
@@ -11,19 +25,48 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             android:alpha="0"
-            app:visibilityMode="ignore"
-            android:visibility="visible"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </ConstraintSet>
-
-    <ConstraintSet android:id="@+id/end">
-
+            app:layout_constraintStart_toStartOf="parent" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/recyclerViewStore"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/welcomeScreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1">
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
         <Constraint
             android:id="@+id/guideline"
-            app:layout_constraintGuide_percent="0.3"
+            app:layout_constraintGuide_percent="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/storeConstraintSetWelcome" >
         <Constraint
             android:id="@+id/scrim"
             android:elevation="7dp"
@@ -32,15 +75,270 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             android:alpha="0.4"
-       app:visibilityMode="ignore"
-            android:visibility="visible"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-        <!--            app:visibilityMode="ignore"-->
+            app:layout_constraintStart_toStartOf="parent">
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/recyclerViewStore"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/guideline"
+            app:layout_constraintGuide_percent="0.3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:alpha="1" />
+        <Constraint
+            android:id="@+id/welcomeScreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/recyclerViewDashboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
 
     </ConstraintSet>
-
+    <ConstraintSet android:id="@+id/normalStateConstrains" >
+        <Constraint
+            android:id="@+id/recyclerViewDashboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/scrim"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            android:alpha="0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/guideline"
+            app:layout_constraintGuide_percent="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Constraint
+            android:id="@+id/recyclerViewStore"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/welcomeScreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/editModeConstrains" >
+        <Constraint
+            android:id="@+id/recyclerViewDashboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/scrim"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            android:alpha="0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/guideline"
+            app:layout_constraintGuide_percent="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Constraint
+            android:id="@+id/recyclerViewStore"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/welcomeScreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0" >
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/storeConstraintSetEdit" >
+        <Constraint
+            android:id="@+id/recyclerViewDashboard"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1">
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/scrim"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
+            android:alpha="0.4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/guideline"
+            app:layout_constraintGuide_percent="0.3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Constraint
+            android:id="@+id/recyclerViewStore"
+            android:elevation="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="1">
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="true" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/welcomeScreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0">
+            <CustomAttribute
+                app:attributeName="clickable"
+                app:customBoolean="false" />
+        </Constraint>
+    </ConstraintSet>
     <Transition
-        app:constraintSetEnd="@id/end"
-        app:constraintSetStart="@+id/start" />
+        app:constraintSetStart="@+id/welcomeScreenConstraint"
+        app:constraintSetEnd="@+id/storeConstraintSetWelcome"
+        app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/storeConstraintSetWelcome"
+        app:constraintSetEnd="@+id/welcomeScreenConstraint"
+        app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/storeConstraintSetWelcome"
+        app:constraintSetEnd="@+id/editModeConstrains"
+        app:duration="500" />
+    <Transition
+        app:constraintSetStart="@+id/editModeConstrains"
+        app:constraintSetEnd="@+id/normalStateConstrains"
+        app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/editModeConstrains"
+        app:constraintSetEnd="@+id/storeConstraintSetEdit"
+        app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/storeConstraintSetEdit"
+        app:constraintSetEnd="@+id/editModeConstrains"
+        app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/normalStateConstrains"
+        app:constraintSetEnd="@+id/editModeConstrains"
+        app:duration="500"/>
 </MotionScene>
