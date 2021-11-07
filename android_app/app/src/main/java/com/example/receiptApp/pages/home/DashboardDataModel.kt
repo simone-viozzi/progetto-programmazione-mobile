@@ -9,7 +9,8 @@ interface DashboardElement
 enum class TYPE()
 {
     TEST,
-    TEST_BIG;
+    TEST_BIG,
+    SQUARE;
 
     fun getObj(): DashboardDataModel
     {
@@ -17,6 +18,7 @@ enum class TYPE()
         {
             TEST -> DashboardDataModel.Test()
             TEST_BIG -> DashboardDataModel.TestBig()
+            SQUARE -> DashboardDataModel.Square()
         }
     }
 }
@@ -27,16 +29,15 @@ sealed class DashboardDataModel : DashboardElement
         override var id: Int = 0,
         override val type: TYPE = TYPE.TEST,
         var name: String = "",
-
-        ) : DashboardDataModel(), DashboardElement
+    ) : DashboardDataModel()
 
     data class TestBig(
         override var id: Int = 0,
         override val type: TYPE = TYPE.TEST_BIG,
+    ) : DashboardDataModel()
 
-        ) : DashboardDataModel(), DashboardElement
+    data class Square(
+        override var id: Int = 0,
+        override val type: TYPE = TYPE.SQUARE
+    ) : DashboardDataModel()
 }
-
-
-
-

@@ -1,4 +1,4 @@
-package com.example.receiptApp.Utils
+package com.example.receiptApp.utils
 
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts

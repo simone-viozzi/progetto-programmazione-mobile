@@ -15,6 +15,7 @@ import com.example.receiptApp.databinding.AddSingleElementBinding
 import com.example.receiptApp.pages.add.AddDataModel
 import com.example.receiptApp.toEditable
 
+/*
 class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(GraphDiffCallback()) {
 
     /**
@@ -162,3 +163,4 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
     }
 
 }
+*/

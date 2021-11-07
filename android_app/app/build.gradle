@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.recipeApp"
-        minSdk 25
+        minSdk 29 //25
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -27,7 +27,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+        }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

@@ -12,4 +12,9 @@
         android:title="Edit"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/bottom_bar_menu_clear_dash"
+        android:title="clear"
+        app:showAsAction="never" />
+
 </menu>

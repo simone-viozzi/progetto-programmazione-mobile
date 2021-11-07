@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
-import com.example.receiptApp.Utils.PermissionsHandling
+import com.example.receiptApp.utils.PermissionsHandling
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
@@ -169,8 +169,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         // the adapter take the two callBacks, one is implemented in the View model the other here
         addAdapter = AddAdapter(viewModel.textEditCallback) {
-            // TODO use a constant tag in the constants
-            // TODO if the user call this more than one  time the app crash, need to test if datePicker is visible
             if (!datePicker.isVisible)
             {
                 datePicker.show(childFragmentManager, "tag")
@@ -194,7 +192,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             binding.addMotionLayout.transitionToState(R.id.start)
         }
 
-        binding.recyclerView.apply {
+        binding.recyclerViewAdd.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = addAdapter
         }
@@ -245,7 +243,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             scrim.isClickable = visible
             recyclerViewImgs.isClickable = visible
 
-            recyclerView.isClickable = !visible
+            recyclerViewAdd.isClickable = !visible
         }
 
         with((activity as MainActivity).binding)

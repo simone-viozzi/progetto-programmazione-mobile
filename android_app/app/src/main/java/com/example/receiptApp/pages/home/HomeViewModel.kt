@@ -1,39 +1,60 @@
 package com.example.receiptApp.pages.home
 
 import androidx.lifecycle.*
+import com.example.receiptApp.utils.StateStack
 import com.example.receiptApp.repository.SharedPrefRepository
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.util.*
 
 class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 {
-    private val _list: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
-    val list: LiveData<List<DashboardDataModel>> = _list
+    private val _dashboard: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
+    val dashboard: LiveData<List<DashboardDataModel>> = _dashboard
 
     private val _store: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val store: LiveData<List<DashboardDataModel>> = _store
 
     sealed class HomeState
     {
-        object NullState : HomeState()
-        data class NormalMode(val list: List<DashboardDataModel>): HomeState()
-        data class EditMode(val onItemMove: (List<DashboardDataModel>) -> Unit): HomeState()
-        data class StoreMode(val store: List<DashboardDataModel>): HomeState()
+        object NoState: HomeState()
+        object EmptyDashMode : HomeState()
+        object NormalMode : HomeState()
+        object EditMode : HomeState()
+        object StoreMode : HomeState()
+
+        override fun toString(): String = this.javaClass.name.replaceBeforeLast("$", "")
     }
 
+    private val homeStateStack = StateStack<HomeState>()
     private val _homeState: MutableLiveData<HomeState> = MutableLiveData<HomeState>()
     val homeState: LiveData<HomeState> = _homeState
 
+    private object Id
+    {
+        var lastId: Int = 0
+        fun getId() = ++lastId
+    }
+
     init
     {
+        homeStateStack.push(HomeState.NoState)
+
+        _homeState.value = HomeState.NoState
         loadDashboard()
     }
 
     val onItemMove: (List<DashboardDataModel>) -> Unit = {
-        _list.value = it
+        _dashboard.value = it
     }
 
-    val setEditMode: () -> Unit = {
-        _homeState.value = HomeState.EditMode(onItemMove)
+
+    fun setEditMode()
+    {
+        homeStateStack.push(HomeState.EditMode)
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        _homeState.value = HomeState.EditMode
 
         if (store.value == null)
         {
@@ -41,25 +62,39 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
         }
     }
 
-    val setStoreMode: () -> Unit = {
-        _homeState.value = HomeState.StoreMode(store.value!!)
+
+    fun setStoreMode()
+    {
+        homeStateStack.push(HomeState.StoreMode)
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        _homeState.value = HomeState.StoreMode
+
+        if (store.value == null)
+        {
+            loadStore()
+        }
     }
+
 
     private fun loadStore() = viewModelScope.launch {
 
         val list = (0..20).map {
-            arrayOf (DashboardDataModel.Test(id=it), DashboardDataModel.TestBig(id=it)).random()
-        }.toMutableList()
+            arrayOf(
+                DashboardDataModel.Test(id = it),
+                DashboardDataModel.TestBig(id = it),
+                DashboardDataModel.Square(id = it)
+            ).random()
+        }
 
         _store.value = list
     }
 
 
     fun saveDashboard() = viewModelScope.launch {
-        val needToSave: MutableMap<Int, DashboardElement> = mutableMapOf()
+        val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
 
-        _list.value?.let {
-
+        _dashboard.value?.let {
             it.forEachIndexed { i, element ->
                 needToSave[i] = element
             }
@@ -67,31 +102,95 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 
         repository.writeDashboard(needToSave)
 
-        _homeState.value = HomeState.NormalMode(_list.value!!)
+        homeStateStack.clear()
+        homeStateStack.push(HomeState.NormalMode)
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        _homeState.value = HomeState.NormalMode
     }
 
     private fun loadDashboard() = viewModelScope.launch {
 
-        val dashboard: Map<Int, DashboardElement> = repository.readDashboard()
+        val dashboard: Map<Int, DashboardDataModel> = repository.readDashboard()
 
-        var list: MutableList<DashboardDataModel> = mutableListOf()
+        val list: MutableList<DashboardDataModel> = mutableListOf()
 
         dashboard.entries.forEach {
             when (it.value)
             {
-                is DashboardDataModel.Test -> list.add(it.value as DashboardDataModel.Test)
-                is DashboardDataModel.TestBig -> list.add(it.value as DashboardDataModel.TestBig)
+                is DashboardDataModel.Test -> list.add(it.value)
+                is DashboardDataModel.TestBig -> list.add(it.value)
+                is DashboardDataModel.Square -> list.add(it.value)
             }
         }
 
-        if (list.isEmpty()) {
-            list = (0..20).map {
-                arrayOf (DashboardDataModel.Test(id=it), DashboardDataModel.TestBig(id=it)).random()
-            }.toMutableList()
-        }
+        if (list.isNotEmpty())
+        {
+            homeStateStack.push(HomeState.NormalMode)
+            Timber.e("homeStateStack -> $homeStateStack")
 
-        _list.value = list
-        _homeState.value = HomeState.NormalMode(list)
+            Id.lastId = list.size
+            _dashboard.value = list
+            _homeState.value = HomeState.NormalMode
+        } else
+        {
+            homeStateStack.push(HomeState.EmptyDashMode)
+            Timber.e("homeStateStack -> $homeStateStack")
+
+            _dashboard.value = emptyList()
+            _homeState.value = HomeState.EmptyDashMode
+        }
+    }
+
+    fun addToDashboard(element: DashboardDataModel)
+    {
+        homeStateStack.clear()
+        homeStateStack.push(HomeState.EditMode)
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        element.id = Id.getId()
+        _dashboard.value = _dashboard.value?.toMutableList()?.also { it.add(0, element) }
+        _homeState.value = HomeState.EditMode
+    }
+
+    fun swapItems(from: Int, to: Int)
+    {
+        _dashboard.value?.let {
+            val list = it.toMutableList()
+            Collections.swap(list, from, to)
+            _dashboard.value = list
+        }
+    }
+
+    fun clearDashboard()
+    {
+        homeStateStack.clear()
+        homeStateStack.push(HomeState.EmptyDashMode)
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        repository.clearDashboard()
+        _dashboard.value = emptyList()
+        Id.lastId = 0
+        _homeState.value = HomeState.EmptyDashMode
+    }
+
+    fun goBackToPreviousState()
+    {
+        homeStateStack.peekPrevious()?.let {
+            homeStateStack.push(it)
+            _homeState.value = it
+            Timber.e("homeStateStack -> $homeStateStack")
+        }
+    }
+
+    fun getPreviousState(): HomeState
+    {
+        val state = homeStateStack.peekPrevious()
+
+        Timber.e("state -> $state")
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        return state ?: HomeState.NoState
     }
 }
 

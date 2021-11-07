@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.content.FileProvider
-import com.example.receiptApp.Utils.FileUtils
+import com.example.receiptApp.utils.FileUtils
 import com.example.receiptApp.repository.sources.GalleryImages
 import com.example.receiptApp.repository.sources.GalleryImagesPaginated
 import timber.log.Timber

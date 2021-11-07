@@ -1,4 +1,4 @@
-package com.example.receiptApp.Utils
+package com.example.receiptApp.utils
 
 import android.annotation.SuppressLint
 import kotlinx.coroutines.Dispatchers
