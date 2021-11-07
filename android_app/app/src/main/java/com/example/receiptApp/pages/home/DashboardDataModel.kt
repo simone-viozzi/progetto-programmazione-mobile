@@ -35,7 +35,6 @@ sealed class DashboardDataModel : DashboardElement
         override val type: TYPE = TYPE.TEST_BIG,
 
         ) : DashboardDataModel(), DashboardElement
-
 }
 
 
