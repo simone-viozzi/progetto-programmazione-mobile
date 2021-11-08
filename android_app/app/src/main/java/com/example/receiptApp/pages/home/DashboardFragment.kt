@@ -44,12 +44,17 @@ class DashboardFragment : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
+        Timber.e("onViewCreated -> DashboardFragment")
+
         // this is needed for binding the view model to the binding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
         binding.homeMotionLayout.setDebugMode(1)
         binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
+
+        binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
+        //binding.homeMotionLayout.jumpToState(R.id.baseConstraint)
 
         val dashAdapter = DashboardAdapter()
 
@@ -114,11 +119,13 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onClickListener = null
 
 
-                    //if (viewModel.getPreviousState() is HomeViewModel.HomeState.NoState)
-                    //{
-                    //    binding.homeMotionLayout.jumpToState(R.id.welcomeScreenConstraint)
-                    //}
-                    //else
+//                    if (viewModel.getPreviousState() is HomeViewModel.HomeState.NoState)
+//                    {
+//                        Timber.e("setTransition(R.id.baseConstraint, R.id.welcomeScreenConstraint)")
+//                        //binding.homeMotionLayout.setTransition(R.id.baseConstraint, R.id.welcomeScreenConstraint)
+//                        binding.homeMotionLayout.jumpToState(R.id.welcomeScreenConstraint)
+//                    }
+//                    else
                     //{
                        binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
                     //}
@@ -150,7 +157,15 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
-                    binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
+                    if (viewModel.getPreviousState() is HomeViewModel.HomeState.NoState)
+                    {
+                        //binding.homeMotionLayout.setTransition(R.id.baseConstraint, R.id.normalStateConstrains)
+                        binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
+                    }
+                    else
+                    {
+                        binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
+                    }
                 }
                 is HomeViewModel.HomeState.EditMode ->
                 {

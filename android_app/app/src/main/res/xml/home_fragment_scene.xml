@@ -5,7 +5,7 @@
 
     <ConstraintSet android:id="@+id/welcomeScreenConstraint" >
         <Constraint
-            android:id="@+id/recyclerViewDashboard"
+            android:id="@id/recyclerViewDashboard"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -18,7 +18,7 @@
                 app:customBoolean="false" />
         </Constraint>
         <Constraint
-            android:id="@+id/scrim"
+            android:id="@id/scrim"
             android:elevation="7dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
@@ -30,9 +30,12 @@
             <CustomAttribute
                 app:attributeName="clickable"
                 app:customBoolean="false" />
+            <CustomAttribute
+                app:attributeName="visibility"
+                app:customIntegerValue="8" />
         </Constraint>
         <Constraint
-            android:id="@+id/recyclerViewStore"
+            android:id="@id/recyclerViewStore"
             android:elevation="7dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
@@ -46,7 +49,7 @@
                 app:customBoolean="false" />
         </Constraint>
         <Constraint
-            android:id="@+id/welcomeScreen"
+            android:id="@id/welcomeScreen"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -57,14 +60,16 @@
             <CustomAttribute
                 app:attributeName="clickable"
                 app:customBoolean="true" />
+            <CustomAttribute
+                app:attributeName="visibility"
+                app:customIntegerValue="0" />
         </Constraint>
         <Constraint
-            android:id="@+id/guideline"
+            android:id="@id/guideline"
             app:layout_constraintGuide_percent="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"/>
-
     </ConstraintSet>
     <ConstraintSet android:id="@+id/storeConstraintSetWelcome" >
         <Constraint
@@ -157,6 +162,9 @@
             <CustomAttribute
                 app:attributeName="clickable"
                 app:customBoolean="false" />
+            <CustomAttribute
+                app:attributeName="visibility"
+                app:customIntegerValue="8" />
         </Constraint>
         <Constraint
             android:id="@+id/guideline"
@@ -298,6 +306,9 @@
             <CustomAttribute
                 app:attributeName="clickable"
                 app:customBoolean="true" />
+            <CustomAttribute
+                app:attributeName="visibility"
+                app:customIntegerValue="0" />
         </Constraint>
         <Constraint
             android:id="@+id/welcomeScreen"
@@ -313,6 +324,7 @@
                 app:customBoolean="false" />
         </Constraint>
     </ConstraintSet>
+    <ConstraintSet android:id="@+id/baseConstraint" />
     <Transition
         app:constraintSetStart="@+id/welcomeScreenConstraint"
         app:constraintSetEnd="@+id/storeConstraintSetWelcome"
@@ -341,4 +353,21 @@
         app:constraintSetStart="@+id/normalStateConstrains"
         app:constraintSetEnd="@+id/editModeConstrains"
         app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/baseConstraint"
+        app:constraintSetEnd="@+id/welcomeScreenConstraint"
+        app:duration="500"/>
+    <Transition
+        app:constraintSetStart="@+id/baseConstraint"
+        app:constraintSetEnd="@+id/normalStateConstrains"
+        app:duration="500" />
+    <Transition
+        app:constraintSetStart="@+id/baseConstraint"
+        app:constraintSetEnd="@+id/storeConstraintSetWelcome" />
+    <Transition
+        app:constraintSetStart="@+id/baseConstraint"
+        app:constraintSetEnd="@+id/editModeConstrains" />
+    <Transition
+        app:constraintSetStart="@+id/baseConstraint"
+        app:constraintSetEnd="@+id/storeConstraintSetEdit" />
 </MotionScene>
