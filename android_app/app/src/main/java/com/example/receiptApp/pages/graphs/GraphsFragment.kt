@@ -34,4 +34,5 @@ class GraphsFragment : Fragment(R.layout.graphs_fragment)
         binding.lifecycleOwner = viewLifecycleOwner
     }
 
+
 }

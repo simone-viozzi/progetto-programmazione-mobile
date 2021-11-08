@@ -41,7 +41,3 @@ sealed class DashboardDataModel : DashboardElement
         override val type: TYPE = TYPE.SQUARE
     ) : DashboardDataModel()
 }
-
-
-
-

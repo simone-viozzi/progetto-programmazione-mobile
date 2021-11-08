@@ -30,18 +30,15 @@ class AttachmentRepository(private val applicationContext: Context)
     {
         val filesPath = File(applicationContext.filesDir, "files/")
 
-
         //if (!filesPath.mkdirs()) throw FileNotFoundException()
 
         val newFile = File(filesPath, "${FileUtils.getUniqueFilename()}.${type.type}")
-
 
         val contentUri: Uri = FileProvider.getUriForFile(
             applicationContext,
             "com.example.receiptApp",
             newFile
         )
-
 
         val resolver = applicationContext.contentResolver
 
@@ -53,6 +50,5 @@ class AttachmentRepository(private val applicationContext: Context)
             }
         }
     }
-
 
 }
