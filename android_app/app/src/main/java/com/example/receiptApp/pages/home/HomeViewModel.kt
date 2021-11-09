@@ -44,13 +44,10 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
         loadDashboard()
     }
 
-    val onItemMove: (List<DashboardDataModel>) -> Unit = {
-        _dashboard.value = it
-    }
-
-
     fun setEditMode()
     {
+        if (homeStateStack.peek() == HomeState.EditMode) return
+
         homeStateStack.push(HomeState.EditMode)
         Timber.e("homeStateStack -> $homeStateStack")
 

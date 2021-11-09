@@ -8,7 +8,6 @@ import com.google.android.material.card.MaterialCardView
 
 class DragManageAdapter(
     var viewModel: HomeViewModel,
-    var adapter: DashboardAdapter
 ) : ItemTouchHelper.Callback()
 {
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int

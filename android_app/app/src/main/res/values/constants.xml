@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <item name="FabGravityEnd" type="integer">1</item>
-    <item name="FabGravityCenter" type="integer">0</item>
+    <item name="durationJump" type="integer">10</item>
+    <item name="durationTransition" type="integer">200</item>
 
 </resources>

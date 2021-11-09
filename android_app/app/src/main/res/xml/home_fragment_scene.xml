@@ -226,6 +226,9 @@
             <CustomAttribute
                 app:attributeName="clickable"
                 app:customBoolean="false" />
+            <CustomAttribute
+                app:attributeName="visibility"
+                app:customIntegerValue="8" />
         </Constraint>
         <Constraint
             android:id="@+id/guideline"
@@ -258,6 +261,9 @@
             <CustomAttribute
                 app:attributeName="clickable"
                 app:customBoolean="false" />
+            <CustomAttribute
+                app:attributeName="visibility"
+                app:customIntegerValue="8" />
         </Constraint>
     </ConstraintSet>
     <ConstraintSet android:id="@+id/storeConstraintSetEdit" >
@@ -328,46 +334,49 @@
     <Transition
         app:constraintSetStart="@+id/welcomeScreenConstraint"
         app:constraintSetEnd="@+id/storeConstraintSetWelcome"
-        app:duration="500"/>
+        app:duration="@integer/durationTransition"/>
     <Transition
         app:constraintSetStart="@+id/storeConstraintSetWelcome"
         app:constraintSetEnd="@+id/welcomeScreenConstraint"
-        app:duration="500"/>
+        app:duration="@integer/durationTransition"/>
     <Transition
         app:constraintSetStart="@+id/storeConstraintSetWelcome"
         app:constraintSetEnd="@+id/editModeConstrains"
-        app:duration="500" />
+        app:duration="@integer/durationTransition" />
     <Transition
         app:constraintSetStart="@+id/editModeConstrains"
         app:constraintSetEnd="@+id/normalStateConstrains"
-        app:duration="500"/>
+        app:duration="@integer/durationTransition"/>
     <Transition
         app:constraintSetStart="@+id/editModeConstrains"
         app:constraintSetEnd="@+id/storeConstraintSetEdit"
-        app:duration="500"/>
+        app:duration="@integer/durationTransition"/>
     <Transition
         app:constraintSetStart="@+id/storeConstraintSetEdit"
         app:constraintSetEnd="@+id/editModeConstrains"
-        app:duration="500"/>
+        app:duration="@integer/durationTransition"/>
     <Transition
         app:constraintSetStart="@+id/normalStateConstrains"
         app:constraintSetEnd="@+id/editModeConstrains"
-        app:duration="500"/>
+        app:duration="@integer/durationTransition"/>
     <Transition
         app:constraintSetStart="@+id/baseConstraint"
         app:constraintSetEnd="@+id/welcomeScreenConstraint"
-        app:duration="500"/>
+        app:duration="@integer/durationJump"/>
     <Transition
         app:constraintSetStart="@+id/baseConstraint"
         app:constraintSetEnd="@+id/normalStateConstrains"
-        app:duration="500" />
+        app:duration="@integer/durationJump" />
     <Transition
         app:constraintSetStart="@+id/baseConstraint"
-        app:constraintSetEnd="@+id/storeConstraintSetWelcome" />
+        app:constraintSetEnd="@+id/storeConstraintSetWelcome"
+        app:duration="@integer/durationJump"/>
     <Transition
         app:constraintSetStart="@+id/baseConstraint"
-        app:constraintSetEnd="@+id/editModeConstrains" />
+        app:constraintSetEnd="@+id/editModeConstrains"
+        app:duration="@integer/durationJump"/>
     <Transition
         app:constraintSetStart="@+id/baseConstraint"
-        app:constraintSetEnd="@+id/storeConstraintSetEdit" />
+        app:constraintSetEnd="@+id/storeConstraintSetEdit"
+        app:duration="@integer/durationJump"/>
 </MotionScene>

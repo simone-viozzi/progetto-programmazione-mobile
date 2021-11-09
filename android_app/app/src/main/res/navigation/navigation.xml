@@ -20,12 +20,6 @@
         android:name="com.example.receiptApp.pages.graphs.GraphsFragment"
         android:label="graphs_fragment"
         tools:layout="@layout/graphs_fragment" >
-        <argument
-            android:name="FabShow"
-            android:defaultValue="false"/>
-        <argument
-            android:name="BottomBarMenu"
-            android:defaultValue="@menu/bottom_bar_menu_hide"/>
     </fragment>
 
     <fragment
