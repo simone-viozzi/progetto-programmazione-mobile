@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.ArchiveFragmentBinding
 
@@ -32,6 +33,13 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         // this is needed for binding the view model to the binding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        with((activity as MainActivity).binding)
+        {
+            bottomAppBar.replaceMenu(R.menu.bottom_app_bar_archive)
+
+            val a: SearchResultProvider
+        }
     }
 
 }

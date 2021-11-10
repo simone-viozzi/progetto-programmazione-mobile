@@ -9,16 +9,8 @@
             type="com.example.receiptApp.pages.archive.ArchiveViewModel" />
     </data>
 
-
-    <FrameLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".pages.archive.ArchiveFragment">
+        android:layout_height="match_parent"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="ArchiveFragment" />
-
-    </FrameLayout>
 </layout>
