@@ -1,21 +1,16 @@
 package com.example.receiptApp.pages.graphs
 
-import android.view.View
-import androidx.core.content.ContextCompat
-import androidx.core.widget.doOnTextChanged
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
-import com.example.receiptApp.databinding.AddHeadBinding
-import com.example.receiptApp.databinding.AddSingleElementBinding
-import com.example.receiptApp.pages.add.AddDataModel
-import com.example.receiptApp.toEditable
+import com.example.receiptApp.databinding.CakeCardBinding
+import com.example.receiptApp.databinding.HistogramCardBinding
 
-/*
+
 class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(GraphDiffCallback()) {
 
     /**
@@ -43,7 +38,7 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
      *
      * @param binding the view binding
      */
-    sealed class AddViewHolder(binding: ViewBinding) :
+    sealed class GraphViewHolder(binding: ViewBinding) :
         RecyclerView.ViewHolder(binding.root)
     {
         /**
@@ -51,116 +46,105 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
          *
          * @property binding
          * @constructor
-         *
-         * @param textEditCallback the callback for extracting the text from the text edit when the user modify it
-         * @param calendarClick callback to open the date picker
          */
-        class HeaderViewHolder(
-            private val binding: AddHeadBinding,
-            textEditCallback: ((AddDataModel) -> (Unit)),
-            calendarClick: (() -> Unit)
-        ) : AddViewHolder(binding)
+        class HistogramViewHolder(
+            private val binding: HistogramCardBinding
+            ) : GraphViewHolder(binding)
         {
             // the callbacks need to be in the init section
             init
             {
-                // callback that get called when the user is modifying the edittext inside the textFieldTag.
-                // with this callback i get the text that is currently into the textedit and the count of characters
-                // that got replaced
-                binding.textFieldTag.editText?.doOnTextChanged { text: CharSequence?,
-                                                                 _, _,
-                                                                 count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
-                        // TODO adapterPosition can be NO_POSITION, need to test for it!
-                        AddDataModel.Aggregate(vId = bindingAdapterPosition, tag = text.toString())
-                    )
-                }
+                // eventualy initial setup on the layout
 
-                binding.dateOverlay.setOnClickListener {
-                    calendarClick.invoke()
-                }
             }
 
-            fun bind(aggregate: AddDataModel.Aggregate)
+            fun bind(histogram: GraphsDataModel.Histogram)
             {
                 with(binding)
                 {
-                    textFieldTag.editText?.text = aggregate.tag?.toEditable()
-                    textFieldDate.editText?.text = aggregate.str_date?.toEditable()
-
-                    thumbnail.visibility = if (aggregate.thumbnail != null) View.VISIBLE else View.GONE
-
-                    Glide.with(binding.root.context)
-                        .load(aggregate.thumbnail)
-                        .apply(
-                            RequestOptions
-                                .centerCropTransform()
-                                .override(thumbnail.width)
-                        )
-                        .apply(
-                            RequestOptions()
-                                .placeholder(
-                                    ContextCompat.getDrawable(
-                                        binding.root.context,
-                                        R.drawable.ic_baseline_image_24
-                                    )
-                                )
-                                .override(thumbnail.width)
-                                .dontAnimate()
-                        )
-                        .into(thumbnail)
+                    /**
+                     * Load inside the card layout what is inside
+                     * the Histogram object passed
+                     */
+                    // graph binding
+                    aaChartView.aa_drawChartWithChartModel(histogram.aaChartModel)
                 }
             }
         }
 
-        class ElementViewHolder(
-            private val binding: AddSingleElementBinding,
-            textEditCallback: ((AddDataModel) -> (Unit))
-        ) : AddViewHolder(binding)
+        class CakeViewHolder(
+            private val binding: CakeCardBinding,
+        ) : GraphViewHolder(binding)
         {
             init
             {
-                binding.textFieldName.editText?.doOnTextChanged { text: CharSequence?,
-                                                                  _, _,
-                                                                  count: Int ->
-                    // TODO adapterPosition can be NO_POSITION, need to test for it!
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, name = text.toString())
-                    )
-                }
-                binding.textFieldNum.editText?.doOnTextChanged { text: CharSequence?,
-                                                                 _, _,
-                                                                 count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, num = text.toString().toIntOrNull())
-                    )
-                }
-                binding.textFieldTag.editText?.doOnTextChanged { text: CharSequence?,
-                                                                 _, _,
-                                                                 count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, elem_tag = text.toString())
-                    )
-                }
-                binding.textFieldCost.editText?.doOnTextChanged { text: CharSequence?,
-                                                                  _, _,
-                                                                  count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
-                    )
-                }
+                // eventualy initial setup on the layout
+
             }
 
-            fun bind(element: AddDataModel.Element)
+            fun bind(cake: GraphsDataModel.Cake)
             {
-                binding.textFieldName.editText?.text = element.name?.toEditable()
-                binding.textFieldNum.editText?.text = element.num?.toString()?.toEditable()
-                binding.textFieldTag.editText?.text = element.elem_tag?.toEditable()
-                binding.textFieldCost.editText?.text = element.cost?.toString()?.toEditable()
+                /**
+                 * Load inside the card layout what is inside
+                 * the cake graph object passed
+                 */
+
             }
         }
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GraphViewHolder
+    {
+        // depending on the view type i return the corresponding holder
+        return when (viewType)
+        {
+            R.layout.histogram_card -> GraphViewHolder.HistogramViewHolder(
+                // this is the binding!
+                HistogramCardBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+            R.layout.cake_card -> GraphViewHolder.CakeViewHolder(
+                // this is the binding!
+                CakeCardBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+
+            // the else case is needed, but should never be called
+            else -> throw IllegalStateException("the view type in the RecyclerView is wrongggg! ")
+        }
+    }
+
+    override fun onBindViewHolder(holder: GraphViewHolder, position: Int)
+    {
+        // depending on the type of the holder i need to bind the corresponding view
+        when (holder)
+        {
+            is GraphViewHolder.HistogramViewHolder -> holder.bind(getItem(position) as GraphsDataModel.Histogram)
+            is GraphViewHolder.CakeViewHolder -> holder.bind(getItem(position) as GraphsDataModel.Cake)
+        }
+    }
+
+    /**
+     * this is needed to let the recyclerview know the relation between holder and layout
+     *
+     * TODO: here should be specified particular layout for each type of graph
+     *
+     * @param position
+     * @return -> the layout that need to inflated in the position
+     */
+    override fun getItemViewType(position: Int): Int
+    {
+        return when (getItem(position))
+        {
+            is GraphsDataModel.Histogram -> R.layout.histogram_card
+            is GraphsDataModel.Cake -> R.layout.cake_card
+
+        }
+    }
 }
-*/

@@ -1,16 +1,18 @@
 package com.example.receiptApp.pages.graphs
 
+import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
+
 
 enum class GraphType()
 {
-    ISTOGRAM,
+    HISTOGRAM,
     CAKE;
 
     fun getObj(): GraphsDataModel
     {
         return when (this)
         {
-            ISTOGRAM -> GraphsDataModel.Istogram()
+            HISTOGRAM -> GraphsDataModel.Histogram()
             CAKE -> GraphsDataModel.Cake()
         }
     }
@@ -24,16 +26,19 @@ interface GraphElement
 
 sealed class GraphsDataModel : GraphElement {
 
-    data class Istogram(
+    data class Histogram(
         override var id: Int = 0,
-        override val type: GraphType = GraphType.ISTOGRAM,
+        override val type: GraphType = GraphType.HISTOGRAM,
         var name: String = "",
+        var aaChartModel: AAChartModel = AAChartModel()
 
         ) : GraphsDataModel()
 
     data class Cake(
         override var id: Int = 0,
         override val type: GraphType = GraphType.CAKE,
+        var name: String = "",
+        var aaChartModel: AAChartModel = AAChartModel()
 
         ) : GraphsDataModel()
 }
