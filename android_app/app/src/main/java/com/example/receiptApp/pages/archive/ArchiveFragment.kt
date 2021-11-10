@@ -38,7 +38,6 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         {
             bottomAppBar.replaceMenu(R.menu.bottom_app_bar_archive)
 
-            val a: SearchResultProvider
         }
     }
 
