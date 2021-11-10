@@ -1,12 +1,10 @@
 package com.example.receiptApp.utils
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.BufferedOutputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,44 +12,56 @@ class FileUtils
 {
     companion object
     {
-        suspend fun saveFile(bis: InputStream, destinationFilename: String)
+        fun saveFile(bis: InputStream, destinationFile: File): Uri?
         {
-            withContext(Dispatchers.IO)
+            var contentUri: Uri? = null
+            var bos: BufferedOutputStream? = null
+            try
             {
-                var bos: BufferedOutputStream? = null
+                bos = BufferedOutputStream(FileOutputStream(destinationFile.absolutePath, false))
+                val buf = ByteArray(1024)
+                bis.read(buf)
+                do
+                {
+                    bos.write(buf)
+                } while (bis.read(buf) != -1)
+            } catch (e: IOException)
+            {
+                e.printStackTrace()
+            } finally
+            {
                 try
                 {
-                    bos = BufferedOutputStream(FileOutputStream(destinationFilename, false))
-                    val buf = ByteArray(1024)
-                    bis.read(buf)
-                    do
-                    {
-                        bos.write(buf)
-                    } while (bis.read(buf) != -1)
+                    bis.close()
+                    bos?.close()
+                    contentUri = Uri.fromFile(destinationFile)
                 } catch (e: IOException)
                 {
                     e.printStackTrace()
-                } finally
-                {
-                    try
-                    {
-                        bis.close()
-                        bos?.close()
-                    } catch (e: IOException)
-                    {
-                        e.printStackTrace()
-                    }
                 }
             }
+            return contentUri
         }
 
 
         @SuppressLint("SimpleDateFormat")
-        fun getUniqueFilename(): String
+        fun getUniqueFilename(fileName: String): String
         {
+            val name = getFilenameWithoutExt(fileName)
+            val ext = getTypeExtension(fileName)
+
             val format = SimpleDateFormat("ddMMyy-hhmmss");
-            return "File-${format.format( Date() )}"
+            return "$name-${format.format( Date() )}.$ext"
         }
 
+        private fun getTypeExtension(name: String): String
+        {
+            return File(name).extension
+        }
+
+        private fun getFilenameWithoutExt(name: String): String
+        {
+            return File(name).nameWithoutExtension
+        }
     }
 }

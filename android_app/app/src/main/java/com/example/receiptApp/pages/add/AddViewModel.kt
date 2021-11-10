@@ -2,11 +2,11 @@ package com.example.receiptApp.pages.add
 
 import android.net.Uri
 import android.text.format.DateFormat
+import android.widget.Toast
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.example.receiptApp.repository.Attachment
 import com.example.receiptApp.repository.AttachmentRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
     private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
     val galleryState: StateFlow<GalleryDataState> = _galleryState
 
-    private var attachment: Attachment? = null
+    private var attachment: AttachmentRepository.Attachment? = null
 
     // the callback used by every element of the views in the textWatcher to update the corresponding element in the
     // view model, it pass an element with only the updated field and the id != null
@@ -68,6 +68,14 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
         }
     }
 
+    init
+    {
+        _rvList.value = listOf(
+            AddDataModel.Aggregate(vId = 0),
+            AddDataModel.Element(vId = getLastId())
+        )
+    }
+
     // this get called when the date picker return
     fun setDate(millis: Long)
     {
@@ -85,7 +93,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
         return if (autoincrement) ++lastId else lastId
     }
 
-    fun setAttachment(attachment: Attachment)
+    fun setAttachment(attachment: AttachmentRepository.Attachment)
     {
         _rvList.value = _rvList.value?.toMutableList().also { li ->
             val header = li?.get(0) as AddDataModel.Aggregate
@@ -96,13 +104,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
         this.attachment = attachment
     }
 
-    init
-    {
-        _rvList.value = listOf(
-            AddDataModel.Aggregate(vId = 0),
-            AddDataModel.Element(vId = getLastId())
-        )
-    }
+
 
     private val flow = Pager(
         PagingConfig(
@@ -113,6 +115,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
 
     fun galleryCollect()
     {
+        _galleryState.value = GalleryDataState.Loading
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 flow.collectLatest { pagingData ->
@@ -122,19 +125,17 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository) : Vie
         }
     }
 
-    // TODO this need refactor
-    fun copyFile(uri: Uri)
-    {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                attachmentRepository.copyAttachment(uri, AttachmentRepository.TYPE.PDF)
-            }
-        }
+
+    private fun saveToDb() = viewModelScope.launch {
+        var attachmentUri = attachment?.let { attachmentRepository.copyAttachment(it) }
+
     }
 
-    private fun saveToDb()
+    fun setAttachment(uri: Uri, type: AttachmentRepository.TYPE)
     {
-
+        attachmentRepository.getFileName(uri)?.let {
+            attachment = AttachmentRepository.Attachment(it, uri, null, true, type)
+        }
     }
 
 }

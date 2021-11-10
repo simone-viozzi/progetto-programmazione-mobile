@@ -30,15 +30,15 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
         aggregate.id = null // if the id isn't null reset it
         val aggregateId = _insertAggregateWithTag(aggregate)
         val newAggregate = _getAggregateById(aggregateId)
-        var total_cost: Float = 0.0f
+        var totalCost: Float = 0.0f
         elements.forEach {
             it.aggregate_id = aggregateId
             it.parent_tag_id = newAggregate.tag_id
-            total_cost += it.cost * it.num
+            totalCost += it.cost * it.num
         }
 
         _insertElementsListWithTag(elements)
-        _updateAggregateTotalCostById(aggregateId, total_cost)
+        _updateAggregateTotalCostById(aggregateId, totalCost)
 
         return aggregateId
     }
