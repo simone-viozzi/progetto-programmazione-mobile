@@ -44,6 +44,8 @@ class DashboardFragment : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
+        Timber.e("onViewCreated -> DashboardFragment")
+
         // this is needed for binding the view model to the binding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
@@ -51,12 +53,15 @@ class DashboardFragment : Fragment()
         binding.homeMotionLayout.setDebugMode(1)
         binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
 
+        binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
+        //binding.homeMotionLayout.jumpToState(R.id.baseConstraint)
+
         val dashAdapter = DashboardAdapter()
 
         val rvLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
-        val callback = DragManageAdapter(viewModel, dashAdapter)
+        val callback = DragManageAdapter(viewModel)
 
         val helper = ItemTouchHelper(callback)
 
@@ -105,20 +110,20 @@ class DashboardFragment : Fragment()
 
                     viewModel.store.removeObservers(viewLifecycleOwner)
 
-                    dashAdapter.onItemMove = null
                     dashAdapter.onLongClickListener = null
                     dashAdapter.onClickListener = null
 
-                    dashStoreAdapter.onItemMove = null
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
 
-                    //if (viewModel.getPreviousState() is HomeViewModel.HomeState.NoState)
-                    //{
-                    //    binding.homeMotionLayout.jumpToState(R.id.welcomeScreenConstraint)
-                    //}
-                    //else
+//                    if (viewModel.getPreviousState() is HomeViewModel.HomeState.NoState)
+//                    {
+//                        Timber.e("setTransition(R.id.baseConstraint, R.id.welcomeScreenConstraint)")
+//                        //binding.homeMotionLayout.setTransition(R.id.baseConstraint, R.id.welcomeScreenConstraint)
+//                        binding.homeMotionLayout.jumpToState(R.id.welcomeScreenConstraint)
+//                    }
+//                    else
                     //{
                        binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
                     //}
@@ -142,15 +147,17 @@ class DashboardFragment : Fragment()
 
                     viewModel.store.removeObservers(viewLifecycleOwner)
 
-                    dashAdapter.onItemMove = null
-                    dashAdapter.onLongClickListener = { viewModel.setEditMode() }
+                    dashAdapter.onLongClickListener = {
+                        Timber.e("viewModel.setEditMode()")
+                        viewModel.setEditMode()
+                    }
                     dashAdapter.onClickListener = null
 
-                    dashStoreAdapter.onItemMove = null
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
                     binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
+
                 }
                 is HomeViewModel.HomeState.EditMode ->
                 {
@@ -190,11 +197,9 @@ class DashboardFragment : Fragment()
                         scrim.setOnClickListener(null)
                     }
 
-                    dashAdapter.onItemMove = viewModel.onItemMove
                     dashAdapter.onLongClickListener = null
                     dashAdapter.onClickListener = null
 
-                    dashStoreAdapter.onItemMove = null
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
@@ -202,6 +207,7 @@ class DashboardFragment : Fragment()
                 }
                 is HomeViewModel.HomeState.StoreMode ->
                 {
+                    helper.attachToRecyclerView(null)
                     Timber.e("STORE STATE")
                     with((activity as MainActivity).binding)
                     {
@@ -223,11 +229,9 @@ class DashboardFragment : Fragment()
                         dashStoreAdapter.submitList(it)
                     }
 
-                    dashAdapter.onItemMove = null
                     dashAdapter.onLongClickListener = null
                     dashAdapter.onClickListener = null
 
-                    dashStoreAdapter.onItemMove = null
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = {
                         viewModel.addToDashboard(it)

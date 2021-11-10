@@ -15,7 +15,6 @@ import java.util.*
 
 class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(DashboardDiffCallback())
 {
-    var onItemMove: ((List<DashboardDataModel>) -> Unit)? = null
     var onLongClickListener: (() -> Unit)? = null
     var onClickListener: ((DashboardDataModel) -> Unit)? = null
 
@@ -72,14 +71,6 @@ class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(Das
             is DashboardDataModel.TestBig -> R.layout.dashboard_element_test_big
             is DashboardDataModel.Square -> R.layout.dashboard_element_test_square
         }
-    }
-
-    fun swapItems(fromPosition: Int, toPosition: Int) {
-        val currList = currentList.toMutableList()
-
-        Collections.swap(currList, fromPosition, toPosition)
-
-        onItemMove?.invoke(currList)
     }
 
 }

@@ -14,13 +14,13 @@ import java.io.FileNotFoundException
 class ImageUtils
 {
     companion object {
-
         /**
          * Get thumbnail from the uri of an image
          *
+         * @param contentResolver
          * @param contentUri
          * @param id -> if SDK < Q need to use old method
-         * @return -> the bitmap
+         * @return -> the bitmap or null if not found
          */
         fun getThumbnail(contentResolver: ContentResolver, contentUri: Uri, id: Long): Bitmap?
         {

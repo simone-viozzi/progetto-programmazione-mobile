@@ -23,10 +23,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
-import com.example.receiptApp.utils.PermissionsHandling
 import com.example.receiptApp.databinding.AddFragmentBinding
 import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
+import com.example.receiptApp.repository.AttachmentRepository
+import com.example.receiptApp.utils.PermissionsHandling
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.collectLatest
@@ -201,6 +202,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         val galleryAdapter = GalleryAdapter {
             viewModel.setAttachment(it)
+
             addAdapter.notifyItemChanged(0)
 
             binding.addMotionLayout.transitionToState(R.id.start)
@@ -214,9 +216,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 // TODO set the states of simplify this code
                 when (state)
                 {
-                    is GalleryDataState.Idle ->
-                    {
-                    }
                     is GalleryDataState.Error ->
                     {
                         Toast.makeText(activity, "there was an error with the attachments", Toast.LENGTH_SHORT).show()
@@ -315,8 +314,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         binding.addMotionLayout.transitionToState(R.id.start)
 
-        TODO("this action need to be done when the user click OK! not right now")
-        viewModel.copyFile(uri)
+        viewModel.setAttachment(uri, AttachmentRepository.TYPE.PDF)
     }
 
     private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {

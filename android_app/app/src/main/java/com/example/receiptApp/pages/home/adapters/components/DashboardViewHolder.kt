@@ -21,6 +21,10 @@ sealed class DashboardViewHolder(
     ) : DashboardViewHolder(binding)
     {
 
+        init {
+
+        }
+
         fun bind(holder: DashboardDataModel.Test)
         {
             (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig

@@ -10,14 +10,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddImgBinding
-import com.example.receiptApp.repository.Attachment
+import com.example.receiptApp.repository.AttachmentRepository.Attachment
 
 
 class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : PagingDataAdapter<Attachment, GalleryAdapter.ImgViewHolder>(DiffCallback())
 {
     class DiffCallback : DiffUtil.ItemCallback<Attachment>()
     {
-        override fun areItemsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem.contentUri == newItem.contentUri
+        override fun areItemsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem.uri == newItem.uri
         override fun areContentsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem == newItem
     }
 
@@ -58,8 +58,6 @@ class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : Paging
                         .dontAnimate()
                 )
                 .into(binding.imageView)
-
-            //binding.textView.text = item.name
         }
     }
 

@@ -15,7 +15,7 @@ class Converters
 {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
-        return value?.let {value -> Date(value) }
+        return value?.let { it -> Date(it) }
     }
 
     @TypeConverter

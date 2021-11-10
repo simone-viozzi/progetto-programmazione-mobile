@@ -7,14 +7,14 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import com.example.receiptApp.utils.ImageUtils
-import com.example.receiptApp.repository.Attachment
+import com.example.receiptApp.repository.AttachmentRepository
 import timber.log.Timber
 
 
 class GalleryImages(private val contentResolver: ContentResolver)
 {
 
-    fun getImages(limit: Int, offset: Int): List<Attachment>?
+    fun getImages(limit: Int, offset: Int): List<AttachmentRepository.Attachment>?
     {
         val projection: Array<String> = arrayOf(
             MediaStore.Images.Media._ID,
@@ -44,7 +44,7 @@ class GalleryImages(private val contentResolver: ContentResolver)
             "image/png"
         )
 
-        val list: MutableList<Attachment> = mutableListOf()
+        val list: MutableList<AttachmentRepository.Attachment> = mutableListOf()
 
         val curr: Cursor? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
         {
@@ -102,10 +102,14 @@ class GalleryImages(private val contentResolver: ContentResolver)
                         id
                     )
 
-                    //Timber.d("contentUri=$contentUri")
-
                     ImageUtils.getThumbnail(contentResolver, contentUri, id)?.let { thumbnail ->
-                        list.add(Attachment(displayName, contentUri, thumbnail))
+                        list.add(AttachmentRepository.Attachment(
+                            name = displayName,
+                            uri = contentUri,
+                            thumbnail,
+                            true,
+                            type=AttachmentRepository.TYPE.IMAGE)
+                        )
                     }
 
                 } while (cursor.moveToNext())
