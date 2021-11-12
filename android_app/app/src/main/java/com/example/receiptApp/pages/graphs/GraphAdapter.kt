@@ -67,6 +67,7 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
                      * the Histogram object passed
                      */
                     // graph binding
+                    textView.text = histogram.name
                     aaChartView.aa_drawChartWithChartModel(histogram.aaChartModel)
                 }
             }
@@ -84,11 +85,15 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
 
             fun bind(cake: GraphsDataModel.Cake)
             {
-                /**
-                 * Load inside the card layout what is inside
-                 * the cake graph object passed
-                 */
-
+                with(binding)
+                {
+                    /**
+                     * Load inside the card layout what is inside
+                     * the cake graph object passed
+                     */
+                    textView.text = cake.name
+                    aaChartView.aa_drawChartWithChartModel(cake.aaChartModel)
+                }
             }
         }
     }
@@ -144,7 +149,7 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
         {
             is GraphsDataModel.Histogram -> R.layout.histogram_card
             is GraphsDataModel.Cake -> R.layout.cake_card
-
+            is GraphsDataModel.Label -> R.layout.cake_card // TODO: va creato il layout label
         }
     }
 }

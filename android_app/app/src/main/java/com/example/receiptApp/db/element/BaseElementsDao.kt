@@ -3,6 +3,7 @@ package com.example.receiptApp.db.element
 import androidx.room.*
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.tag.TagsDao
+import java.util.*
 
 @Dao
 interface BaseElementsDao : TagsDao {
@@ -64,6 +65,10 @@ interface BaseElementsDao : TagsDao {
 
     @Query("SELECT SUM(element.cost * element.num) FROM element WHERE element.elem_tag_id = :elem_tag_id")
     suspend fun _countAllExpensesByElementTagId(elem_tag_id: Long): Float
+
+
+
+
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
