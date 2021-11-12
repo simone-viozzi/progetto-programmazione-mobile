@@ -6,7 +6,8 @@ import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 enum class GraphType()
 {
     HISTOGRAM,
-    CAKE;
+    CAKE,
+    LABEL;
 
     fun getObj(): GraphsDataModel
     {
@@ -14,6 +15,7 @@ enum class GraphType()
         {
             HISTOGRAM -> GraphsDataModel.Histogram()
             CAKE -> GraphsDataModel.Cake()
+            LABEL -> GraphsDataModel.Label()
         }
     }
 }
@@ -41,4 +43,12 @@ sealed class GraphsDataModel : GraphElement {
         var aaChartModel: AAChartModel = AAChartModel()
 
         ) : GraphsDataModel()
+
+    data class Label(
+        override var id: Int = 0,
+        override val type: GraphType = GraphType.LABEL,
+        var name: String = "",
+        var value: Float = 0.0f
+
+    ) : GraphsDataModel()
 }

@@ -197,6 +197,9 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
         return _countAllAggregatesByTagId(tag_id)
     }
 
+    @Query("SELECT COUNT(*) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date AND aggregate.tag_id = :tag_id")
+    suspend fun countAllAggregatesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Long
+
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate")
     suspend fun countAllExpenses(): Float
 
@@ -207,12 +210,13 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
     suspend fun countAllExpensesAfterDate(date: Date): Float
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date")
-    suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float
+        suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.tag_id = :tag_id")
-    suspend fun countAllExpensesByTag(tag_id: Long): Float
+    suspend fun countAllExpensesByTag(tag_id: Long?): Float
 
-    // TODO: aggiungere funzioni per filtraggio in base a data e tag
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date AND aggregate.tag_id = :tag_id")
+    suspend fun countAllExpensesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Float
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////

@@ -16,20 +16,19 @@ class App : Application()
 {
     val database by lazy { AppDatabase.getInstance(this) }
 
-    private val aggregateDao by lazy { database.aggregateDao() }
-    private val elementDao by lazy { database.elementsDao() }
+    private val dbRepository by lazy {
+        DbRepository(
+            database.aggregateDao(),
+            database.elementsDao(),
+            database.tagsDao()
+        )
+    }
 
     val attachmentRepository by lazy { AttachmentRepository(this) }
 
     val sharedPrefRepository by lazy { SharedPrefRepository(this) }
 
-    val graphsRepository by lazy {
-        GraphsRepository(
-            this,
-            aggregateDao,
-            elementDao
-        )
-    }
+    val graphsRepository by lazy { GraphsRepository(this, dbRepository)}
 
     // TODO implement repositories
     // val repository by lazy { ColorRepository(database.colorDao()) }

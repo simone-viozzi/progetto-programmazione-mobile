@@ -1,12 +1,8 @@
 package com.example.receiptApp.pages.graphs
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.receiptApp.pages.add.AddDataModel
-import com.example.receiptApp.pages.add.AddViewModel
+import androidx.lifecycle.*
 import com.example.receiptApp.repository.GraphsRepository
+import kotlinx.coroutines.launch
 
 class GraphsViewModel(private val graphsRepository: GraphsRepository) : ViewModel()
 {
@@ -17,23 +13,30 @@ class GraphsViewModel(private val graphsRepository: GraphsRepository) : ViewMode
 
     init{
         // In the initialization each graph should be created
-        _rvList.value = listOf(
-            GraphsDataModel.Histogram(
-                id = 0,
-                name = "test",
-                aaChartModel = graphsRepository.testGraph()
-            ),
-            GraphsDataModel.Histogram(
-                id = 1,
-                name = "test",
-                aaChartModel = graphsRepository.testGraph()
-            ),
-            GraphsDataModel.Histogram(
-                id = 2,
-                name = "test",
-                aaChartModel = graphsRepository.testGraph()
-            ),
-        )
+        viewModelScope.launch {
+
+            // loading graphs data
+
+
+            // create all the graph objects
+            _rvList.value = listOf(
+                GraphsDataModel.Histogram(
+                    id = 0,
+                    name = "test histogram 1",
+                    aaChartModel = graphsRepository.testMonthGraph()
+                ),
+                GraphsDataModel.Histogram(
+                    id = 1,
+                    name = "test histogram 2",
+                    aaChartModel = graphsRepository.testYearGraph()
+                ),
+                GraphsDataModel.Cake(
+                    id = 2,
+                    name = "test pie 1",
+                    aaChartModel = graphsRepository.testPieGraph()
+                ),
+            )
+        }
     }
 }
 
