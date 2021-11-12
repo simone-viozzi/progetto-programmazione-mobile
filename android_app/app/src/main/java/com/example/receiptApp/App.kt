@@ -12,8 +12,6 @@ import com.example.receiptApp.repository.SharedPrefRepository
 import timber.log.Timber
 
 
-fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
-
 
 class App : Application()
 {
