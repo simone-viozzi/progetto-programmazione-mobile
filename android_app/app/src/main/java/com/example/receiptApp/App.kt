@@ -16,8 +16,8 @@ class App : Application()
 {
     val database by lazy { AppDatabase.getInstance(this) }
 
-    private val aggregateDao: AggregatesDao = database.aggregateDao()
-    private val elementDao: ElementsDao = database.elementsDao()
+    private val aggregateDao by lazy { database.aggregateDao() }
+    private val elementDao by lazy { database.elementsDao() }
 
     val attachmentRepository by lazy { AttachmentRepository(this) }
 
