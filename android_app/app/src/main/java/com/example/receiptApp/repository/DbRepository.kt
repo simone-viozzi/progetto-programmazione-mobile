@@ -1,7 +1,9 @@
 package com.example.receiptApp.repository
 
 import androidx.room.Transaction
+import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
+import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.TagsDao
 import java.util.*
@@ -364,6 +366,12 @@ class DbRepository(
         return getElementTagsAndExpenses(
             start = getPeriodStartDate(period)
         )
+    }
+
+
+    suspend fun insertAggregateWithElements(aggregate: Aggregate, elements: List<Element>)
+    {
+        aggregateDao.insertAggregateWithElements(aggregate, elements)
     }
 
 }

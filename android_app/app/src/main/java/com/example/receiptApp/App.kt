@@ -6,6 +6,7 @@ import com.example.receiptApp.db.AppDatabase
 import com.example.receiptApp.db.aggregate.AggregatesDao
 import com.example.receiptApp.db.element.ElementsDao
 import com.example.receiptApp.repository.AttachmentRepository
+import com.example.receiptApp.repository.DbRepository
 import com.example.receiptApp.repository.GraphsRepository
 import com.example.receiptApp.repository.SharedPrefRepository
 import timber.log.Timber
@@ -16,7 +17,7 @@ class App : Application()
 {
     val database by lazy { AppDatabase.getInstance(this) }
 
-    private val dbRepository by lazy {
+    val dbRepository by lazy {
         DbRepository(
             database.aggregateDao(),
             database.elementsDao(),

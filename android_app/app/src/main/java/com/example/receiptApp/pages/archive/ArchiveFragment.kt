@@ -16,7 +16,12 @@ import com.example.receiptApp.pages.home.adapters.DashboardAdapter
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import timber.log.Timber
 import kotlin.math.abs
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+
+
+
 
 
 class ArchiveFragment : Fragment(R.layout.archive_fragment)
@@ -88,16 +93,31 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
                     (abs(verticalOffset) == appBarLayout.totalScrollRange) && closed ->
                     {
                         // Collapsed
+
+                        // Fully collapsed so set the flags to lock the toolbar
                         val lp = toolbar.layoutParams as AppBarLayout.LayoutParams
-                        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+                        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+
+                        //val appBarLayoutParams = appbar.layoutParams as CoordinatorLayout.LayoutParams
+                        //appBarLayoutParams.behavior = null
+                        //appbar.layoutParams = appBarLayoutParams
+
+                        Timber.e("COLLAPSED")
 
                         appbar.removeOnOffsetChangedListener(this)
                     }
                     (verticalOffset == 0) && !closed ->
                     {
                         // Expanded
-                        val lp = toolbar.layoutParams as AppBarLayout.LayoutParams
-                        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+                        val toolbarLayoutParams = toolbar.layoutParams as AppBarLayout.LayoutParams
+                        toolbarLayoutParams.scrollFlags = 0
+                        toolbar.layoutParams = toolbarLayoutParams
+
+                        val appBarLayoutParams = appbar.layoutParams as CoordinatorLayout.LayoutParams
+                        appBarLayoutParams.behavior = null
+                        appbar.layoutParams = appBarLayoutParams
+
+                        Timber.e("EXPANDED")
 
                         appbar.removeOnOffsetChangedListener(this)
                     }
@@ -122,9 +142,17 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         })
 
         // Unlock by restoring the flags and then expand
-        val lp = toolbar.layoutParams as AppBarLayout.LayoutParams
-        lp.scrollFlags =
-            AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+
+        Timber.e("starting ${if (closed) "CLOSING" else "OPENING"}")
+
+        val toolbarLayoutParams = toolbar.layoutParams as AppBarLayout.LayoutParams
+        toolbarLayoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+        toolbar.layoutParams = toolbarLayoutParams
+
+        val appBarLayoutParams = appbar.layoutParams as CoordinatorLayout.LayoutParams
+        appBarLayoutParams.behavior = AppBarLayout.Behavior()
+        appbar.layoutParams = appBarLayoutParams
+
         appbar.setExpanded(!closed, true)
 
     }

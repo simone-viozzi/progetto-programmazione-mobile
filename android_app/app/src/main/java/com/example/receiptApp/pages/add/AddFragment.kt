@@ -46,7 +46,10 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private lateinit var permHandler: PermissionsHandling
 
     private val viewModel: AddViewModel by viewModels {
-        AddViewModelFactory((activity?.application as App).attachmentRepository)
+        AddViewModelFactory(
+            (activity?.application as App).attachmentRepository,
+                (activity?.application as App).dbRepository
+        )
     }
 
     private lateinit var binding: AddFragmentBinding

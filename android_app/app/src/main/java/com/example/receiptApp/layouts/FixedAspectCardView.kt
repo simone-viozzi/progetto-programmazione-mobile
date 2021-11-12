@@ -7,7 +7,12 @@ import com.example.receiptApp.R
 import com.example.receiptApp.px
 import com.google.android.material.card.MaterialCardView
 
-
+/**
+ * override of a cardView to make it use the aspect ratio we impose from the XML
+ * it has two custom attributes:
+ *  -> widthRatio -> this is used to determine the height from the width: height = width / widthRatio
+ *  -> isBig -> this is used in the dashboard to make the cardView occupy all the available rows
+ */
 class FixedAspectCardView(
     context: Context,
     attrs: AttributeSet? = null
@@ -35,10 +40,15 @@ class FixedAspectCardView(
         }
     }
 
+    /**
+     * with this override i can set the height respecting the aspect ratio
+     */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int)
     {
         val width = MeasureSpec.getSize(widthMeasureSpec)
 
+        // if the card is a square i need to compensate the padding of the smaller views to make it of
+        // the same height
         var heightValue = width / widthRatio
         if (widthRatio == 1.0F && !isBig)
         {
