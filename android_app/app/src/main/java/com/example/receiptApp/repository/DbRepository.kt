@@ -139,7 +139,7 @@ class DbRepository(
 
     /**
      * Get tot expenses
-     *
+     * Category: label
      * @param start start date of interval considered for the sum
      * @param end end date of interval considered for the sum
      * @return sum off all expenses as float, related to the specified date interval
@@ -153,7 +153,7 @@ class DbRepository(
 
     /**
      * Get week expenses sum
-     *
+     * Category: label
      * @param period enum that specify the time interval of interest
      * @return sum off all expenses of the specified period as float
      */
@@ -167,7 +167,7 @@ class DbRepository(
 
     /**
      * Get period expenses
-     *
+     * Category: Histogram
      * @param period
      * @return
      */
@@ -178,7 +178,7 @@ class DbRepository(
             Period.YEAR -> 12
             else -> throw IllegalArgumentException("Wrong period passed to getPeriodExpenses()")
         }
-        
+
         val expenses = Array(periodMaxSize){0.0f}
         val subPeriods = getSubPeriodsDates(period)
 
@@ -196,7 +196,7 @@ class DbRepository(
 
     /**
      * Get aggregate tags
-     *
+     * Category: helper, histogram, pie
      * @return an Array<String?> of each aggregate tags, only tag names are returned
      */
     suspend fun getAggregateTagNames(): Array<String?>{
@@ -211,7 +211,7 @@ class DbRepository(
 
     /**
      * Get element tags
-     *
+     * Category: helper, histogram, pie
      * @return an Array<String?> of each element tags, only tag names are returned
      */
     suspend fun getElementTagNames(): Array<String?>{
@@ -226,6 +226,7 @@ class DbRepository(
 
     /**
      * Get aggregate tags and count
+     * Category: histogram, pie
      * @param start the start date interval for the query. by default take 1-1-1970 as start date as filter
      * @param end the end date interval for the query. by default take the call moment as end date as filter
      * @return a map of each tag belong to an aggregate and the count of all aggregates that
@@ -262,6 +263,7 @@ class DbRepository(
 
     /**
      * Get aggregate tags and expenses
+     * Category:
      * @param start the start date interval for the query. by default take 1-1-1970 as start date as filter
      * @param end the end date interval for the query. by default take the call moment as end date as filter
      * @return a map of each tag belong to an aggregate and the sum of all expenses
@@ -294,6 +296,8 @@ class DbRepository(
             start = getPeriodStartDate(period)
         )
     }
+
+
 
     /**
      * Get element tags and count
@@ -365,5 +369,6 @@ class DbRepository(
             start = getPeriodStartDate(period)
         )
     }
+
 
 }
