@@ -9,6 +9,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.receiptApp.db.aggregate.Aggregate
+import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.repository.DbRepository
 import com.google.gson.internal.bind.util.ISO8601Utils.format
@@ -134,24 +135,15 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     }
 
 
-    private fun saveToDb() = viewModelScope.launch {
+    fun saveToDb() = viewModelScope.launch {
         _rvList.value?.let { currList ->
-
             val attachmentUri = attachment?.let { attachmentRepository.copyAttachment(it) }
 
             val aggregate = currList[0] as AddDataModel.Aggregate
             val elements = currList.subList(1, currList.lastIndex).map { it as AddDataModel.Element }
 
-            var date: Date? = null
-            aggregate.str_date?.let { strDate ->
-                date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)
-            }
-
-
-            val dbAggregate = Aggregate(date = date, attachment = attachmentUri)
+            dbRepository.insertAggregateWithElements(aggregate, elements, attachmentUri)
         }
-
-
 
     }
 
@@ -163,6 +155,8 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     }
 
 }
+
+
 
 class AddViewModelFactory(private val attachmentRepository: AttachmentRepository, private val dbRepository: DbRepository) : ViewModelProvider.Factory
 {

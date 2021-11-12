@@ -1,13 +1,14 @@
-package com.example.receiptApp.pages.home
+package com.example.receiptApp.pages.dashboard
 
 import androidx.lifecycle.*
+import com.example.receiptApp.repository.DbRepository
 import com.example.receiptApp.utils.StateStack
 import com.example.receiptApp.repository.SharedPrefRepository
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
-class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
+class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, private val dbRepository: DbRepository) : ViewModel()
 {
     private val _dashboard: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val dashboard: LiveData<List<DashboardDataModel>> = _dashboard
@@ -31,6 +32,12 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
     val homeState: LiveData<HomeState> = _homeState
 
     private object Id
+    {
+        var lastId: Int = 0
+        fun getId() = ++lastId
+    }
+
+    private object StoreId
     {
         var lastId: Int = 0
         fun getId() = ++lastId
@@ -73,21 +80,6 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
         }
     }
 
-
-    private fun loadStore() = viewModelScope.launch {
-
-        val list = (0..20).map {
-            arrayOf(
-                DashboardDataModel.Test(id = it),
-                DashboardDataModel.TestBig(id = it),
-                DashboardDataModel.Square(id = it)
-            ).random()
-        }
-
-        _store.value = list
-    }
-
-
     fun saveDashboard() = viewModelScope.launch {
         val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
 
@@ -97,7 +89,7 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
             }
         }
 
-        repository.writeDashboard(needToSave)
+        sharedPrefRepository.writeDashboard(needToSave)
 
         homeStateStack.clear()
         homeStateStack.push(HomeState.NormalMode)
@@ -108,7 +100,7 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 
     private fun loadDashboard() = viewModelScope.launch {
 
-        val dashboard: Map<Int, DashboardDataModel> = repository.readDashboard()
+        val dashboard: Map<Int, DashboardDataModel> = sharedPrefRepository.readDashboard()
 
         val list: MutableList<DashboardDataModel> = mutableListOf()
 
@@ -165,7 +157,7 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
         homeStateStack.push(HomeState.EmptyDashMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
-        repository.clearDashboard()
+        sharedPrefRepository.clearDashboard()
         _dashboard.value = emptyList()
         Id.lastId = 0
         _homeState.value = HomeState.EmptyDashMode
@@ -189,17 +181,40 @@ class HomeViewModel(private val repository: SharedPrefRepository) : ViewModel()
 
         return state ?: HomeState.NoState
     }
+
+    private fun loadStore() = viewModelScope.launch {
+
+        val storeList: MutableList<DashboardDataModel> = mutableListOf()
+
+        dbRepository.getAggregateTagsAndExpensesByPeriod(DbRepository.Period.MONTH).entries.forEach {
+            it.key?.let { name ->
+                storeList.add(
+                    DashboardDataModel.Test(
+                        id = StoreId.getId(),
+                        name = name,
+                        value = it.value
+                    )
+                )
+            }
+        }
+
+        _store.value = storeList
+
+    }
 }
 
 
-class HomeViewModelFactory(private val repository: SharedPrefRepository) : ViewModelProvider.Factory
+class HomeViewModelFactory(
+    private val sharedPrefRepository: SharedPrefRepository,
+    private val dbRepository: DbRepository
+    ) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
     {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java))
         {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(repository) as T
+            return HomeViewModel(sharedPrefRepository, dbRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

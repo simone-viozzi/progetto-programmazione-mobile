@@ -1,11 +1,14 @@
 package com.example.receiptApp.repository
 
+import android.net.Uri
 import androidx.room.Transaction
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.TagsDao
+import com.example.receiptApp.pages.add.AddDataModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 class DbRepository(
@@ -369,9 +372,31 @@ class DbRepository(
     }
 
 
-    suspend fun insertAggregateWithElements(aggregate: Aggregate, elements: List<Element>)
+    suspend fun insertAggregateWithElements(
+        aggregate: AddDataModel.Aggregate,
+        elements: List<AddDataModel.Element>,
+        attachmentUri: Uri?)
     {
-        aggregateDao.insertAggregateWithElements(aggregate, elements)
+        var date: Date? = null
+        aggregate.str_date?.let { strDate ->
+            date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)
+        }
+
+
+        val dbAggregate = Aggregate(date = date, attachment = attachmentUri).also { it.tag = aggregate.tag }
+        val dbElements = elements.map {
+            if (it.cost == null || it.cost == null) throw IllegalArgumentException("cost or num cannot be null")
+
+            Element(
+                cost = it.cost?.toFloat() ?: 0f,
+                name = it.name,
+                num = it.num?.toLong() ?: 0L
+            ).also { el ->
+                el.elem_tag = it.elem_tag
+            }
+        }
+
+        aggregateDao.insertAggregateWithElements(dbAggregate, dbElements)
     }
 
 }

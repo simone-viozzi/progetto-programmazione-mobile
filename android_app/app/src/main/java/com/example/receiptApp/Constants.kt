@@ -8,6 +8,10 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 
 fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
 
+
+private fun Double?.toFloatOrNull(): Float = this?.toFloat() ?: 0f
+
+
 val Int.dp: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
 

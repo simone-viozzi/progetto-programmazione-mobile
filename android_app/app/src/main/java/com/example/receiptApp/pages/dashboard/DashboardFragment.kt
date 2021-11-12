@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.home
+package com.example.receiptApp.pages.dashboard
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,7 +15,7 @@ import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.ActivityMainBinding
 import com.example.receiptApp.databinding.DashboardFragmentBinding
-import com.example.receiptApp.pages.home.adapters.DashboardAdapter
+import com.example.receiptApp.pages.dashboard.adapters.DashboardAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
 import timber.log.Timber
 
@@ -23,7 +23,10 @@ import timber.log.Timber
 class DashboardFragment : Fragment()
 {
     val viewModel: HomeViewModel by viewModels {
-        HomeViewModelFactory((activity?.application as App).sharedPrefRepository)
+        HomeViewModelFactory(
+            (activity?.application as App).sharedPrefRepository,
+            (activity?.application as App).dbRepository
+        )
     }
 
     private lateinit var binding: DashboardFragmentBinding
@@ -86,7 +89,6 @@ class DashboardFragment : Fragment()
         }
 
         viewModel.homeState.observe(viewLifecycleOwner) { state ->
-
             when (state)
             {
                 HomeViewModel.HomeState.EmptyDashMode ->
@@ -116,17 +118,7 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
-
-//                    if (viewModel.getPreviousState() is HomeViewModel.HomeState.NoState)
-//                    {
-//                        Timber.e("setTransition(R.id.baseConstraint, R.id.welcomeScreenConstraint)")
-//                        //binding.homeMotionLayout.setTransition(R.id.baseConstraint, R.id.welcomeScreenConstraint)
-//                        binding.homeMotionLayout.jumpToState(R.id.welcomeScreenConstraint)
-//                    }
-//                    else
-                    //{
-                       binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
-                    //}
+                    binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
                 }
                 is HomeViewModel.HomeState.NormalMode ->
                 {

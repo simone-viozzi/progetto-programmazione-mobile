@@ -4,24 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.ArchiveFragmentBinding
-import com.example.receiptApp.pages.home.DashboardDataModel
-import com.example.receiptApp.pages.home.adapters.DashboardAdapter
+import com.example.receiptApp.pages.dashboard.DashboardDataModel
+import com.example.receiptApp.pages.dashboard.adapters.DashboardAdapter
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import timber.log.Timber
 import kotlin.math.abs
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-
-
-
+import androidx.recyclerview.widget.LinearLayoutManager
 
 
 class ArchiveFragment : Fragment(R.layout.archive_fragment)

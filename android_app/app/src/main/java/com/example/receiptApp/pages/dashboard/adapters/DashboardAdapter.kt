@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.home.adapters
+package com.example.receiptApp.pages.dashboard.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,9 +7,9 @@ import com.example.receiptApp.R
 import com.example.receiptApp.databinding.DashboardElementTestBigBinding
 import com.example.receiptApp.databinding.DashboardElementTestBinding
 import com.example.receiptApp.databinding.DashboardElementTestSquareBinding
-import com.example.receiptApp.pages.home.DashboardDataModel
-import com.example.receiptApp.pages.home.adapters.components.DashboardDiffCallback
-import com.example.receiptApp.pages.home.adapters.components.DashboardViewHolder
+import com.example.receiptApp.pages.dashboard.DashboardDataModel
+import com.example.receiptApp.pages.dashboard.adapters.components.DashboardDiffCallback
+import com.example.receiptApp.pages.dashboard.adapters.components.DashboardViewHolder
 import java.util.*
 
 

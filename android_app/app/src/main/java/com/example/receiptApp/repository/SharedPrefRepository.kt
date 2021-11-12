@@ -3,9 +3,9 @@ package com.example.receiptApp.repository
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.receiptApp.SHARED_PREF_DASHBOARD
-import com.example.receiptApp.pages.home.DashboardDataModel
-import com.example.receiptApp.pages.home.DashboardElement
-import com.example.receiptApp.pages.home.TYPE
+import com.example.receiptApp.pages.dashboard.DashboardDataModel
+import com.example.receiptApp.pages.dashboard.DashboardElement
+import com.example.receiptApp.pages.dashboard.TYPE
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -46,6 +46,7 @@ class SharedPrefRepository(applicationContext: Context)
         with (editor) {
             putInt("${base}_id", element.id)
             putString("${base}_type", element.type.name)
+            putString("${base}_content", element.content)
         }
     }
 
@@ -77,12 +78,14 @@ class SharedPrefRepository(applicationContext: Context)
         {
             val id = getInt("${base}_id", -1)
             val type = getString("${base}_type", "")
+            val content = getString("${base}_content", "") ?: ""
 
             Timber.d("id -> $id, type -> $type")
 
             element = type?.let { TYPE.valueOf(it).getObj() }!!
 
             element.id = id
+            element.content = content
         }
 
         return element
