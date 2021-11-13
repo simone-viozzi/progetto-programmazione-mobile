@@ -1,32 +1,22 @@
 package com.example.receiptApp.pages.add
 
-import android.icu.text.MessageFormat.format
 import android.net.Uri
 import android.text.format.DateFormat
-import android.text.format.DateFormat.format
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.example.receiptApp.db.aggregate.Aggregate
-import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.repository.DbRepository
-import com.google.gson.internal.bind.util.ISO8601Utils.format
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 
-class AddViewModel(private val attachmentRepository: AttachmentRepository, private val dbRepository: DbRepository) : ViewModel()
+class AddViewModel(private val attachmentRepository: AttachmentRepository, private val dbRepository: DbRepository) :
+    ViewModel()
 {
     // the list observed by the recyclerview
     private val _rvList = MutableLiveData<List<AddDataModel>>()
@@ -36,8 +26,16 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
     val galleryState: StateFlow<GalleryDataState> = _galleryState
 
-    private val _autoComplete = MutableLiveData<List<String>>()
-    val autoComplete: LiveData<List<String>> = _autoComplete
+    private var autoCompleteAggregateValue: Array<String?>? = null
+    private var autoCompleteElementValue: Array<String?>? = null
+
+    var autoCompleteAggregateCallback: () -> Array<String?>? = {
+        autoCompleteAggregateValue
+    }
+
+    var autoCompleteElementCallback: () -> Array<String?>? = {
+        autoCompleteElementValue
+    }
 
     private var attachment: AttachmentRepository.Attachment? = null
 
@@ -62,20 +60,31 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
             {
                 val oldEl = _rvList.value?.get(el.vId) as AddDataModel.Element
 
-                el.name?.let { oldEl.name = it }
-                el.elem_tag?.let { oldEl.elem_tag = it }
-                el.num?.let { oldEl.num = it }
-                el.cost?.let { oldEl.cost = it }
+                val update = oldEl.update(el)
+                Timber.d("update -> $update")
 
                 val newList = _rvList.value?.toMutableList().also { it?.set(el.vId, oldEl) }
 
-                // TODO update the list only if there was a change!
+                if (el.vId == getLastId(false)-1)
+                {
+                    newList?.also { list ->
+                        val lastIndex = list.lastIndex
+                        list[lastIndex] = AddDataModel.Element(vId = lastIndex, elem_tag = el.elem_tag )
+                    }
+                }
+
                 _rvList.value = newList?.also {
-                    if (el.vId == getLastId(false)) it.add(AddDataModel.Element(vId = getLastId()))
+                    if (el.vId == getLastId(false) && update)
+                    {
+                        it.add(
+                            AddDataModel.Element(
+                                vId = getLastId(),
+                            )
+                        )
+                    }
                 }
             }
         }
-        Timber.d("rv updated")
     }
 
     init
@@ -84,6 +93,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
             AddDataModel.Aggregate(vId = 0),
             AddDataModel.Element(vId = getLastId())
         )
+        loadAutocomplete()
     }
 
     // this get called when the date picker return
@@ -138,16 +148,20 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
      * Save what the user inserted into the db
      *
      */
-    fun saveToDb() = viewModelScope.launch {
+    @DelicateCoroutinesApi
+    fun saveToDb() = GlobalScope.launch {
         _rvList.value?.let { currList ->
             // if the attachment is not into the private memory of the app i need to copy it there
-            val attachmentUri = attachment?.let { if (!it.needToCopy) it.uri else attachmentRepository.copyAttachment(it) }
+            val attachmentUri =
+                attachment?.let { if (!it.needToCopy) it.uri else attachmentRepository.copyAttachment(it) }
 
             // split the list taking the aggregate and all the elements
             val aggregate = currList[0] as AddDataModel.Aggregate
             val elements = currList.subList(1, currList.lastIndex).map { it as AddDataModel.Element }
 
             dbRepository.insertAggregateWithElements(aggregate, elements, attachmentUri)
+
+            Timber.e("fine inserimento")
         }
     }
 
@@ -159,14 +173,19 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     }
 
 
-    private val COUNTRIES =  listOf("Belgium", "Balbe", "Balbus", "France", "Italy", "Germany", "Spain")
+    private fun loadAutocomplete() = viewModelScope.launch {
+        autoCompleteAggregateValue = dbRepository.getAggregateTagNames()
+        autoCompleteElementValue = dbRepository.getElementTagNames()
+    }
 
 
 }
 
 
-
-class AddViewModelFactory(private val attachmentRepository: AttachmentRepository, private val dbRepository: DbRepository) : ViewModelProvider.Factory
+class AddViewModelFactory(
+    private val attachmentRepository: AttachmentRepository,
+    private val dbRepository: DbRepository
+) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
     {

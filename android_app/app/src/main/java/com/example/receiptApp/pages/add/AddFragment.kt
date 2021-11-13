@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -33,18 +32,12 @@ import com.example.receiptApp.utils.PermissionsHandling
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.CalendarConstraints.DateValidator
+import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
-import java.util.*
-import com.google.android.material.datepicker.DateValidatorPointBackward
-
-import com.google.android.material.datepicker.DateValidatorPointForward
-
-
-
 
 
 /**
@@ -110,7 +103,10 @@ class AddFragment : Fragment(R.layout.add_fragment)
             fab.setImageResource(R.drawable.ic_baseline_check_24)
             fab.setOnClickListener {
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
+
                 viewModel.saveToDb()
+
+                Timber.e("going up")
                 findNavController().navigateUp()
             }
         }
@@ -192,7 +188,11 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
 
         // the adapter take the two callBacks, one is implemented in the View model the other here
-        addAdapter = AddAdapter(viewModel.textEditCallback) {
+        addAdapter = AddAdapter(
+            viewModel.textEditCallback,
+            viewModel.autoCompleteAggregateCallback,
+            viewModel.autoCompleteElementCallback
+        ) {
             if (!datePicker.isVisible)
             {
                 datePicker.show(childFragmentManager, "tag")
@@ -220,10 +220,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
         binding.recyclerViewAdd.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = addAdapter
-        }
-
-        viewModel.autoComplete.observe(viewLifecycleOwner) {
-            addAdapter.autocompleteAdapter = ArrayAdapter(activity as MainActivity, android.R.layout.simple_dropdown_item_1line, it)
         }
 
         val galleryAdapter = GalleryAdapter {

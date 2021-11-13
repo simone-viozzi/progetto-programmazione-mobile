@@ -1,9 +1,11 @@
 package com.example.receiptApp.pages.add.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DiffUtil
@@ -18,12 +20,17 @@ import com.example.receiptApp.databinding.AddHeadBinding
 import com.example.receiptApp.databinding.AddSingleElementBinding
 import com.example.receiptApp.pages.add.AddDataModel
 import com.example.receiptApp.toEditable
+import timber.log.Timber
 
-class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarClick: (() -> Unit)) :
+class AddAdapter(
+    private var textEditCallback: ((AddDataModel) -> Unit),
+    private var autocompleteAggregate: (() -> Array<String?>?),
+    private var autocompleteElement: (() -> Array<String?>?),
+    private var calendarClick: (() -> Unit)
+) :
     ListAdapter<AddDataModel, AddAdapter.AddViewHolder>(AddDiffCallback())
 {
 
-    var autocompleteAdapter: ArrayAdapter<String>? = null
 
     /**
      * for areItemsTheSame i use  the id, that NEED to be unique
@@ -68,6 +75,27 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
     sealed class AddViewHolder(binding: ViewBinding) :
         RecyclerView.ViewHolder(binding.root)
     {
+        fun showSuggestions(editText: AppCompatAutoCompleteTextView, callback: (() -> Array<String?>?), context: Context)
+        {
+
+            callback.invoke()?.let { hints ->
+                val adapter = ArrayAdapter(
+                    context,
+                    android.R.layout.simple_dropdown_item_1line,
+                    hints
+                )
+
+                Timber.e("${hints.toList()}")
+                editText.setAdapter(adapter)
+
+                if (!editText.isPopupShowing && editText.text.isEmpty())
+                {
+                    editText.showDropDown()
+                }
+            }
+        }
+
+
         /**
          * view holder of the block relative to the aggregate data
          *
@@ -81,9 +109,10 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
             private val binding: AddHeadBinding,
             textEditCallback: ((AddDataModel) -> (Unit)),
             calendarClick: (() -> Unit),
-            autocompleteAdapter: ArrayAdapter<String>?
+            autocomplete: (() -> Array<String?>?)
         ) : AddViewHolder(binding)
         {
+
             // the callbacks need to be in the init section
             init
             {
@@ -94,20 +123,20 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                     doOnTextChanged { text: CharSequence?,
                                       _, _,
                                       count: Int ->
+
                         val position = bindingAdapterPosition
-                        if (position != NO_POSITION && count > 0) textEditCallback.invoke(
-                            // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
-                            AddDataModel.Aggregate(vId = position, tag = text.toString())
-                        )
-                        autocompleteAdapter?.let { setAdapter(it) }
+                        if (position != NO_POSITION && count > 0)
+                        {
+                            textEditCallback.invoke(
+                                // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
+                                AddDataModel.Aggregate(vId = position, tag = text.toString())
+                            )
+                            showSuggestions(this, autocomplete, context)
+                        }
                     }
 
                     setOnFocusChangeListener { _, hasFocus ->
-                        if (hasFocus)
-                        {
-                            autocompleteAdapter?.let { setAdapter(it) }
-                            showDropDown()
-                        }
+                        if (hasFocus) showSuggestions(this, autocomplete, context)
                     }
                 }
 
@@ -150,39 +179,75 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
 
         class ElementViewHolder(
             private val binding: AddSingleElementBinding,
-            textEditCallback: ((AddDataModel) -> (Unit))
+            textEditCallback: (AddDataModel) -> Unit,
+            autocomplete: (() -> Array<String?>?)
         ) : AddViewHolder(binding)
         {
+
             init
             {
                 binding.textFieldName.editText?.doOnTextChanged { text: CharSequence?,
                                                                   _, _,
                                                                   count: Int ->
-                    // TODO adapterPosition can be NO_POSITION, need to test for it!
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, name = text.toString())
-                    )
+
+                    val position = bindingAdapterPosition
+                    if (position != NO_POSITION && count > 0)
+                    {
+                        textEditCallback.invoke(
+                            AddDataModel.Element(
+                                vId = position, name = text.toString()
+                            )
+                        )
+                    }
                 }
+
                 binding.textFieldNum.editText?.doOnTextChanged { text: CharSequence?,
                                                                  _, _,
                                                                  count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, num = text.toString().toIntOrNull())
-                    )
+                    val position = bindingAdapterPosition
+                    if (position != NO_POSITION && count > 0)
+                    {
+                        textEditCallback.invoke(
+                            AddDataModel.Element(
+                                vId = position, num = text.toString().toIntOrNull()
+                            )
+                        )
+                    }
                 }
-                binding.textFieldTag.editText?.doOnTextChanged { text: CharSequence?,
-                                                                 _, _,
-                                                                 count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, elem_tag = text.toString())
-                    )
+
+                binding.textFieldTagEditText.apply {
+                    doOnTextChanged { text: CharSequence?,
+                                      _, _,
+                                      count: Int ->
+
+                        val position = bindingAdapterPosition
+                        if (position != NO_POSITION && count > 0)
+                        {
+                            textEditCallback.invoke(
+                                AddDataModel.Element(
+                                    vId = position, elem_tag = text.toString()
+                                )
+                            )
+                            showSuggestions(this, autocomplete, context)
+                        }
+                    }
+                    setOnFocusChangeListener { v, hasFocus ->
+                        if (hasFocus) showSuggestions(this, autocomplete, context)
+                    }
                 }
+
                 binding.textFieldCost.editText?.doOnTextChanged { text: CharSequence?,
                                                                   _, _,
                                                                   count: Int ->
-                    if (count > 0) textEditCallback.invoke(
-                        AddDataModel.Element(vId = bindingAdapterPosition, cost = text.toString().toDoubleOrNull())
-                    )
+                    val position = bindingAdapterPosition
+                    if (position != NO_POSITION && count > 0)
+                    {
+                        textEditCallback.invoke(
+                            AddDataModel.Element(
+                                vId = position, cost = text.toString().toDoubleOrNull()
+                            )
+                        )
+                    }
                 }
             }
 
@@ -211,7 +276,7 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                 // the other parameters in the constructor
                 textEditCallback,
                 calendarClick,
-                autocompleteAdapter
+                autocompleteAggregate
             )
 
             R.layout.add_single_element -> AddViewHolder.ElementViewHolder(
@@ -221,7 +286,8 @@ class AddAdapter(var textEditCallback: ((AddDataModel) -> Unit), var calendarCli
                     parent,
                     false
                 ),
-                textEditCallback
+                textEditCallback,
+                autocompleteElement
             )
 
             // the else case is needed, but should never be called

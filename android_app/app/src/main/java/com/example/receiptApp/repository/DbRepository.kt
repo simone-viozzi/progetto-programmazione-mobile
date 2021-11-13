@@ -8,6 +8,8 @@ import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.TagsDao
 import com.example.receiptApp.pages.add.AddDataModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -381,13 +383,13 @@ class DbRepository(
     suspend fun insertAggregateWithElements(
         aggregate: AddDataModel.Aggregate,
         elements: List<AddDataModel.Element>,
-        attachmentUri: Uri?)
-    {
+        attachmentUri: Uri?
+    ) = withContext(Dispatchers.IO) {
+
         var date: Date? = null
         aggregate.str_date?.let { strDate ->
             date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)
         }
-
 
         val dbAggregate = Aggregate(date = date, attachment = attachmentUri).also { it.tag = aggregate.tag }
         val dbElements = elements.map {
