@@ -18,7 +18,6 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-
             app:expanded="false">
 
 
@@ -27,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:expandedTitleGravity="top"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
+                app:layout_scrollFlags="scroll|enterAlways"
                 app:contentScrim="?attr/colorPrimary">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

@@ -79,6 +79,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
                         it.add(
                             AddDataModel.Element(
                                 vId = getLastId(),
+                                elem_tag = oldEl.elem_tag
                             )
                         )
                     }
