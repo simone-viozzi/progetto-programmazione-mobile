@@ -434,6 +434,12 @@ class DbRepository(
         aggregateDao.insertAggregateWithElements(dbAggregate, dbElements)
     }
 
+    suspend fun clearDb()
+    {
+        aggregateDao.deleteAll()
+    }
+
+
     // ##########################################################################
     // GET METHODS
 
@@ -441,7 +447,5 @@ class DbRepository(
 
     // ##########################################################################
     // UPDATE METHODS
-
-
 
 }
