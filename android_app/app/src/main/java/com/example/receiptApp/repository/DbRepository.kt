@@ -98,6 +98,7 @@ class DbRepository(
             start = cal.getTime()
 
             val numOfDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+
             // iter over each day of month
             for(i in 2..(numOfDays+1)){
                 if(i < (numOfDays+1)) {
@@ -119,8 +120,8 @@ class DbRepository(
             start = cal.getTime()
 
             // iter over each month
-            for(i in 2..13){
-                if(i < 13){
+            for(i in 1..12){
+                if(i < 12){
                     cal.set(Calendar.MONTH, i)
                     cal.set(Calendar.DAY_OF_MONTH, 1)
                     end = cal.getTime()
@@ -130,7 +131,7 @@ class DbRepository(
                     // as the final end date pass 00:00:00 of the first day
                     // of the first mont of the next year.
                     cal.add(Calendar.YEAR, 1)
-                    cal.set(Calendar.MONTH, 1)
+                    cal.set(Calendar.MONTH, 0)
                     cal.set(Calendar.DAY_OF_MONTH, 1)
                     end = cal.getTime()
                     intervals.add(arrayOf(start, end))
@@ -154,7 +155,7 @@ class DbRepository(
     suspend fun getExpenses(
         start: Date = Date(0),
         end: Date = Date()
-    ):Float{
+    ):Float?{
         return aggregateDao.countAllExpensesBetweenDates(start, end)
     }
 
@@ -164,7 +165,7 @@ class DbRepository(
      * @param period enum that specify the time interval of interest
      * @return sum off all expenses of the specified period as float
      */
-    suspend fun getPeriodExpensesSum(period: Period): Float{
+    suspend fun getPeriodExpensesSum(period: Period): Float?{
 
         // return all the expenses from the start of the week to now
         return getExpenses(
@@ -191,12 +192,17 @@ class DbRepository(
 
         for(i in 1..periodMaxSize){
             if(i < subPeriods.size){
-                expenses[i] = getExpenses(subPeriods[i][0], subPeriods[i][1])
+                // only if the result isn't null update the value
+                getExpenses(subPeriods[i][0], subPeriods[i][1])?.let{
+                    expenses[i] = it
+                }
             }
         }
 
         return expenses
     }
+
+
 
     // ##########################################################################
     // TAGS METHODS
@@ -248,10 +254,16 @@ class DbRepository(
         var mapTagCount = mutableMapOf<String?, Long>()
 
         tagsList?.forEach {
-            mapTagCount[it.tag_name] = aggregateDao.countAllAggregatesBetweenDatesByTag(start, end, it.tag_id)
+            val result = aggregateDao.countAllAggregatesBetweenDatesByTag(start, end, it.tag_id)
+
+            if(result != null){
+                mapTagCount[it.tag_name] = result
+            }else{
+                mapTagCount[it.tag_name] = 0L
+            }
         }
 
-        return mapTagCount
+        return mapTagCount.toList().sortedByDescending { pair -> pair.second }.toMap()
     }
 
     /**
@@ -269,6 +281,43 @@ class DbRepository(
     }
 
     /**
+     * Get aggregate count by tag
+     *
+     * @param tag_name
+     * @param start
+     * @param end
+     * @return
+     */
+    suspend fun getAggregateCountByTag(
+        tag_name: String,
+        start: Date = Date(0),
+        end: Date = Date(),
+    ): Long?{
+        val tag = tagDao.getAggregateTagByName(tag_name)
+        return if(tag != null)
+            aggregateDao.countAllAggregatesBetweenDatesByTag(start, end, tag.tag_id)
+        else
+            null
+    }
+
+    /**
+     * Get aggregate count by tag and period
+     *
+     * @param tag_name
+     * @param period
+     * @return
+     */
+    suspend fun getAggregateCountByTagAndPeriod(
+        tag_name: String,
+        period: Period
+    ): Long?{
+        return getAggregateCountByTag(
+            tag_name = tag_name,
+            start = getPeriodStartDate(period)
+        )
+    }
+
+    /**
      * Get aggregate tags and expenses
      * Category:
      * @param start the start date interval for the query. by default take 1-1-1970 as start date as filter
@@ -276,7 +325,6 @@ class DbRepository(
      * @return a map of each tag belong to an aggregate and the sum of all expenses
      *         for each specific tag between start and end dates
      */
-    @Transaction
     suspend fun getAggregateTagsAndExpenses(
         start: Date = Date(0), // by default take 1-1-1970 as start date as filter
         end: Date = Date() // by default take the call moment as end date as filter
@@ -285,9 +333,15 @@ class DbRepository(
         var mapTagExpenses = mutableMapOf<String?, Float>()
 
         tagsList?.forEach {
-            mapTagExpenses[it.tag_name] = aggregateDao.countAllExpensesBetweenDatesByTag(start, end, it.tag_id)
+            val result = aggregateDao.countAllExpensesBetweenDatesByTag(start, end, it.tag_id)
+            if(result != null){
+                mapTagExpenses[it.tag_name] = result
+            }else{
+                mapTagExpenses[it.tag_name] = 0.0f
+            }
         }
-        return mapTagExpenses
+
+        return mapTagExpenses.toList().sortedByDescending { pair -> pair.second }.toMap()
     }
 
     /**
@@ -304,7 +358,42 @@ class DbRepository(
         )
     }
 
+    /**
+     * Get aggregate expenses by tag
+     *
+     * @param tag_name
+     * @param start
+     * @param end
+     * @return
+     */
+    suspend fun getAggregateExpensesByTag(
+        tag_name: String,
+        start: Date = Date(0), // by default take 1-1-1970 as start date as filter
+        end: Date = Date() // by default take the call moment as end date as filter
+    ): Float?{
+        val tag = tagDao.getAggregateTagByName(tag_name)
+        return if(tag != null)
+                aggregateDao.countAllExpensesBetweenDatesByTag(start_date = start, end_date = end, tag.tag_id)
+            else
+                null
+    }
 
+    /**
+     * Get aggregate expenses by tag and period
+     *
+     * @param tag_name
+     * @param period
+     * @return
+     */
+    suspend fun getAggregateExpensesByTagAndPeriod(
+        tag_name: String,
+        period: Period
+    ): Float?{
+        return getAggregateExpensesByTag(
+            tag_name = tag_name,
+            start = getPeriodStartDate(period)
+        )
+    }
 
     /**
      * Get element tags and count
@@ -325,7 +414,7 @@ class DbRepository(
             mapTagCount[it.tag_name] = elementDao.countAllSingleElementsBetweenDatesByElementTagId(start, end, it.tag_id)
         }
 
-        return mapTagCount
+        return mapTagCount.toList().sortedByDescending { pair -> pair.second }.toMap()
     }
 
     /**
@@ -335,9 +424,47 @@ class DbRepository(
      * @return
      */
     suspend fun getElementTagsAndCountByPeriod(
-        period: Period
+        period: Period,
+        sort: Boolean = true
     ):Map<String?, Long>{
         return getElementTagsAndCount(
+            start = getPeriodStartDate(period)
+        )
+    }
+
+    /**
+     * Get element count by tag
+     *
+     * @param tag_name
+     * @param start
+     * @param end
+     * @return
+     */
+    suspend fun getElementCountByTag(
+        tag_name: String,
+        start: Date = Date(0),
+        end: Date = Date(),
+    ): Long?{
+        val tag = tagDao.getElementTagByName(tag_name)
+        return if(tag != null)
+            elementDao.countAllSingleElementsBetweenDatesByElementTagId(start, end, tag.tag_id)
+        else
+            null
+    }
+
+    /**
+     * Get element count by tag and period
+     *
+     * @param tag_name
+     * @param period
+     * @return
+     */
+    suspend fun getElementCountByTagAndPeriod(
+        tag_name: String,
+        period: Period
+    ): Long?{
+        return getElementCountByTag(
+            tag_name = tag_name,
             start = getPeriodStartDate(period)
         )
     }
@@ -349,7 +476,6 @@ class DbRepository(
      * @return a map of each tag belong to an element and the sum of all expenses
      *         for each specific tag between start and end dates
      */
-    @Transaction
     suspend fun getElementTagsAndExpenses(
         start: Date = Date(0), // by default take 1-1-1970 as start date as filter
         end: Date = Date() // by default take the call moment as end date as filter
@@ -360,11 +486,8 @@ class DbRepository(
         tagsList?.forEach {
             mapTagExpenses[it.tag_name] = elementDao.countAllExpensesBetweenDatesByElementTagId(start, end, it.tag_id)
         }
-        return mapTagExpenses
+        return mapTagExpenses.toList().sortedByDescending { pair -> pair.second }.toMap()
     }
-
-    // ##########################################################################
-    // INSERT METHODS
 
     /**
      * Get element tags and expenses by period
@@ -379,6 +502,46 @@ class DbRepository(
             start = getPeriodStartDate(period)
         )
     }
+
+    /**
+     * Get aggregate expenses by tag
+     *
+     * @param tag_name
+     * @param start
+     * @param end
+     * @return
+     */
+    suspend fun getElementExpensesByTag(
+        tag_name: String,
+        start: Date = Date(0), // by default take 1-1-1970 as start date as filter
+        end: Date = Date() // by default take the call moment as end date as filter
+    ): Float?{
+        val tag = tagDao.getElementTagByName(tag_name)
+        return if(tag != null)
+            elementDao.countAllExpensesBetweenDatesByElementTagId(start_date = start, end_date = end, tag.tag_id)
+        else
+            null
+    }
+
+    /**
+     * Get aggregate expenses by tag and period
+     *
+     * @param tag_name
+     * @param period
+     * @return
+     */
+    suspend fun getElementExpensesByTagAndPeriod(
+        tag_name: String,
+        period: Period
+    ): Float?{
+        return getElementExpensesByTag(
+            tag_name = tag_name,
+            start = getPeriodStartDate(period)
+        )
+    }
+
+    // ##########################################################################
+    // INSERT METHODS
 
     suspend fun insertAggregateWithElements(
         aggregate: AddDataModel.Aggregate,

@@ -49,13 +49,13 @@ data class Element @JvmOverloads constructor(
 
     var name: String? = null,
 
-    var num: Long = 0L,
+    var num: Long = 0L, // ESSENTIAL
 
     var parent_tag_id: Long? = null,
 
     var elem_tag_id: Long? = null,
 
-    var cost: Float = 0.0f,
+    var cost: Float = 0.0f, // ESSENTIAL
 ){
     // fields not used in the table
 

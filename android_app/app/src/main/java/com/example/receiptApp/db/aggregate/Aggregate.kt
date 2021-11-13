@@ -37,7 +37,7 @@ data class Aggregate @JvmOverloads constructor(
 
     var tag_id: Long? = null,
 
-    var date: Date? = null,
+    var date: Date? = null, // ESSENTIAL
 
     var location: Location? = null,
 
