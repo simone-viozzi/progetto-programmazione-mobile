@@ -105,9 +105,26 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         val list: MutableList<DashboardDataModel> = mutableListOf()
 
         dashboard.entries.forEach {
-            when (it.value)
+
+            when (val el = it.value)
             {
-                is DashboardDataModel.Test -> list.add(it.value)
+                is DashboardDataModel.Test -> {
+
+                    val contentParsing = el.content.split(":")
+
+                    when(contentParsing[0])
+                    {
+                        "sumTag" -> {
+                            val tag = contentParsing[1]
+                            val period = DbRepository.Period.valueOf(contentParsing[3])
+
+                            el.name = tag
+                            //el.value = dbRepository
+                        }
+                    }
+
+                    list.add(el)
+                }
                 is DashboardDataModel.TestBig -> list.add(it.value)
                 is DashboardDataModel.Square -> list.add(it.value)
             }
@@ -130,6 +147,28 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
             _homeState.value = HomeState.EmptyDashMode
         }
     }
+
+    private fun loadStore() = viewModelScope.launch {
+
+        val storeList: MutableList<DashboardDataModel> = mutableListOf()
+
+        val period = DbRepository.Period.MONTH
+        dbRepository.getAggregateTagsAndExpensesByPeriod(period).entries.forEach {
+            it.key?.let { name ->
+                storeList.add(
+                    DashboardDataModel.Test(
+                        id = StoreId.getId(),
+                        name = name,
+                        value = it.value,
+                        content = "sumTag:$name:${period.name}"
+                    )
+                )
+            }
+        }
+
+        _store.value = storeList
+    }
+
 
     fun addToDashboard(element: DashboardDataModel)
     {
@@ -182,25 +221,6 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         return state ?: HomeState.NoState
     }
 
-    private fun loadStore() = viewModelScope.launch {
-
-        val storeList: MutableList<DashboardDataModel> = mutableListOf()
-
-        dbRepository.getAggregateTagsAndExpensesByPeriod(DbRepository.Period.MONTH).entries.forEach {
-            it.key?.let { name ->
-                storeList.add(
-                    DashboardDataModel.Test(
-                        id = StoreId.getId(),
-                        name = name,
-                        value = it.value
-                    )
-                )
-            }
-        }
-
-        _store.value = storeList
-
-    }
 }
 
 

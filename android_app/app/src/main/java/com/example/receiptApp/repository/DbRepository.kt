@@ -382,7 +382,6 @@ class DbRepository(
             date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)
         }
 
-
         val dbAggregate = Aggregate(date = date, attachment = attachmentUri).also { it.tag = aggregate.tag }
         val dbElements = elements.map {
             if (it.cost == null || it.cost == null) throw IllegalArgumentException("cost or num cannot be null")

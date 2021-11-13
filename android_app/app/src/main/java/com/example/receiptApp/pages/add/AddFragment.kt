@@ -98,6 +98,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             fab.setOnClickListener {
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
                 viewModel.saveToDb()
+                findNavController().navigateUp()
             }
         }
 
