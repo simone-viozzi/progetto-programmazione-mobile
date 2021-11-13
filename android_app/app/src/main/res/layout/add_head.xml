@@ -17,11 +17,14 @@
             android:hint="tag"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+             >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,7 +71,8 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textFieldDate"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars"
+            tools:visibility="visible"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline4"
@@ -87,6 +91,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
             app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
             app:layout_constraintTop_toTopOf="@+id/thumbnail" />
 

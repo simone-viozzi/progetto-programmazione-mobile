@@ -74,28 +74,36 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
 
         _homeState.value = HomeState.StoreMode
 
-        if (store.value == null)
-        {
-            loadStore()
-        }
+        loadStore()
     }
 
     fun saveDashboard() = viewModelScope.launch {
-        val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
 
-        _dashboard.value?.let {
-            it.forEachIndexed { i, element ->
-                needToSave[i] = element
+        if (_dashboard.value?.isNotEmpty() == true)
+        {
+            val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
+
+            _dashboard.value?.let {
+                it.forEachIndexed { i, element ->
+                    needToSave[i] = element
+                }
             }
+
+            sharedPrefRepository.writeDashboard(needToSave)
+
+            homeStateStack.clear()
+            homeStateStack.push(HomeState.NormalMode)
+            Timber.e("homeStateStack -> $homeStateStack")
+
+            _homeState.value = HomeState.NormalMode
         }
+        else
+        {
+            homeStateStack.push(HomeState.EmptyDashMode)
+            Timber.e("homeStateStack -> $homeStateStack")
 
-        sharedPrefRepository.writeDashboard(needToSave)
-
-        homeStateStack.clear()
-        homeStateStack.push(HomeState.NormalMode)
-        Timber.e("homeStateStack -> $homeStateStack")
-
-        _homeState.value = HomeState.NormalMode
+            _homeState.value = HomeState.EmptyDashMode
+        }
     }
 
     private fun loadDashboard() = viewModelScope.launch {
@@ -154,6 +162,7 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
 
         val period = DbRepository.Period.MONTH
         dbRepository.getAggregateTagsAndExpensesByPeriod(period).entries.forEach {
+            Timber.e("it -> $it")
             it.key?.let { name ->
                 storeList.add(
                     DashboardDataModel.Test(
@@ -190,18 +199,6 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         }
     }
 
-    fun clearDashboard()
-    {
-        homeStateStack.clear()
-        homeStateStack.push(HomeState.EmptyDashMode)
-        Timber.e("homeStateStack -> $homeStateStack")
-
-        sharedPrefRepository.clearDashboard()
-        _dashboard.value = emptyList()
-        Id.lastId = 0
-        _homeState.value = HomeState.EmptyDashMode
-    }
-
     fun goBackToPreviousState()
     {
         homeStateStack.peekPrevious()?.let {
@@ -219,6 +216,22 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         Timber.e("homeStateStack -> $homeStateStack")
 
         return state ?: HomeState.NoState
+    }
+
+    fun clearDashboard()
+    {
+        homeStateStack.clear()
+        homeStateStack.push(HomeState.EmptyDashMode)
+        Timber.e("homeStateStack -> $homeStateStack")
+
+        sharedPrefRepository.clearDashboard()
+        _dashboard.value = emptyList()
+        Id.lastId = 0
+        _homeState.value = HomeState.EmptyDashMode
+    }
+
+    fun clearDb() = viewModelScope.launch {
+        dbRepository.clearDb()
     }
 
 }

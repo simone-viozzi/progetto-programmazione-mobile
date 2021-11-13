@@ -401,5 +401,10 @@ class DbRepository(
         aggregateDao.insertAggregateWithElements(dbAggregate, dbElements)
     }
 
+    suspend fun clearDb()
+    {
+        aggregateDao.deleteAll()
+    }
+
 
 }

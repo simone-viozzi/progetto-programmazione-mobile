@@ -57,7 +57,6 @@ class DashboardFragment : Fragment()
         binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
 
         binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
-        //binding.homeMotionLayout.jumpToState(R.id.baseConstraint)
 
         val dashAdapter = DashboardAdapter()
 
@@ -204,8 +203,8 @@ class DashboardFragment : Fragment()
                     with((activity as MainActivity).binding)
                     {
                         fab.hide()
-
                         bottomAppBar.replaceMenu(R.menu.bottom_bar_menu_hide)
+                        bottomAppBar.navigationIcon = null
                     }
 
                     with(binding)
@@ -280,6 +279,7 @@ class DashboardFragment : Fragment()
                 R.id.bottom_bar_menu_clear_dash ->
                 {
                     viewModel.clearDashboard()
+                    viewModel.clearDb()
                     true
                 }
                 else -> false
