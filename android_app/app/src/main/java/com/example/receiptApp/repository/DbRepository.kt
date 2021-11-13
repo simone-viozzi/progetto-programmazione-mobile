@@ -361,6 +361,9 @@ class DbRepository(
         return mapTagExpenses
     }
 
+    // ##########################################################################
+    // INSERT METHODS
+
     /**
      * Get element tags and expenses by period
      *
@@ -401,6 +404,15 @@ class DbRepository(
 
         aggregateDao.insertAggregateWithElements(dbAggregate, dbElements)
     }
+
+    // ##########################################################################
+    // GET METHODS
+
+
+
+    // ##########################################################################
+    // UPDATE METHODS
+
 
 
 }
