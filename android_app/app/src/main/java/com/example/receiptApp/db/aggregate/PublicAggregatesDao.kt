@@ -190,33 +190,33 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
     // Get count queries aggregates
 
     @Query("SELECT COUNT(*) FROM aggregate")
-    suspend fun countAllAggregates(): Long
+    suspend fun countAllAggregates(): Long?
 
     @Transaction
-    suspend fun countAllAggregatesByTagId(tag_id: Long?): Long{
+    suspend fun countAllAggregatesByTagId(tag_id: Long?): Long?{
         return _countAllAggregatesByTagId(tag_id)
     }
 
     @Query("SELECT COUNT(*) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date AND aggregate.tag_id = :tag_id")
-    suspend fun countAllAggregatesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Long
+    suspend fun countAllAggregatesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Long?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate")
-    suspend fun countAllExpenses(): Float
+    suspend fun countAllExpenses(): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date <= :date")
-    suspend fun countAllExpensesBeforeDate(date: Date): Float
+    suspend fun countAllExpensesBeforeDate(date: Date): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :date")
-    suspend fun countAllExpensesAfterDate(date: Date): Float
+    suspend fun countAllExpensesAfterDate(date: Date): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date")
-        suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float
+        suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.tag_id = :tag_id")
-    suspend fun countAllExpensesByTag(tag_id: Long?): Float
+    suspend fun countAllExpensesByTag(tag_id: Long?): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date AND aggregate.tag_id = :tag_id")
-    suspend fun countAllExpensesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Float
+    suspend fun countAllExpensesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Float?
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
