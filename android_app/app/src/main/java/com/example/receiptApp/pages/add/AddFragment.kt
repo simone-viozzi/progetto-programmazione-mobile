@@ -46,7 +46,10 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private lateinit var permHandler: PermissionsHandling
 
     private val viewModel: AddViewModel by viewModels {
-        AddViewModelFactory((activity?.application as App).attachmentRepository)
+        AddViewModelFactory(
+            (activity?.application as App).attachmentRepository,
+                (activity?.application as App).dbRepository
+        )
     }
 
     private lateinit var binding: AddFragmentBinding
@@ -93,8 +96,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
             fab.setImageResource(R.drawable.ic_baseline_check_24)
             fab.setOnClickListener {
-                Toast.makeText(activity, "halooo dal fab", Toast.LENGTH_SHORT).show()
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
+                viewModel.saveToDb()
             }
         }
 

@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.receiptApp.pages.home.HomeViewModel" />
+            type="com.example.receiptApp.pages.dashboard.HomeViewModel" />
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout

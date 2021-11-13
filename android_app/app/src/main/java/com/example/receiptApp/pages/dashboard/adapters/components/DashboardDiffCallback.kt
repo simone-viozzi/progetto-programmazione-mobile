@@ -1,7 +1,7 @@
-package com.example.receiptApp.pages.home.adapters.components
+package com.example.receiptApp.pages.dashboard.adapters.components
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.receiptApp.pages.home.DashboardDataModel
+import com.example.receiptApp.pages.dashboard.DashboardDataModel
 
 
 class DashboardDiffCallback : DiffUtil.ItemCallback<DashboardDataModel>()

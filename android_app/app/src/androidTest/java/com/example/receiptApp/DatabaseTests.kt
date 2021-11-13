@@ -21,12 +21,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import kotlin.math.abs
 
-/**
- * This is not meant to be a full set of tests. For simplicity, most of your samples do not
- * include tests. However, when building the Room, it is helpful to make sure it works before
- * adding the UI.
- */
-
 @RunWith(AndroidJUnit4::class)
 class DatabaseTests
 {
@@ -52,7 +46,6 @@ class DatabaseTests
 
     val aggregateTagsList = listOf<String>("alimentari", "banca", "macchina", "bollette", "viaggi")
     val elementTagsList = listOf<String>("colazione", "tagliando auto", "acqua", "luce", "biglietto aereo", "cornetto", "mouse", "bullone", "taralli")
-
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()

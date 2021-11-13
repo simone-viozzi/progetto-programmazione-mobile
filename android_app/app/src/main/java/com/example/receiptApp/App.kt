@@ -17,7 +17,7 @@ class App : Application()
 {
     val database by lazy { AppDatabase.getInstance(this) }
 
-    private val dbRepository by lazy {
+    val dbRepository by lazy {
         DbRepository(
             database.aggregateDao(),
             database.elementsDao(),

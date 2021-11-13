@@ -51,6 +51,25 @@ fun <T> LiveData<T>.getOrAwaitValue(
 }
 
 object databaseTestHelper {
+
+
+    /**
+     * Generate agregates and elements
+     *
+     * @param aggregatesList
+     * @param listOfElementsLists
+     * @param aggregateIdsList
+     * @param aggregateTagsList
+     * @param elementTagsList
+     * @param aggregatesDao
+     * @param aggr_num
+     * @param elem_num
+     * @param elem_num_casual if true each aggregate can has a random number of elements between 1 and elem_num otherwise each aggregate will has elem_num elements
+     * @param elem_fixed_num if
+     * @param elem_fixed_cost
+     * @param date_fixed_increment
+     * @return
+     */
     suspend fun generateAgregatesAndElements(
         aggregatesList: MutableList<Aggregate>,
         listOfElementsLists: MutableList<List<Element>>,
@@ -60,7 +79,10 @@ object databaseTestHelper {
         aggregatesDao: PublicAggregatesDao,
         aggr_num: Long = 10,
         elem_num: Long = 10,
-        elem_num_casual: Boolean = false
+        elem_num_casual: Boolean = false,
+        elem_fixed_num: Long? = null,
+        elem_fixed_cost: Float? = null,
+        date_fixed_increment: Long? = null
     ): Long{
 
         var elements_num = 0L
@@ -105,5 +127,7 @@ object databaseTestHelper {
         }
         return elements_num
     }
+
+
 }
 

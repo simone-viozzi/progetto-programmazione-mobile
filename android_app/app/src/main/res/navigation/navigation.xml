@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="com.example.receiptApp.pages.home.DashboardFragment"
+        android:name="com.example.receiptApp.pages.dashboard.DashboardFragment"
         android:label="home_fragment"
         tools:layout="@layout/dashboard_fragment" >
         <action

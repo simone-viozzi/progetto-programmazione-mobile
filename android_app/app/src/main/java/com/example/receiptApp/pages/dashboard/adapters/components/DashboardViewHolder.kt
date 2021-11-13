@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.home.adapters.components
+package com.example.receiptApp.pages.dashboard.adapters.components
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -6,7 +6,7 @@ import androidx.viewbinding.ViewBinding
 import com.example.receiptApp.databinding.DashboardElementTestBigBinding
 import com.example.receiptApp.databinding.DashboardElementTestBinding
 import com.example.receiptApp.databinding.DashboardElementTestSquareBinding
-import com.example.receiptApp.pages.home.DashboardDataModel
+import com.example.receiptApp.pages.dashboard.DashboardDataModel
 
 
 
@@ -29,7 +29,8 @@ sealed class DashboardViewHolder(
         {
             (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
 
-            binding.textView1.text = holder.id.toString()
+            binding.textView1.text = holder.name
+            binding.textView2.text = holder.value.toString()
 
             binding.cardView.setOnLongClickListener {
                 onLongClickListener?.invoke()
