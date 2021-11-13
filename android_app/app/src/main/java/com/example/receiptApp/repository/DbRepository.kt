@@ -266,6 +266,35 @@ class DbRepository(
         )
     }
 
+    suspend fun getAggregateTagCount(
+        start: Date = Date(0),
+        end: Date = Date()
+    ):Map<String?, Long>{
+        // NOTA: poteva essere reso piu efficiente integrando le query ma non c'è tempo
+        val tagsList = tagDao.getAggregateTags()
+        var mapTagCount = mutableMapOf<String?, Long>()
+
+        tagsList?.forEach {
+            mapTagCount[it.tag_name] = aggregateDao.countAllAggregatesBetweenDatesByTag(start, end, it.tag_id)
+        }
+
+        return mapTagCount
+    }
+
+    /**
+     * Get aggregate tags and count by period
+     *
+     * @param period
+     * @return
+     */
+    suspend fun getAggregateTagCountByPeriod(
+        period: Period
+    ):Map<String?, Long>{
+        return getAggregateTagsAndCount(
+            start = getPeriodStartDate(period)
+        )
+    }
+
     /**
      * Get aggregate tags and expenses
      * Category:
