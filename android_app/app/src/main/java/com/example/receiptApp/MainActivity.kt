@@ -38,11 +38,9 @@ class MainActivity : AppCompatActivity()
 
 
         ////////////////////// set the nav navController //////////////////////
-        // TODO there is a better way to bind those?
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
         binding.navigationView.setupWithNavController(navController)
-
 
 
         // callBack for then the user click on the hamburger icon

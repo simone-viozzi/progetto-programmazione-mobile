@@ -37,10 +37,6 @@ class AttachmentRepository(private val applicationContext: Context)
     val galleryImagesPaginated = GalleryImagesPaginated(galleryImages)
 
     suspend fun copyAttachment(attachment: Attachment): Uri? = withContext(Dispatchers.IO) {
-        if (!attachment.needToCopy)
-        {
-            return@withContext attachment.uri
-        }
 
         val filesPath = when (attachment.type)
         {

@@ -1,6 +1,7 @@
 package com.example.receiptApp.pages.add
 
 import android.Manifest
+import android.annotation.TargetApi
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -29,11 +31,20 @@ import com.example.receiptApp.pages.add.adapters.GalleryAdapter
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.utils.PermissionsHandling
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.CalendarConstraints.DateValidator
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
+import java.util.*
+import com.google.android.material.datepicker.DateValidatorPointBackward
+
+import com.google.android.material.datepicker.DateValidatorPointForward
+
+
+
 
 
 /**
@@ -80,6 +91,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+        // disable the system autofill
+        disableAutofill()
 
         with(binding)
         {
@@ -104,6 +117,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         permHandler = PermissionsHandling(frag = this)
 
+        // ask the permission for the attachment
         permHandler.setCallbacksAndAsk(
             permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             {
@@ -122,9 +136,9 @@ class AddFragment : Fragment(R.layout.add_fragment)
             denied = onPermissionDenied
         )
 
+        // in this fragment the animation will perform first and than the graphics change, this is a bit laggy
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
         {
-
             override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int)
             {
             }
@@ -137,7 +151,9 @@ class AddFragment : Fragment(R.layout.add_fragment)
             {
                 when (currentId)
                 {
+                    // the start state is the one with the attachment closed
                     R.id.start -> setAttachmentVisible(false)
+                    // the end state is with the attachment open
                     R.id.end -> setAttachmentVisible(true)
                 }
             }
@@ -150,7 +166,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
             )
             {
             }
-
         })
 
         // set the toolbar for this fragment
@@ -158,17 +173,21 @@ class AddFragment : Fragment(R.layout.add_fragment)
         setHasOptionsMenu(true)
         (activity as AppCompatActivity).setSupportActionBar(binding.topAppBar)
 
-
+        // handling of the up button in the appbar
         binding.topAppBar.setNavigationOnClickListener {
             // TODO need to check the state before going up!
             findNavController().navigateUp()
         }
 
 
+        val dateValidatorMax: DateValidator = DateValidatorPointBackward.before(MaterialDatePicker.todayInUtcMilliseconds())
+
         val datePicker = MaterialDatePicker.Builder.datePicker()
             // TODO get the string out of here!
             .setTitleText("Select date")
+            // select today as default date
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .setCalendarConstraints(CalendarConstraints.Builder().setValidator(dateValidatorMax).build())
             .build()
 
 
@@ -193,6 +212,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             addAdapter.submitList(it)
         }
 
+        // pressing on the scrim close the attachment recyclerView with the animation
         binding.scrim.setOnClickListener {
             binding.addMotionLayout.transitionToState(R.id.start)
         }
@@ -202,18 +222,25 @@ class AddFragment : Fragment(R.layout.add_fragment)
             adapter = addAdapter
         }
 
-        binding.recyclerViewImgs.layoutManager = GridLayoutManager(activity, 3)
+        viewModel.autoComplete.observe(viewLifecycleOwner) {
+            addAdapter.autocompleteAdapter = ArrayAdapter(activity as MainActivity, android.R.layout.simple_dropdown_item_1line, it)
+        }
 
         val galleryAdapter = GalleryAdapter {
             viewModel.setAttachment(it)
 
             addAdapter.notifyItemChanged(0)
-
             binding.addMotionLayout.transitionToState(R.id.start)
         }
 
-        binding.recyclerViewImgs.adapter = galleryAdapter
 
+        binding.recyclerViewImgs.apply {
+            layoutManager = GridLayoutManager(activity, 3)
+            adapter = galleryAdapter
+        }
+
+        // the galleryAdapter need the submit data to be in a coroutine, we are not actually using the states,
+        // but they are implemented.
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.galleryState.collectLatest { state ->
 
@@ -236,7 +263,11 @@ class AddFragment : Fragment(R.layout.add_fragment)
         setAttachmentVisible(false)
     }
 
-
+    /**
+     * modify the graphics to display / hide the attachment section
+     *
+     * @param visible
+     */
     fun setAttachmentVisible(visible: Boolean)
     {
         with(binding)
@@ -258,6 +289,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
             val menuItemClickListener: (MenuItem) -> Boolean
             if (visible)
             {
+                // if the attachment is visible the menu will be bottom_bar_menu_attach, so we need to handle the
+                // camera and file attachments
                 menuItemClickListener = {
                     when (it.itemId)
                     {
@@ -277,6 +310,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
             } else
             {
+                // if !visible, the menu need to open the attachment section
                 menuItemClickListener = {
                     binding.addMotionLayout.transitionToState(R.id.end)
                     true
@@ -286,6 +320,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         }
     }
 
+    // TODO debug this
     private fun handleCamera()
     {
         permHandler.setCallbacksAndAsk(
@@ -310,7 +345,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         )
     }
 
-
+    // TODO this is debugged halfway
     private val getFile = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri ->
@@ -321,6 +356,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         viewModel.setAttachment(uri, AttachmentRepository.TYPE.PDF)
     }
 
+    // TODO debug thiss
     private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {
 
         binding.addMotionLayout.transitionToState(R.id.start)
@@ -329,5 +365,15 @@ class AddFragment : Fragment(R.layout.add_fragment)
         if (it) Timber.d("got camera") else Timber.e("no camera")
     }
 
+
+    /**
+     * Disable system autofill for this fragment, if we didn't put this the system will try to autofill passwords
+     * in our app
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun disableAutofill()
+    {
+        activity?.window?.decorView?.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+    }
 
 }

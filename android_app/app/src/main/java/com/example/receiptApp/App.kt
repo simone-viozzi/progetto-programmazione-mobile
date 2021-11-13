@@ -31,10 +31,6 @@ class App : Application()
 
     val graphsRepository by lazy { GraphsRepository(this, dbRepository)}
 
-    // TODO implement repositories
-    // val repository by lazy { ColorRepository(database.colorDao()) }
-
-
 
     override fun onCreate()
     {

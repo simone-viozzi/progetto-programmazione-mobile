@@ -156,10 +156,12 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         }
     }
 
+
     private fun loadStore() = viewModelScope.launch {
 
         val storeList: MutableList<DashboardDataModel> = mutableListOf()
 
+        //TODO("bug here!!")
         val period = DbRepository.Period.MONTH
         dbRepository.getAggregateTagsAndExpensesByPeriod(period).entries.forEach {
             Timber.e("it -> $it")
@@ -168,7 +170,7 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
                     DashboardDataModel.Test(
                         id = StoreId.getId(),
                         name = name,
-                        value = it.value,
+                        value = it.value, // this is null! why??? TODO
                         content = "sumTag:$name:${period.name}"
                     )
                 )

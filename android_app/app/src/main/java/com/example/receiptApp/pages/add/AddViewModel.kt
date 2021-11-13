@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -35,12 +36,14 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     private val _galleryState = MutableStateFlow<GalleryDataState>(GalleryDataState.Idle)
     val galleryState: StateFlow<GalleryDataState> = _galleryState
 
+    private val _autoComplete = MutableLiveData<List<String>>()
+    val autoComplete: LiveData<List<String>> = _autoComplete
+
     private var attachment: AttachmentRepository.Attachment? = null
 
     // the callback used by every element of the views in the textWatcher to update the corresponding element in the
     // view model, it pass an element with only the updated field and the id != null
     var textEditCallback: ((el: AddDataModel) -> (Unit)) = { el ->
-
         // need to separate the two types
         when (el)
         {
@@ -68,13 +71,11 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
 
                 // TODO update the list only if there was a change!
                 _rvList.value = newList?.also {
-                    if (el.vId == getLastId(false))
-                    {
-                        it.add(AddDataModel.Element(vId = getLastId()))
-                    }
+                    if (el.vId == getLastId(false)) it.add(AddDataModel.Element(vId = getLastId()))
                 }
             }
         }
+        Timber.d("rv updated")
     }
 
     init
@@ -113,8 +114,6 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
         this.attachment = attachment
     }
 
-
-
     private val flow = Pager(
         PagingConfig(
             pageSize = 32,
@@ -135,16 +134,21 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     }
 
 
+    /**
+     * Save what the user inserted into the db
+     *
+     */
     fun saveToDb() = viewModelScope.launch {
         _rvList.value?.let { currList ->
-            val attachmentUri = attachment?.let { attachmentRepository.copyAttachment(it) }
+            // if the attachment is not into the private memory of the app i need to copy it there
+            val attachmentUri = attachment?.let { if (!it.needToCopy) it.uri else attachmentRepository.copyAttachment(it) }
 
+            // split the list taking the aggregate and all the elements
             val aggregate = currList[0] as AddDataModel.Aggregate
             val elements = currList.subList(1, currList.lastIndex).map { it as AddDataModel.Element }
 
             dbRepository.insertAggregateWithElements(aggregate, elements, attachmentUri)
         }
-
     }
 
     fun setAttachment(uri: Uri, type: AttachmentRepository.TYPE)
@@ -153,6 +157,10 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
             attachment = AttachmentRepository.Attachment(it, uri, null, true, type)
         }
     }
+
+
+    private val COUNTRIES =  listOf("Belgium", "Balbe", "Balbus", "France", "Italy", "Germany", "Spain")
+
 
 }
 
