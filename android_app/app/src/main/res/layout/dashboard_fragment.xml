@@ -88,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:alpha="0"
-            android:background="@color/design_default_color_background"
+            android:background="?android:attr/colorBackground"
             android:elevation="7dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
