@@ -35,6 +35,7 @@ class AddAdapter(
     object SelfCheckCallbacks
     {
         var selfCheckAggregate: (() -> Unit)? = null
+        var selfCheckElements: MutableMap<Int, (() -> Unit)?> = mutableMapOf()
     }
 
 
@@ -81,10 +82,6 @@ class AddAdapter(
     sealed class AddViewHolder(binding: ViewBinding) :
         RecyclerView.ViewHolder(binding.root)
     {
-
-        // TODO!!
-        var selfCheckElement: ((Int) -> Unit)? = null
-
 
         fun showSuggestions(editText: AppCompatAutoCompleteTextView, callback: (() -> Array<String?>?), context: Context)
         {
@@ -153,8 +150,12 @@ class AddAdapter(
                 }
 
                 SelfCheckCallbacks.selfCheckAggregate = {
-                    Toast.makeText(binding.root.context, "selfCheckAggregate", Toast.LENGTH_LONG).show()
-                    Timber.e("selfCheckAggregate called!!!")
+                    if (binding.dateText.text.isNullOrEmpty())
+                    {
+                        binding.textFieldDate.apply {
+                            error = "this field is required"
+                        }
+                    }
                 }
             }
 
@@ -225,6 +226,7 @@ class AddAdapter(
                                 vId = position, num = text.toString().toIntOrNull()
                             )
                         )
+                        binding.textFieldNum.error = null
                     }
                 }
 
@@ -260,6 +262,7 @@ class AddAdapter(
                                 vId = position, cost = text.toString().toDoubleOrNull()
                             )
                         )
+                        binding.textFieldNum.error = null
                     }
                 }
             }
@@ -270,6 +273,22 @@ class AddAdapter(
                 binding.textFieldNum.editText?.text = element.num?.toString()?.toEditable()
                 binding.textFieldTag.editText?.text = element.elem_tag?.toEditable()
                 binding.textFieldCost.editText?.text = element.cost?.toString()?.toEditable()
+
+                SelfCheckCallbacks.selfCheckElements[element.vId] = {
+                    Toast.makeText(binding.root.context, "selfCheckAggregate", Toast.LENGTH_LONG).show()
+                    Timber.e("selfCheckAggregate called!!!")
+
+                    if (binding.textFieldNumEditText.text.isNullOrEmpty())
+                    {
+                        binding.textFieldNum.error = "required"
+
+                    }
+                    if (binding.textFieldCostEditText.text.isNullOrEmpty())
+                    {
+                        binding.textFieldCost.error = "required"
+
+                    }
+                }
             }
         }
     }

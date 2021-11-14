@@ -2,6 +2,7 @@ package com.example.receiptApp.pages.add
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.content.DialogInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,11 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -108,7 +107,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
             fab.setOnClickListener {
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
 
-                viewModel.setCheckCallbacks(AddAdapter.SelfCheckCallbacks.selfCheckAggregate)
+                viewModel.selfCheckAggregate = AddAdapter.SelfCheckCallbacks.selfCheckAggregate
+                viewModel.selfCheckElements = AddAdapter.SelfCheckCallbacks.selfCheckElements
 
                 if (viewModel.selfIntegrityCheck())
                 {
@@ -116,8 +116,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
                     Timber.e("going up")
                     findNavController().navigateUp()
-                }
-                else
+                } else
                 {
                     Toast.makeText(activity, "those fields are required!", Toast.LENGTH_SHORT).show()
                 }
@@ -177,8 +176,23 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         // handling of the up button in the appbar
         binding.topAppBar.setNavigationOnClickListener {
-            // TODO need to check the state before going up!
-            findNavController().navigateUp()
+            // 1. Instantiate an <code><a href="/reference/android/app/AlertDialog.Builder.html">AlertDialog.Builder</a></code> with its constructor
+            val alertDialog: AlertDialog? = activity?.let {
+                val builder = AlertDialog.Builder(it)
+                builder.apply {
+                    setPositiveButton(R.string.ok) { dialog, id ->
+                        // User clicked OK button
+                        findNavController().navigateUp()
+                    }
+                    setNegativeButton("cancel") { dialog, id ->
+                        // User cancelled the dialog
+                    }
+                    setTitle("Are you sure?")
+                }
+                // Create the AlertDialog
+                builder.create()
+            }
+            alertDialog?.show()
         }
 
 

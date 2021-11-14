@@ -18,6 +18,7 @@ import timber.log.Timber
 class AddViewModel(private val attachmentRepository: AttachmentRepository, private val dbRepository: DbRepository) :
     ViewModel()
 {
+
     // the list observed by the recyclerview
     private val _rvList = MutableLiveData<List<AddDataModel>>()
     val rvList: LiveData<List<AddDataModel>>
@@ -159,11 +160,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     }
 
     var selfCheckAggregate: (() -> Unit)? = null
-
-    fun setCheckCallbacks(selfCheckAggregate: (() -> Unit)?)
-    {
-        this.selfCheckAggregate = selfCheckAggregate
-    }
+    var selfCheckElements: Map<Int, (() -> Unit)?>? = null
 
     fun selfIntegrityCheck(): Boolean
     {
@@ -174,12 +171,13 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
         if (aggregate.str_date.isNullOrEmpty())
         {
             selfCheckAggregate?.invoke()
-            ret =  false
+            ret = false
         }
 
         elements.forEach {
             if (it.cost == null || it.num == null)
             {
+                selfCheckElements?.get(it.vId)?.invoke()
                 ret = false
             }
         }
