@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
@@ -30,6 +31,11 @@ class AddAdapter(
 ) :
     ListAdapter<AddDataModel, AddAdapter.AddViewHolder>(AddDiffCallback())
 {
+
+    object SelfCheckCallbacks
+    {
+        var selfCheckAggregate: (() -> Unit)? = null
+    }
 
 
     /**
@@ -75,9 +81,13 @@ class AddAdapter(
     sealed class AddViewHolder(binding: ViewBinding) :
         RecyclerView.ViewHolder(binding.root)
     {
+
+        // TODO!!
+        var selfCheckElement: ((Int) -> Unit)? = null
+
+
         fun showSuggestions(editText: AppCompatAutoCompleteTextView, callback: (() -> Array<String?>?), context: Context)
         {
-
             callback.invoke()?.let { hints ->
                 val adapter = ArrayAdapter(
                     context,
@@ -95,7 +105,6 @@ class AddAdapter(
             }
         }
 
-
         /**
          * view holder of the block relative to the aggregate data
          *
@@ -112,7 +121,6 @@ class AddAdapter(
             autocomplete: (() -> Array<String?>?)
         ) : AddViewHolder(binding)
         {
-
             // the callbacks need to be in the init section
             init
             {
@@ -142,6 +150,11 @@ class AddAdapter(
 
                 binding.dateOverlay.setOnClickListener {
                     calendarClick.invoke()
+                }
+
+                SelfCheckCallbacks.selfCheckAggregate = {
+                    Toast.makeText(binding.root.context, "selfCheckAggregate", Toast.LENGTH_LONG).show()
+                    Timber.e("selfCheckAggregate called!!!")
                 }
             }
 

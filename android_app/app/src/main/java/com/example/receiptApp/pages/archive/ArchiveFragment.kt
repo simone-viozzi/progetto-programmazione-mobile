@@ -79,7 +79,7 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
 
         val lp = binding.collapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
         lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
-        
+
         val appBarLayoutParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
         appBarLayoutHeight = appBarLayoutParams.height
         appBarLayoutParams.behavior = null

@@ -23,3 +23,5 @@ val Int.px: Int
 const val DATABASE_NAME = "recipe-db"
 const val THUMBNAIL_SIZE = 200
 const val SHARED_PREF_DASHBOARD = "SharedPrefDashboard"
+
+const val DATE_PICKER_TAG = "DatePickerTag"

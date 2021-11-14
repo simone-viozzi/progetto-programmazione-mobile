@@ -65,11 +65,11 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
 
                 val newList = _rvList.value?.toMutableList().also { it?.set(el.vId, oldEl) }
 
-                if (el.vId == getLastId(false)-1)
+                if (el.vId == getLastId(false) - 1)
                 {
                     newList?.also { list ->
                         val lastIndex = list.lastIndex
-                        list[lastIndex] = AddDataModel.Element(vId = lastIndex, elem_tag = el.elem_tag )
+                        list[lastIndex] = AddDataModel.Element(vId = lastIndex, elem_tag = el.elem_tag)
                     }
                 }
 
@@ -145,25 +145,65 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
     }
 
 
+    private fun spitAggregateAndElements(): Pair<AddDataModel.Aggregate, List<AddDataModel.Element>>
+    {
+        _rvList.value?.let { currList ->
+
+            // split the list taking the aggregate and all the elements
+            val aggregate = currList[0] as AddDataModel.Aggregate
+            val elements = currList.subList(1, currList.lastIndex).map { it as AddDataModel.Element }
+
+            return Pair(aggregate, elements)
+        }
+        throw NullPointerException("rvList.value is null!")
+    }
+
+    var selfCheckAggregate: (() -> Unit)? = null
+
+    fun setCheckCallbacks(selfCheckAggregate: (() -> Unit)?)
+    {
+        this.selfCheckAggregate = selfCheckAggregate
+    }
+
+    fun selfIntegrityCheck(): Boolean
+    {
+        val (aggregate, elements) = spitAggregateAndElements()
+
+        var ret = true
+
+        if (aggregate.str_date.isNullOrEmpty())
+        {
+            selfCheckAggregate?.invoke()
+            ret =  false
+        }
+
+        elements.forEach {
+            if (it.cost == null || it.num == null)
+            {
+                ret = false
+            }
+        }
+
+        return ret
+    }
+
+
     /**
      * Save what the user inserted into the db
      *
      */
     @DelicateCoroutinesApi
     fun saveToDb() = GlobalScope.launch {
-        _rvList.value?.let { currList ->
-            // if the attachment is not into the private memory of the app i need to copy it there
-            val attachmentUri =
-                attachment?.let { if (!it.needToCopy) it.uri else attachmentRepository.copyAttachment(it) }
 
-            // split the list taking the aggregate and all the elements
-            val aggregate = currList[0] as AddDataModel.Aggregate
-            val elements = currList.subList(1, currList.lastIndex).map { it as AddDataModel.Element }
+        val (aggregate, elements) = spitAggregateAndElements()
 
-            dbRepository.insertAggregateWithElements(aggregate, elements, attachmentUri)
+        // if the attachment is not into the private memory of the app i need to copy it there
+        val attachmentUri =
+            attachment?.let { if (!it.needToCopy) it.uri else attachmentRepository.copyAttachment(it) }
 
-            Timber.e("fine inserimento")
-        }
+        dbRepository.insertAggregateWithElements(aggregate, elements, attachmentUri)
+
+        Timber.e("fine inserimento")
     }
 
     fun setAttachment(uri: Uri, type: AttachmentRepository.TYPE)

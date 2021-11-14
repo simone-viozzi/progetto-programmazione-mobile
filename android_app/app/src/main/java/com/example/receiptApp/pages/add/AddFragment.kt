@@ -12,7 +12,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,6 +25,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
+import com.example.receiptApp.DATE_PICKER_TAG
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddFragmentBinding
@@ -104,10 +108,19 @@ class AddFragment : Fragment(R.layout.add_fragment)
             fab.setOnClickListener {
                 Timber.d("\nlist -> \n${viewModel.rvList.value}")
 
-                viewModel.saveToDb()
+                viewModel.setCheckCallbacks(AddAdapter.SelfCheckCallbacks.selfCheckAggregate)
 
-                Timber.e("going up")
-                findNavController().navigateUp()
+                if (viewModel.selfIntegrityCheck())
+                {
+                    viewModel.saveToDb()
+
+                    Timber.e("going up")
+                    findNavController().navigateUp()
+                }
+                else
+                {
+                    Toast.makeText(activity, "those fields are required!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -135,13 +148,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
         // in this fragment the animation will perform first and than the graphics change, this is a bit laggy
         binding.addMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener
         {
-            override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int)
-            {
-            }
-
-            override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float)
-            {
-            }
+            override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {}
+            override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) {}
 
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int)
             {
@@ -159,9 +167,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 triggerId: Int,
                 positive: Boolean,
                 progress: Float
-            )
-            {
-            }
+            ) {}
         })
 
         // set the toolbar for this fragment
@@ -187,7 +193,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             .build()
 
 
-        // the adapter take the two callBacks, one is implemented in the View model the other here
+        // the adapter take the four callBacks, 3 are in the View model and the other here
         addAdapter = AddAdapter(
             viewModel.textEditCallback,
             viewModel.autoCompleteAggregateCallback,
@@ -195,7 +201,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         ) {
             if (!datePicker.isVisible)
             {
-                datePicker.show(childFragmentManager, "tag")
+                datePicker.show(childFragmentManager, DATE_PICKER_TAG)
             }
         }
 
