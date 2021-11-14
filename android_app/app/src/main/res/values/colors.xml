@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="graph_color1">#FF6200EE</color>
+    <color name="graph_color2">#FF3700B3</color>
+    <color name="graph_color3">#FF03DAC5</color>
+    <color name="graph_color4">#FF018786</color>
+
 </resources>

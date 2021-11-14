@@ -2,6 +2,7 @@ package com.example.receiptApp.repository
 
 import android.net.Uri
 import androidx.room.Transaction
+import com.example.receiptApp.Utils.databaseTestHelper
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
@@ -424,8 +425,7 @@ class DbRepository(
      * @return
      */
     suspend fun getElementTagsAndCountByPeriod(
-        period: Period,
-        sort: Boolean = true
+        period: Period
     ):Map<String?, Long>{
         return getElementTagsAndCount(
             start = getPeriodStartDate(period)
@@ -570,12 +570,6 @@ class DbRepository(
         aggregateDao.insertAggregateWithElements(dbAggregate, dbElements)
     }
 
-    suspend fun clearDb()
-    {
-        aggregateDao.deleteAll()
-    }
-
-
     // ##########################################################################
     // GET METHODS
 
@@ -584,4 +578,59 @@ class DbRepository(
     // ##########################################################################
     // UPDATE METHODS
 
+
+
+    // ##########################################################################
+    // DELETE METHODS
+
+    suspend fun clearDb()
+    {
+        aggregateDao.deleteAll()
+    }
+
+    // ##########################################################################
+    // DEBUG METHODS
+
+    suspend fun RandomFillDatabase() {
+        // TODO solo per il debug, rimuovere
+
+        val aggregatesList = mutableListOf<Aggregate>()
+        val listOfElementsLists = mutableListOf<List<Element>>()
+        val aggregateIdsList = mutableListOf<Long>()
+
+        val aggregateTagsList =
+            listOf<String>(
+                "alimentari",
+                "banca",
+                "macchina",
+                "bollette",
+                "viaggi"
+            )
+
+        val elementTagsList =
+            listOf<String>(
+            "colazione",
+            "tagliando auto",
+            "acqua",
+            "luce",
+            "biglietto aereo",
+            "cornetto",
+            "mouse",
+            "bullone",
+            "taralli"
+        )
+
+        // loading graphs data
+        databaseTestHelper.generateAgregatesAndElements(
+            aggregatesList = aggregatesList,
+            listOfElementsLists = listOfElementsLists,
+            aggregateIdsList = aggregateIdsList,
+            aggregateTagsList = aggregateTagsList,
+            elementTagsList = elementTagsList,
+            aggregatesDao = aggregateDao,
+            aggr_num = 300,
+            elem_num = 10,
+            elem_num_casual = true
+        )
+    }
 }

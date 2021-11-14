@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">receiptApp</string>
+
+    <string name="histo_month_expenses">Spese del mese</string>
+    <string name="histo_year_expenses">Spese del anno</string>
+    <string name="histo_month_expenses_by_atag">Spese del mese divise per tag aggregato</string>
+    <string name="histo_month_expenses_by_etag">Spese del mese divise per tag elemento</string>
+    <string name="histo_year_expenses_by_atag">Spese del anno divise per tag aggregato</string>
+    <string name="histo_year_expenses_by_etag">Spese del anno divise per tag elemento</string>
+    <string name="pie_count_by_atag">Conteggio delle spese mensili divise per tag aggregato</string>
+    <string name="pie_count_by_etag">Conteggio delle spese mensili divise per tag elemento</string>
+
+    <string name="expense">spesa: </string>
+    <string name="count">conteggio: </string>
+
+</resources>

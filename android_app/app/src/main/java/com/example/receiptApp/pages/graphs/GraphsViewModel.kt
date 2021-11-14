@@ -1,11 +1,13 @@
 package com.example.receiptApp.pages.graphs
 
 import androidx.lifecycle.*
+import com.example.receiptApp.R
 import com.example.receiptApp.repository.GraphsRepository
 import kotlinx.coroutines.launch
 
 class GraphsViewModel(private val graphsRepository: GraphsRepository) : ViewModel()
 {
+
     // the list observed by the recyclerview
     private val _rvList = MutableLiveData<List<GraphsDataModel>>()
     val rvList: LiveData<List<GraphsDataModel>>
@@ -15,26 +17,57 @@ class GraphsViewModel(private val graphsRepository: GraphsRepository) : ViewMode
         // In the initialization each graph should be created
         viewModelScope.launch {
 
-            // loading graphs data
-
+            graphsRepository.RandomFillDatabase()
 
             // create all the graph objects
             _rvList.value = listOf(
+                // ###########################################################################
+                // HIST GRAPHS
+
                 GraphsDataModel.Histogram(
                     id = 0,
-                    name = "test histogram 1",
-                    aaChartModel = graphsRepository.testMonthGraph()
+                    name = graphsRepository.getStrings(R.string.histo_month_expenses),
+                    aaChartModel = graphsRepository.monthExpensesHistogram()
                 ),
                 GraphsDataModel.Histogram(
                     id = 1,
-                    name = "test histogram 2",
-                    aaChartModel = graphsRepository.testYearGraph()
+                    name = graphsRepository.getStrings(R.string.histo_year_expenses),
+                    aaChartModel = graphsRepository.yearExpensesHistogram()
+                ),
+                GraphsDataModel.Histogram(
+                    id = 2,
+                    name = graphsRepository.getStrings(R.string.histo_month_expenses_by_atag),
+                    aaChartModel = graphsRepository.monthAggrTagExpensesHistogram()
+                ),
+                GraphsDataModel.Histogram(
+                    id = 3,
+                    name = graphsRepository.getStrings(R.string.histo_month_expenses_by_etag),
+                    aaChartModel = graphsRepository.monthElemTagExpensesHistogram()
+                ),
+                GraphsDataModel.Histogram(
+                    id = 4,
+                    name = graphsRepository.getStrings(R.string.histo_year_expenses_by_atag),
+                    aaChartModel = graphsRepository.yearAggrTagExpensesHistogram()
+                ),
+                GraphsDataModel.Histogram(
+                    id = 5,
+                    name = graphsRepository.getStrings(R.string.histo_year_expenses_by_etag),
+                    aaChartModel = graphsRepository.yearElemTagExpensesHistogram()
+                ),
+
+                // ###########################################################################
+                // CAKE GRAPHS
+
+                GraphsDataModel.Cake(
+                    id = 6,
+                    name = graphsRepository.getStrings(R.string.pie_count_by_atag),
+                    aaChartModel = graphsRepository.monthAggrCountByTagPie()
                 ),
                 GraphsDataModel.Cake(
-                    id = 2,
-                    name = "test pie 1",
-                    aaChartModel = graphsRepository.testPieGraph()
-                ),
+                    id = 7,
+                    name = graphsRepository.getStrings(R.string.pie_count_by_etag),
+                    aaChartModel = graphsRepository.monthElemCountByTagPie()
+                )
             )
         }
     }

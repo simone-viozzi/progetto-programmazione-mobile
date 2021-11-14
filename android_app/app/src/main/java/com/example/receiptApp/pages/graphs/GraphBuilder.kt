@@ -1,6 +1,10 @@
 package com.example.receiptApp.pages.graphs
 
 import android.content.Context
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
+import com.example.receiptApp.MainActivity
+import com.example.receiptApp.R
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
@@ -27,6 +31,13 @@ class GraphBuilder(
         "October",
         "November",
         "December"
+    )
+
+    val graph_theme = arrayOf<Any>(
+        "#" + Integer.toHexString(context.applicationContext.getColor(R.color.graph_color1)).substring(2),
+        "#" + Integer.toHexString(context.applicationContext.getColor(R.color.graph_color2)).substring(2),
+        "#" + Integer.toHexString(context.applicationContext.getColor(R.color.graph_color3)).substring(2),
+        "#" + Integer.toHexString(context.applicationContext.getColor(R.color.graph_color4)).substring(2)
     )
 
     /**
@@ -79,9 +90,9 @@ class GraphBuilder(
         return date_array
     }
 
-    fun multi_histogram(
+    fun multi_histogram(): AAChartModel {
 
-    ): AAChartModel {
+        // NOTE: present but not used
 
         return AAChartModel.Builder(context)
             .setChartType(AAChartType.Column)
@@ -110,7 +121,7 @@ class GraphBuilder(
     fun pie(
         categories: Array<String>,
         values_name: String = "series 1",
-        values: Array<Double>,
+        values: Array<Any>, //TODO verificare che i values as any non causino problemi, prima era Double
     ): AAChartModel {
 
         var pieData = Array<Any>(categories.size){
@@ -120,7 +131,8 @@ class GraphBuilder(
         return AAChartModel.Builder(context)
             .setChartType(AAChartType.Pie)
             .setBackgroundColor("#ffffff")
-            .setColorsTheme(arrayOf("#6200ee", "#3700B3", "#03DAC5", "#018786"))
+            //.setColorsTheme(arrayOf("#6200ee", "#3700B3", "#03DAC5", "#018786"))
+            .setColorsTheme(graph_theme)
             .setDataLabelsEnabled(false)
             .setYAxisGridLineWidth(0f)
             .setLegendEnabled(false)
@@ -155,6 +167,8 @@ class GraphBuilder(
             .setBackgroundColor("#ffffff")
             .setDataLabelsEnabled(false)
             .setYAxisGridLineWidth(0f)
+            .setYAxisTitle(values_name)
+            .setYAxisAllowDecimals(false)
             .setLegendEnabled(false)
             .setTouchEventEnabled(true)
             .setCategories(*categories) // note: * + array -> vararg
@@ -166,6 +180,5 @@ class GraphBuilder(
             )
             .build()
     }
-
 
 }
