@@ -1,4 +1,4 @@
-package com.example.receiptApp
+package com.example.receiptApp.Utils
 
 import android.location.Location
 import android.net.Uri
