@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.text.Editable
 import android.view.View
 import androidx.constraintlayout.motion.widget.MotionLayout
+import kotlin.math.round
 
 
 fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
@@ -11,6 +12,17 @@ fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
 
 private fun Double?.toFloatOrNull(): Float = this?.toFloat() ?: 0f
 
+fun Double.round(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return round(this * multiplier) / multiplier
+}
+
+fun <T> Array<T>.mapInPlace(transform: (T) -> T) {
+    for (i in this.indices) {
+        this[i] = transform(this[i])
+    }
+}
 
 val Int.dp: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()

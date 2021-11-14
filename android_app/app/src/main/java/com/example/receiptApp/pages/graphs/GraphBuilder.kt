@@ -1,9 +1,6 @@
 package com.example.receiptApp.pages.graphs
 
 import android.content.Context
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getColor
-import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
@@ -148,6 +145,7 @@ class GraphBuilder(
     fun category_graph(
         categories: Array<String>,
         values_name: String = "series 1",
+        y_axis_name: String = "series",
         values: Array<Double>,
     ): AAChartModel {
 
@@ -167,7 +165,7 @@ class GraphBuilder(
             .setBackgroundColor("#ffffff")
             .setDataLabelsEnabled(false)
             .setYAxisGridLineWidth(0f)
-            .setYAxisTitle(values_name)
+            .setYAxisTitle(y_axis_name)
             .setYAxisAllowDecimals(false)
             .setLegendEnabled(false)
             .setTouchEventEnabled(true)

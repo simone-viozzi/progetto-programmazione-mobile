@@ -11,6 +11,7 @@
     <string name="pie_count_by_atag">Month aggregates count by tags</string>
     <string name="pie_count_by_etag">Month elements count by tags</string>
 
+    <string name="expenses">expenses</string>
     <string name="expense">expense</string>
     <string name="count">count</string>
 
