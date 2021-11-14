@@ -3,7 +3,9 @@ package com.example.receiptApp.repository
 import android.content.Context
 import com.example.receiptApp.R
 import com.example.receiptApp.Utils.TypesHelper
+import com.example.receiptApp.mapInPlace
 import com.example.receiptApp.pages.graphs.GraphBuilder
+import com.example.receiptApp.round
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 
 class GraphsRepository(
@@ -35,9 +37,11 @@ class GraphsRepository(
     suspend fun monthExpensesHistogram(): AAChartModel{
 
         val values = TypesHelper.float2DoubleArray(dbRepository.getPeriodExpenses(DbRepository.Period.MONTH))
+        values.mapInPlace { n -> n.round(2) }
 
         return graphBuilder.category_graph(
             categories = graphBuilder.generate_month_labels(),
+            y_axis_name = getStrings(R.string.expenses),
             values_name = getStrings(R.string.expense),
             values = values
         )
@@ -46,9 +50,11 @@ class GraphsRepository(
     suspend fun yearExpensesHistogram(): AAChartModel{
 
         val values = TypesHelper.float2DoubleArray(dbRepository.getPeriodExpenses(DbRepository.Period.YEAR))
+        values.mapInPlace { n -> n.round(2) }
 
         return graphBuilder.category_graph(
             categories = graphBuilder.year_labels,
+            y_axis_name = getStrings(R.string.expenses),
             values_name = getStrings(R.string.expense),
             values = values
         )
@@ -67,10 +73,12 @@ class GraphsRepository(
             // NOTE: null tags shouldnt return from the call
             labels = mapResult.keys.toTypedArray() as Array<String>
             values = TypesHelper.float2DoubleArray(mapResult.values.toTypedArray())
+            values.mapInPlace { n -> n.round(2) }
         }
 
         return graphBuilder.category_graph(
             categories = labels,
+            y_axis_name = getStrings(R.string.expenses),
             values_name = getStrings(R.string.expense),
             values = values
         )
@@ -89,10 +97,12 @@ class GraphsRepository(
             // NOTE: null tags shouldnt return from the call
             labels = mapResult.keys.toTypedArray() as Array<String>
             values = TypesHelper.float2DoubleArray(mapResult.values.toTypedArray())
+            values.mapInPlace { n -> n.round(2) }
         }
 
         return graphBuilder.category_graph(
             categories = labels,
+            y_axis_name = getStrings(R.string.expenses),
             values_name = getStrings(R.string.expense),
             values = values
         )
@@ -112,10 +122,12 @@ class GraphsRepository(
             // NOTE: null tags shouldnt return from the call
             labels = mapResult.keys.toTypedArray() as Array<String>
             values = TypesHelper.float2DoubleArray(mapResult.values.toTypedArray())
+            values.mapInPlace { n -> n.round(2) }
         }
 
         return graphBuilder.category_graph(
             categories = labels,
+            y_axis_name = getStrings(R.string.expenses),
             values_name = getStrings(R.string.expense),
             values = values
         )
@@ -134,10 +146,12 @@ class GraphsRepository(
             // NOTE: null tags shouldnt return from the call
             labels = mapResult.keys.toTypedArray() as Array<String>
             values = TypesHelper.float2DoubleArray(mapResult.values.toTypedArray())
+            values.mapInPlace { n -> n.round(2) }
         }
 
         return graphBuilder.category_graph(
             categories = labels,
+            y_axis_name = getStrings(R.string.expenses),
             values_name = getStrings(R.string.expense),
             values = values
         )

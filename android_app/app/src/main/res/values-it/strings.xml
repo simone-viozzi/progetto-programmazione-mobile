@@ -11,7 +11,8 @@
     <string name="pie_count_by_atag">Conteggio delle spese mensili divise per tag aggregato</string>
     <string name="pie_count_by_etag">Conteggio delle spese mensili divise per tag elemento</string>
 
-    <string name="expense">spesa: </string>
-    <string name="count">conteggio: </string>
+    <string name="expenses">spese</string>
+    <string name="expense">spesa</string>
+    <string name="count">conteggio</string>
 
 </resources>

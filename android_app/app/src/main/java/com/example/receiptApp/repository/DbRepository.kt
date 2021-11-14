@@ -1,7 +1,6 @@
 package com.example.receiptApp.repository
 
 import android.net.Uri
-import androidx.room.Transaction
 import com.example.receiptApp.Utils.databaseTestHelper
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
@@ -182,21 +181,20 @@ class DbRepository(
      */
     suspend fun getPeriodExpenses(period:Period): Array<Float>{
 
-        val periodMaxSize = when(period){
+        val periodSize = when(period){
             Period.MONTH -> Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
             Period.YEAR -> 12
             else -> throw IllegalArgumentException("Wrong period passed to getPeriodExpenses()")
         }
 
-        val expenses = Array(periodMaxSize){0.0f}
+        val expenses = Array(periodSize){0.0f}
         val subPeriods = getSubPeriodsDates(period)
 
-        for(i in 1..periodMaxSize){
-            if(i < subPeriods.size){
-                // only if the result isn't null update the value
-                getExpenses(subPeriods[i][0], subPeriods[i][1])?.let{
-                    expenses[i] = it
-                }
+        if(periodSize != subPeriods.size) throw Exception("Unexpected periodSize != subPeriods.size in DbRepository::getPeriodExpenses()")
+
+        for(i in 0 until periodSize){
+            getExpenses(subPeriods[i][0], subPeriods[i][1])?.let{
+                expenses[i] = it
             }
         }
 
