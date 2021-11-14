@@ -108,7 +108,6 @@ class GraphsRepository(
         )
     }
 
-
     suspend fun monthElemTagExpensesHistogram(): AAChartModel{
 
         val mapResult = dbRepository.getElementTagsAndExpensesByPeriod(DbRepository.Period.MONTH)
@@ -230,7 +229,6 @@ class GraphsRepository(
 
     fun testPieGraph(): AAChartModel{
 
-
         val month_values = Array(graphBuilder.year_labels.size){it.toDouble()}
 
         return graphBuilder.pie(
@@ -240,6 +238,8 @@ class GraphsRepository(
     }
 
     suspend fun RandomFillDatabase(){
-        dbRepository.RandomFillDatabase()
+        // if database is empty fill it with random data
+        if(dbRepository.dbIsEmpty())
+            dbRepository.RandomFillDatabase()
     }
 }

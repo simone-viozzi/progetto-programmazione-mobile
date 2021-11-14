@@ -571,7 +571,10 @@ class DbRepository(
     // ##########################################################################
     // GET METHODS
 
-
+    suspend fun dbIsEmpty(): Boolean{
+        val aggrNum = aggregateDao.countAllAggregates()
+        return aggrNum == null || aggrNum == 0L
+    }
 
     // ##########################################################################
     // UPDATE METHODS

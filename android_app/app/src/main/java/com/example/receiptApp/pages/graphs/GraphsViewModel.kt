@@ -17,7 +17,9 @@ class GraphsViewModel(private val graphsRepository: GraphsRepository) : ViewMode
         // In the initialization each graph should be created
         viewModelScope.launch {
 
-            graphsRepository.RandomFillDatabase()
+            // if database is empty fill it with random data
+            // TODO remove in production, only for debug purposes
+            // graphsRepository.RandomFillDatabase()
 
             // create all the graph objects
             _rvList.value = listOf(
