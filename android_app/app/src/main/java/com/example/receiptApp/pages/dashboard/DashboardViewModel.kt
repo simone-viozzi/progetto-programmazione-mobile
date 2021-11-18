@@ -1,6 +1,7 @@
 package com.example.receiptApp.pages.dashboard
 
 import androidx.lifecycle.*
+import com.example.receiptApp.repository.DashboardRepository
 import com.example.receiptApp.repository.DbRepository
 import com.example.receiptApp.utils.StateStack
 import com.example.receiptApp.repository.SharedPrefRepository
@@ -8,7 +9,12 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
-class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, private val dbRepository: DbRepository) : ViewModel()
+class HomeViewModel(
+    private val sharedPrefRepository: SharedPrefRepository,
+    private val dbRepository: DbRepository,
+    private val dashboardRepository: DashboardRepository
+
+    ) : ViewModel()
 {
     private val _dashboard: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val dashboard: LiveData<List<DashboardDataModel>> = _dashboard
@@ -31,17 +37,6 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
     private val _homeState: MutableLiveData<HomeState> = MutableLiveData<HomeState>()
     val homeState: LiveData<HomeState> = _homeState
 
-    private object Id
-    {
-        var lastId: Int = 0
-        fun getId() = ++lastId
-    }
-
-    private object StoreId
-    {
-        var lastId: Int = 0
-        fun getId() = ++lastId
-    }
 
     init
     {
@@ -59,11 +54,6 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         Timber.e("homeStateStack -> $homeStateStack")
 
         _homeState.value = HomeState.EditMode
-
-        if (store.value == null)
-        {
-            loadStore()
-        }
     }
 
 
@@ -79,71 +69,36 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
 
     fun saveDashboard() = viewModelScope.launch {
 
-        if (_dashboard.value?.isNotEmpty() == true)
-        {
-            val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
+        _dashboard.value.let {
+            if (!it.isNullOrEmpty())
+            {
+                dashboardRepository.saveDashboard(it)
 
-            _dashboard.value?.let {
-                it.forEachIndexed { i, element ->
-                    needToSave[i] = element
-                }
+                homeStateStack.clear()
+                homeStateStack.push(HomeState.NormalMode)
+                Timber.e("homeStateStack -> $homeStateStack")
+
+                _homeState.value = HomeState.NormalMode
             }
+            else
+            {
+                homeStateStack.push(HomeState.EmptyDashMode)
+                Timber.e("homeStateStack -> $homeStateStack")
 
-            sharedPrefRepository.writeDashboard(needToSave)
-
-            homeStateStack.clear()
-            homeStateStack.push(HomeState.NormalMode)
-            Timber.e("homeStateStack -> $homeStateStack")
-
-            _homeState.value = HomeState.NormalMode
-        }
-        else
-        {
-            homeStateStack.push(HomeState.EmptyDashMode)
-            Timber.e("homeStateStack -> $homeStateStack")
-
-            _homeState.value = HomeState.EmptyDashMode
+                _homeState.value = HomeState.EmptyDashMode
+            }
         }
     }
 
     private fun loadDashboard() = viewModelScope.launch {
 
-        val dashboard: Map<Int, DashboardDataModel> = sharedPrefRepository.readDashboard()
-
-        val list: MutableList<DashboardDataModel> = mutableListOf()
-
-        dashboard.entries.forEach {
-
-            when (val el = it.value)
-            {
-                is DashboardDataModel.Test -> {
-
-                    val contentParsing = el.content.split(":")
-
-                    when(contentParsing[0])
-                    {
-                        "sumTag" -> {
-                            val tag = contentParsing[1]
-                            val period = DbRepository.Period.valueOf(contentParsing[3])
-
-                            el.name = tag
-                            //el.value = dbRepository
-                        }
-                    }
-
-                    list.add(el)
-                }
-                is DashboardDataModel.TestBig -> list.add(it.value)
-                is DashboardDataModel.Square -> list.add(it.value)
-            }
-        }
+        val list = dashboardRepository.loadDashboard()
 
         if (list.isNotEmpty())
         {
             homeStateStack.push(HomeState.NormalMode)
             Timber.e("homeStateStack -> $homeStateStack")
 
-            Id.lastId = list.size
             _dashboard.value = list
             _homeState.value = HomeState.NormalMode
         } else
@@ -159,24 +114,8 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
 
     private fun loadStore() = viewModelScope.launch {
 
-        val storeList: MutableList<DashboardDataModel> = mutableListOf()
+        _store.value = dashboardRepository.loadStore(_dashboard.value)
 
-        val period = DbRepository.Period.MONTH
-        dbRepository.getAggregateTagsAndExpensesByPeriod(period).entries.forEach {
-            Timber.e("it -> $it")
-            it.key?.let { name ->
-                storeList.add(
-                    DashboardDataModel.Test(
-                        id = StoreId.getId(),
-                        name = name,
-                        value = it.value, // this is null! why??? TODO
-                        content = "sumTag:$name:${period.name}"
-                    )
-                )
-            }
-        }
-
-        _store.value = storeList
     }
 
 
@@ -186,7 +125,7 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         homeStateStack.push(HomeState.EditMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
-        element.id = Id.getId()
+        dashboardRepository.notifyAddToDash(element)
         _dashboard.value = _dashboard.value?.toMutableList()?.also { it.add(0, element) }
         _homeState.value = HomeState.EditMode
     }
@@ -227,7 +166,6 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
 
         sharedPrefRepository.clearDashboard()
         _dashboard.value = emptyList()
-        Id.lastId = 0
         _homeState.value = HomeState.EmptyDashMode
     }
 
@@ -235,12 +173,21 @@ class HomeViewModel(private val sharedPrefRepository: SharedPrefRepository, priv
         dbRepository.clearDb()
     }
 
+    fun removeItemFromDashBoard(id: Int)
+    {
+        _dashboard.value = _dashboard.value?.toMutableList()?.also {
+            dashboardRepository.notifyRemoveFromDash(it[id])
+            it.removeAt(id)
+        }
+    }
+
 }
 
 
 class HomeViewModelFactory(
     private val sharedPrefRepository: SharedPrefRepository,
-    private val dbRepository: DbRepository
+    private val dbRepository: DbRepository,
+    private val dashboardRepository: DashboardRepository
     ) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
@@ -248,7 +195,11 @@ class HomeViewModelFactory(
         if (modelClass.isAssignableFrom(HomeViewModel::class.java))
         {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(sharedPrefRepository, dbRepository) as T
+            return HomeViewModel(
+                sharedPrefRepository,
+                dbRepository,
+                dashboardRepository
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

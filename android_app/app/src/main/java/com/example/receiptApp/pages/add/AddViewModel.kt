@@ -175,7 +175,7 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
         }
 
         elements.forEach {
-            if (it.cost == null || it.num == null)
+            if ((it.cost == null || it.num == null) && !(it.name.isNullOrEmpty() && it.name.isNullOrEmpty()) )
             {
                 selfCheckElements?.get(it.vId)?.invoke()
                 ret = false

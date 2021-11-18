@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="Add"
-        android:id="@+id/bottom_bar_menu_add"
+        android:id="@+id/bottom_bar_menu_store"
         android:icon="@drawable/ic_baseline_dashboard_customize_24"
         app:showAsAction="always"/>
 </menu>

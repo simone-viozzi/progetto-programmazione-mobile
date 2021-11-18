@@ -58,7 +58,9 @@ class SharedPrefRepository(applicationContext: Context)
         val dashboard: MutableMap<Int, DashboardDataModel> = mutableMapOf()
         for (i in 0..size)
         {
-            dashboard[i] = readDashboardElement(i) as DashboardDataModel
+            readDashboardElement(i)?.let {
+                dashboard[i] = it as DashboardDataModel
+            }
         }
 
         Timber.d("dashboard $dashboard")
@@ -68,7 +70,7 @@ class SharedPrefRepository(applicationContext: Context)
 
     private fun readDashboardElement(
         index: Int
-    ): DashboardElement
+    ): DashboardElement?
     {
         var element: DashboardElement
 
@@ -78,11 +80,17 @@ class SharedPrefRepository(applicationContext: Context)
         {
             val id = getInt("${base}_id", -1)
             val type = getString("${base}_type", "")
-            val content = getString("${base}_content", "") ?: ""
+            val content = getString("${base}_content", "") ?: return null
 
             Timber.d("id -> $id, type -> $type")
 
-            element = type?.let { TYPE.valueOf(it).getObj() }!!
+            element = type?.let {
+
+                kotlin.runCatching {
+                    TYPE.valueOf(it).getObj()
+                }.getOrDefault(null)
+
+            } ?: return null
 
             element.id = id
             element.content = content

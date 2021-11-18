@@ -9,7 +9,7 @@ interface DashboardElement
 
 enum class TYPE()
 {
-    TEST,
+    LABEL,
     TEST_BIG,
     SQUARE;
 
@@ -17,18 +17,18 @@ enum class TYPE()
     {
         return when (this)
         {
-            TEST -> DashboardDataModel.Test()
             TEST_BIG -> DashboardDataModel.TestBig()
             SQUARE -> DashboardDataModel.Square()
+            LABEL -> DashboardDataModel.Label()
         }
     }
 }
 
 sealed class DashboardDataModel : DashboardElement
 {
-    data class Test(
+    data class Label(
         override var id: Int = 0,
-        override val type: TYPE = TYPE.TEST,
+        override val type: TYPE = TYPE.LABEL,
         var name: String = "",
         override var content: String = "",
         var value: Float = 0f,
