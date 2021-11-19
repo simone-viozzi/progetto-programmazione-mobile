@@ -61,22 +61,25 @@ interface BaseAggregatesDao : TagsDao{
     }
 
     @Query("SELECT * FROM aggregate")
-    suspend fun _getAllAggregates(): List<Aggregate>
+    suspend fun _getAllAggregates(): List<Aggregate>?
 
     @Query("SELECT * FROM aggregate WHERE aggregate.date = :date")
-    suspend fun _getAggregatesByDate(date: Date): List<Aggregate>
+    suspend fun _getAggregatesByDate(date: Date): List<Aggregate>?
 
-    @Query("SELECT * FROM aggregate WHERE aggregate.date <= :date")
-    suspend fun _getAggregatesUntilDate(date: Date): List<Aggregate>
+    @Query("SELECT * FROM aggregate WHERE aggregate.date < :date")
+    suspend fun _getAggregatesUntilDate(date: Date): List<Aggregate>?
 
     @Query("SELECT * FROM aggregate WHERE aggregate.date >= :date")
-    suspend fun _getAggregatesAfterDate(date: Date): List<Aggregate>
+    suspend fun _getAggregatesAfterDate(date: Date): List<Aggregate>?
 
-    @Query("SELECT * FROM aggregate WHERE aggregate.date >= :dstart AND aggregate.date <= :dend")
-    suspend fun _getAggregatesBetweenDate(dstart: Date, dend: Date): List<Aggregate>
+    @Query("SELECT * FROM aggregate WHERE aggregate.date >= :dstart AND aggregate.date < :dend")
+    suspend fun _getAggregatesBetweenDate(dstart: Date, dend: Date): List<Aggregate>?
 
     @Query("SELECT * from aggregate WHERE aggregate.tag_id = :tag")
-    suspend fun _getAggregatesByTag(tag: Long): List<Aggregate>
+    suspend fun _getAggregatesByTag(tag: Long): List<Aggregate>?
+
+    @Query("SELECT * from aggregate WHERE aggregate.date >= :dstart AND aggregate.date < :dend AND aggregate.tag_id = :tag")
+    suspend fun _getAggregatesBetweenDateByTag(dstart: Date, dend: Date, tag: Long): List<Aggregate>?
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
@@ -89,18 +92,6 @@ interface BaseAggregatesDao : TagsDao{
             aggregate.tag = tag.tag_name
         }
         return aggregate
-    }
-
-    @Transaction
-    suspend fun _addTagNameToAggregatesList(aggregateList: List<Aggregate>): List<Aggregate>{
-
-        val tagList = getAggregateTags()?.groupBy{it.tag_id}
-
-        aggregateList.forEach {
-            if(it.tag_id != null) it.tag = tagList?.get(it.tag_id)?.get(0)?.tag_name
-        }
-
-        return aggregateList
     }
 
 }

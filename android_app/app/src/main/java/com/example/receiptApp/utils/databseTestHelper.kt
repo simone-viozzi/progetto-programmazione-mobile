@@ -12,7 +12,6 @@ import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.math.pow
 
 /**
  * Gets the value of a [LiveData] or waits for it to have one, with a timeout.
@@ -50,7 +49,7 @@ fun <T> LiveData<T>.getOrAwaitValue(
     return data as T
 }
 
-object databaseTestHelper {
+object DatabaseTestHelper {
 
 
     /**

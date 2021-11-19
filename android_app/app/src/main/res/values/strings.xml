@@ -15,4 +15,8 @@
     <string name="expense">expense</string>
     <string name="count">count</string>
 
+    <string name="tag">Tag:</string>
+    <string name="date">Date:</string>
+    <string name="ammount">Ammount:</string>
+
 </resources>

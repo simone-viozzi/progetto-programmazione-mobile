@@ -7,7 +7,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.receiptApp.Utils.databaseTestHelper
+import com.example.receiptApp.Utils.DatabaseTestHelper
 import com.example.receiptApp.db.AppDatabase
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
@@ -83,7 +83,7 @@ class DatabaseTests
         val aggregateIdsList = mutableListOf<Long>()
 
         // this function popolate the database and the lists passed with the generated objects
-        val elem_tot = databaseTestHelper.generateAgregatesAndElements(
+        val elem_tot = DatabaseTestHelper.generateAgregatesAndElements(
             aggregatesList = aggregatesList,
             listOfElementsLists = listOfElementsLists,
             aggregateIdsList = aggregateIdsList,
@@ -123,7 +123,7 @@ class DatabaseTests
 
 
         // this function popolate the database and the lists passed with the generated objects
-        val tot_elem_num = databaseTestHelper.generateAgregatesAndElements(
+        val tot_elem_num = DatabaseTestHelper.generateAgregatesAndElements(
             aggregatesList = aggregatesList,
             listOfElementsLists = listOfElementsLists,
             aggregateIdsList = aggregateIdsList,
@@ -161,10 +161,10 @@ class DatabaseTests
         Log.d(tag, "aggregte tags Count: ${aggregateTagsCount}")
         Log.d(tag, "element tags Count: ${elementTagsCount}")
 
-        Assert.assertEquals(aggregatesCount, 0)
-        Assert.assertEquals(elementsCount, 0)
-        Assert.assertEquals(aggregateTagsCount, 0)
-        Assert.assertEquals(elementTagsCount, 0)
+        Assert.assertEquals(aggregatesCount, 0L)
+        Assert.assertEquals(elementsCount, 0L)
+        Assert.assertEquals(aggregateTagsCount, 0L)
+        Assert.assertEquals(elementTagsCount, 0L)
     }
 
     @Test
@@ -180,7 +180,7 @@ class DatabaseTests
         val elementsExpectedCount = 2L
 
         // this function popolate the database and the lists passed with the generated objects
-        val tot_elem_num = databaseTestHelper.generateAgregatesAndElements(
+        val tot_elem_num = DatabaseTestHelper.generateAgregatesAndElements(
             aggregatesList = aggregatesList,
             listOfElementsLists = listOfElementsLists,
             aggregateIdsList = aggregateIdsList,

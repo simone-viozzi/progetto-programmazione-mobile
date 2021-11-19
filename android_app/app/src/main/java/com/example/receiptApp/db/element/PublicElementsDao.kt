@@ -158,12 +158,12 @@ interface PublicElementsDao : ElementsDao{
 
     @Query("SELECT SUM(cost * num) FROM element INNER JOIN aggregate ON " +
             "element.aggregate_id=aggregate.id WHERE elem_tag_id = :elem_tag_id " +
-            "AND aggregate.date >= :start_date AND aggregate.date <= :end_date")
+            "AND aggregate.date >= :start_date AND aggregate.date < :end_date")
     suspend fun countAllExpensesBetweenDatesByElementTagId(start_date: Date, end_date: Date, elem_tag_id: Long?): Float
 
     @Query("SELECT SUM(num) FROM element INNER JOIN aggregate ON" +
             " element.aggregate_id=aggregate.id WHERE elem_tag_id = :elem_tag_id" +
-            " AND aggregate.date >= :start_date AND aggregate.date <= :end_date")
+            " AND aggregate.date >= :start_date AND aggregate.date < :end_date")
     suspend fun countAllSingleElementsBetweenDatesByElementTagId(start_date: Date, end_date: Date, elem_tag_id: Long?): Long
 
 

@@ -8,6 +8,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.ArchiveFragmentBinding
@@ -23,9 +24,15 @@ import kotlin.math.abs
 class ArchiveFragment : Fragment(R.layout.archive_fragment)
 {
 
-    private val viewModel: ArchiveViewModel by viewModels()
+    private val viewModel: ArchiveViewModel by viewModels(){
+        ArchiveViewModelFactory((activity?.application as App).archiveRepository)
+    }
+
     private lateinit var binding: ArchiveFragmentBinding
+    private lateinit var archiveAdapter: ArchiveAdapter
+
     private var appBarLayoutHeight = 0
+    var start = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,8 +43,6 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         binding = ArchiveFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-    var start = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
@@ -66,16 +71,18 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
             }
         }
 
-        val testAdapter = DashboardAdapter()
+        archiveAdapter = ArchiveAdapter()
+
+        // observe the graph list view
+        viewModel.rvList.observe(viewLifecycleOwner){
+            archiveAdapter.submitList(it)
+        }
 
         with(binding)
         {
-            recyclerView.adapter = testAdapter
+            recyclerView.adapter = archiveAdapter
             recyclerView.layoutManager = LinearLayoutManager(activity)
         }
-
-        testAdapter.submitList((0..20).map { DashboardDataModel.TestBig(id = it) })
-
 
         val lp = binding.collapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
         lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL

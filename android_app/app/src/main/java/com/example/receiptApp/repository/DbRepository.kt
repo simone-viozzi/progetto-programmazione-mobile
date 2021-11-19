@@ -1,11 +1,12 @@
 package com.example.receiptApp.repository
 
 import android.net.Uri
-import com.example.receiptApp.Utils.databaseTestHelper
+import com.example.receiptApp.Utils.DatabaseTestHelper
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
+import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
 import com.example.receiptApp.pages.add.AddDataModel
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +52,7 @@ class DbRepository(
         cal.clear(Calendar.MINUTE);
         cal.clear(Calendar.SECOND);
         cal.clear(Calendar.MILLISECOND);
-        cal.getTime()
+        cal.time
 
         when(period){
             //Period.DAY -> do nothing, cal already point to the start of the day
@@ -571,9 +572,18 @@ class DbRepository(
     // ##########################################################################
     // GET METHODS
 
-    suspend fun dbIsEmpty(): Boolean{
-        val aggrNum = aggregateDao.countAllAggregates()
-        return aggrNum == null || aggrNum == 0L
+    suspend fun getAggregates(
+        tag_name: String?,
+        start: Date? = null, // by default take 1-1-1970 as start date as filter
+        end: Date? = null // by default take the call moment as end date as filter
+    ): List<Aggregate>?{
+
+        val tag: Tag? = tag_name?.let{ tagDao.getElementTagByName(tag_name) }
+        return aggregateDao.getAggregates(
+            start_date = start ?: Date(0),
+            end_date = end ?: Date(0),
+            tag?.tag_id
+        )
     }
 
     // ##########################################################################
@@ -587,6 +597,14 @@ class DbRepository(
     suspend fun clearDb()
     {
         aggregateDao.deleteAll()
+    }
+
+    // ##########################################################################
+    // HELPER METHODS
+
+    suspend fun dbIsEmpty(): Boolean{
+        val aggrNum = aggregateDao.countAllAggregates()
+        return aggrNum == null || aggrNum == 0L
     }
 
     // ##########################################################################
@@ -622,7 +640,7 @@ class DbRepository(
         )
 
         // loading graphs data
-        databaseTestHelper.generateAgregatesAndElements(
+        DatabaseTestHelper.generateAgregatesAndElements(
             aggregatesList = aggregatesList,
             listOfElementsLists = listOfElementsLists,
             aggregateIdsList = aggregateIdsList,

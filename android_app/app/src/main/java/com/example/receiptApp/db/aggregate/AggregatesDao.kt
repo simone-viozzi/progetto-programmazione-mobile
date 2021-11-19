@@ -185,7 +185,7 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
 
     @Transaction
     suspend fun _getAggregateWithElementsByDate(date: Date): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = _getAggregatesByDate(date)
+        val aggregatesList: List<Aggregate> = _getAggregatesByDate(date) ?: listOf()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
             val listOfElements = _getElementsByAggregateId(aggregate.id)
@@ -196,18 +196,20 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
 
     @Transaction
     suspend fun _getAllAggregatesWithElements(): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = _getAllAggregates()
+        val aggregatesList: List<Aggregate>? = _getAllAggregates()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
-        for (aggregate in aggregatesList) {
-            val listOfElements = _getElementsByAggregateId(aggregate.id)
-            resultMap[aggregate] = listOfElements
+        if(aggregatesList != null) {
+            for (aggregate in aggregatesList) {
+                val listOfElements = _getElementsByAggregateId(aggregate.id)
+                resultMap[aggregate] = listOfElements
+            }
         }
         return resultMap
     }
 
     @Transaction
     suspend fun _getAggregateWithElementsUntilDate(date: Date): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = _getAggregatesByDate(date)
+        val aggregatesList: List<Aggregate> = _getAggregatesByDate(date) ?: listOf()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
             val listOfElements = _getElementsByAggregateId(aggregate.id)
@@ -218,7 +220,7 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
 
     @Transaction
     suspend fun _getAggregateWithElementsAfterDate(date: Date): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = _getAggregatesAfterDate(date)
+        val aggregatesList: List<Aggregate> = _getAggregatesAfterDate(date) ?: listOf()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
             val listOfElements = _getElementsByAggregateId(aggregate.id)
@@ -232,7 +234,7 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
         start_date: Date,
         end_date: Date
     ): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = _getAggregatesBetweenDate(start_date, end_date)
+        val aggregatesList: List<Aggregate> = _getAggregatesBetweenDate(start_date, end_date) ?: listOf()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
             val listOfElements = _getElementsByAggregateId(aggregate.id)
@@ -243,7 +245,7 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
 
     @Transaction
     suspend fun _getAggregateWithElementsByTag(tag_id: Long): Map<Aggregate, List<Element>> {
-        val aggregatesList: List<Aggregate> = _getAggregatesByTag(tag_id)
+        val aggregatesList: List<Aggregate> = _getAggregatesByTag(tag_id) ?: listOf()
         val resultMap = mutableMapOf<Aggregate, List<Element>>()
         for (aggregate in aggregatesList) {
             val listOfElements = _getElementsByAggregateId(aggregate.id)
@@ -255,6 +257,15 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     // query helpers
+
+    @Transaction
+    suspend fun _addTagNameToAggregatesList(listWithoutTags: List<Aggregate>): List<Aggregate>{
+        var resultWithTags = mutableListOf<Aggregate>()
+        listWithoutTags.forEach {
+            resultWithTags.add(_addTagNameToAggregate(it))
+        }
+        return resultWithTags
+    }
 
     @Transaction
     suspend fun _addTagNameToAggregatesListWithElements(mapWithoutTags: Map<Aggregate, List<Element>>): Map<Aggregate, List<Element>>{
