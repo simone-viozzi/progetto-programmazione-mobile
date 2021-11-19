@@ -37,6 +37,7 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.CalendarConstraints.DateValidator
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -176,23 +177,16 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         // handling of the up button in the appbar
         binding.topAppBar.setNavigationOnClickListener {
-            // 1. Instantiate an <code><a href="/reference/android/app/AlertDialog.Builder.html">AlertDialog.Builder</a></code> with its constructor
-            val alertDialog: AlertDialog? = activity?.let {
-                val builder = AlertDialog.Builder(it)
-                builder.apply {
-                    setPositiveButton(R.string.ok) { dialog, id ->
-                        // User clicked OK button
-                        findNavController().navigateUp()
-                    }
-                    setNegativeButton("cancel") { dialog, id ->
-                        // User cancelled the dialog
-                    }
-                    setTitle("Are you sure?")
+            MaterialAlertDialogBuilder(activity as MainActivity)
+                .setMessage("are you sure?")
+                .setNegativeButton("decline") { dialog, which ->
+                    // Respond to negative button press
                 }
-                // Create the AlertDialog
-                builder.create()
-            }
-            alertDialog?.show()
+                .setPositiveButton("accept") { dialog, which ->
+                    // Respond to positive button press
+                    findNavController().navigateUp()
+                }
+                .show()
         }
 
 

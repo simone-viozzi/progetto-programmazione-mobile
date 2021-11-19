@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.graphs
+package com.example.receiptApp.repository.sources
 
 import android.content.Context
 import com.example.receiptApp.R
@@ -121,7 +121,7 @@ class GraphBuilder(
         values: Array<Any>, //TODO verificare che i values as any non causino problemi, prima era Double
     ): AAChartModel {
 
-        var pieData = Array<Any>(categories.size){
+        val pieData = Array<Any>(categories.size){
             arrayOf(categories[it], values[it])
         }
 

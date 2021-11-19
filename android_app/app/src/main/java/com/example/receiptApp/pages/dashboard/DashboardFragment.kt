@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -17,6 +17,7 @@ import com.example.receiptApp.databinding.ActivityMainBinding
 import com.example.receiptApp.databinding.DashboardFragmentBinding
 import com.example.receiptApp.pages.dashboard.adapters.DashboardAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -25,13 +26,12 @@ class DashboardFragment : Fragment()
     val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory(
             (activity?.application as App).sharedPrefRepository,
-            (activity?.application as App).dbRepository
+            (activity?.application as App).dbRepository,
+            (activity?.application as App).dashboardRepository
         )
     }
 
     private lateinit var binding: DashboardFragmentBinding
-
-    var transitionEndCallback: (() -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +54,6 @@ class DashboardFragment : Fragment()
         binding.lifecycleOwner = viewLifecycleOwner
 
         binding.homeMotionLayout.setDebugMode(1)
-        binding.homeMotionLayout.setTransitionListener(motionLayoutListener)
 
         binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
 
@@ -171,7 +170,7 @@ class DashboardFragment : Fragment()
                         bottomAppBar.setOnMenuItemClickListener {
                             when (it.itemId)
                             {
-                                R.id.bottom_bar_menu_add ->
+                                R.id.bottom_bar_menu_store ->
                                 {
                                     viewModel.setStoreMode()
                                     true
@@ -194,6 +193,7 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
+                    binding.recyclerViewDashboard.smoothScrollToPosition(0)
                     binding.homeMotionLayout.transitionToState(R.id.editModeConstrains)
                 }
                 is HomeViewModel.HomeState.StoreMode ->
@@ -217,6 +217,7 @@ class DashboardFragment : Fragment()
                     }
 
                     viewModel.store.observe(viewLifecycleOwner) {
+                        Timber.d("submitting list -> $it")
                         dashStoreAdapter.submitList(it)
                     }
 
@@ -226,10 +227,6 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = {
                         viewModel.addToDashboard(it)
-
-                        transitionEndCallback = {
-                            binding.recyclerViewDashboard.smoothScrollToPosition(0)
-                        }
                     }
 
                     if (viewModel.getPreviousState() is HomeViewModel.HomeState.EmptyDashMode)
@@ -240,6 +237,7 @@ class DashboardFragment : Fragment()
                     {
                         binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetEdit)
                     }
+                    dashStoreAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -282,40 +280,15 @@ class DashboardFragment : Fragment()
                     viewModel.clearDb()
                     true
                 }
+                R.id.bottom_bar_menu_generate_data -> {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        (activity?.application as App).dbRepository.RandomFillDatabase()
+                    }
+                    true
+                }
                 else -> false
             }
         }
-    }
-
-
-    private val motionLayoutListener = object: MotionLayout.TransitionListener
-    {
-        override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int)
-        {
-            Timber.e("changing transition -> ${motionLayout.toString()}")
-        }
-
-        override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float)
-        {
-
-        }
-
-        override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int)
-        {
-            transitionEndCallback?.invoke()
-            transitionEndCallback = null
-        }
-
-        override fun onTransitionTrigger(
-            motionLayout: MotionLayout?,
-            triggerId: Int,
-            positive: Boolean,
-            progress: Float
-        )
-        {
-
-        }
-
     }
 
 }
