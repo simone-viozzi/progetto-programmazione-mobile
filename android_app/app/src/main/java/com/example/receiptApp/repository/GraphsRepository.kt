@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.receiptApp.R
 import com.example.receiptApp.Utils.TypesHelper
 import com.example.receiptApp.mapInPlace
-import com.example.receiptApp.pages.graphs.GraphBuilder
+import com.example.receiptApp.repository.sources.GraphBuilder
 import com.example.receiptApp.round
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 
@@ -163,15 +163,11 @@ class GraphsRepository(
         val mapResult = dbRepository.getAggregateTagsAndCountByPeriod(DbRepository.Period.MONTH)
 
         // default values if something goes wrong
-        var labels = arrayOf("")
-        var values = arrayOf<Any>(0L)
 
-        //TODO check behaviour whene there are no tags inside db
-        if(mapResult != null) {
-            // NOTE: null tags shouldnt return from the call
-            labels = mapResult.keys.toTypedArray() as Array<String>
-            values = TypesHelper.long2AnyArray(mapResult.values.toTypedArray())
-        }
+        // TODO check behaviour whene there are no tags inside db
+        // NOTE: null tags shouldnt return from the call
+        val labels: Array<String> = mapResult.keys.filterNotNull().toTypedArray()
+        val values: Array<Any> = TypesHelper.long2AnyArray(mapResult.values.toTypedArray())
 
         return graphBuilder.pie(
             categories = labels,
@@ -184,15 +180,11 @@ class GraphsRepository(
         val mapResult = dbRepository.getElementTagsAndCountByPeriod(DbRepository.Period.MONTH)
 
         // default values if something goes wrong
-        var labels = arrayOf("")
-        var values = arrayOf<Any>(0L)
 
         //TODO check behaviour whene there are no tags inside db
-        if(mapResult != null) {
-            // NOTE: null tags shouldnt return from the call
-            labels = mapResult.keys.toTypedArray() as Array<String>
-            values = TypesHelper.long2AnyArray(mapResult.values.toTypedArray())
-        }
+        // NOTE: null tags shouldnt return from the call
+        val labels: Array<String> = mapResult.keys.filterNotNull().toTypedArray()
+        val values: Array<Any> = TypesHelper.long2AnyArray(mapResult.values.toTypedArray())
 
         return graphBuilder.pie(
             categories = labels,

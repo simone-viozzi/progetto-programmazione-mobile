@@ -18,7 +18,7 @@ class FixedAspectCardView(
     attrs: AttributeSet? = null
 ) : MaterialCardView(context, attrs)
 {
-    private var widthRatio: Float = 2.0F
+    var widthRatio: Float = 0F
     var isBig: Boolean = false
 
     init
@@ -31,7 +31,7 @@ class FixedAspectCardView(
 
             try
             {
-                widthRatio = getFloat(R.styleable.FixedAspectCardView_aspectRatio, 2.0F)
+                widthRatio = getFloat(R.styleable.FixedAspectCardView_aspectRatio, 0F)
                 isBig = getBoolean(R.styleable.FixedAspectCardView_isBig, false)
             } finally
             {
@@ -46,6 +46,12 @@ class FixedAspectCardView(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int)
     {
         val width = MeasureSpec.getSize(widthMeasureSpec)
+
+        if (widthRatio == 0F)
+        {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            return
+        }
 
         // if the card is a square i need to compensate the padding of the smaller views to make it of
         // the same height

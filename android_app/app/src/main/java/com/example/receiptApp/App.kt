@@ -1,10 +1,7 @@
 package com.example.receiptApp
 
 import android.app.Application
-import android.text.Editable
 import com.example.receiptApp.db.AppDatabase
-import com.example.receiptApp.db.aggregate.AggregatesDao
-import com.example.receiptApp.db.element.ElementsDao
 import com.example.receiptApp.repository.*
 import timber.log.Timber
 
@@ -26,9 +23,15 @@ class App : Application()
 
     val sharedPrefRepository by lazy { SharedPrefRepository(this) }
 
-    val graphsRepository by lazy { GraphsRepository(this, dbRepository)}
+    val graphsRepository by lazy { GraphsRepository(this, dbRepository) }
 
-    val dashboardRepository by lazy { DashboardRepository(sharedPrefRepository, dbRepository) }
+    val dashboardRepository by lazy {
+        DashboardRepository(
+            sharedPrefRepository,
+            dbRepository,
+            graphsRepository
+        )
+    }
 
     override fun onCreate()
     {

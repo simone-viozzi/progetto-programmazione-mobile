@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.receiptApp.R
-import com.example.receiptApp.databinding.CakeCardBinding
-import com.example.receiptApp.databinding.HistogramCardBinding
+import com.example.receiptApp.databinding.GraphsCakeCardBinding
+import com.example.receiptApp.databinding.GraphsHistogramCardBinding
 
 
 class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(GraphDiffCallback()) {
@@ -48,7 +48,7 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
          * @constructor
          */
         class HistogramViewHolder(
-            private val binding: HistogramCardBinding
+            private val binding: GraphsHistogramCardBinding
             ) : GraphViewHolder(binding)
         {
             // the callbacks need to be in the init section
@@ -74,7 +74,7 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
         }
 
         class CakeViewHolder(
-            private val binding: CakeCardBinding,
+            private val binding: GraphsCakeCardBinding,
         ) : GraphViewHolder(binding)
         {
             init
@@ -103,17 +103,17 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
         // depending on the view type i return the corresponding holder
         return when (viewType)
         {
-            R.layout.histogram_card -> GraphViewHolder.HistogramViewHolder(
+            R.layout.graphs_histogram_card -> GraphViewHolder.HistogramViewHolder(
                 // this is the binding!
-                HistogramCardBinding.inflate(
+                GraphsHistogramCardBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
                 )
             )
-            R.layout.cake_card -> GraphViewHolder.CakeViewHolder(
+            R.layout.graphs_cake_card -> GraphViewHolder.CakeViewHolder(
                 // this is the binding!
-                CakeCardBinding.inflate(
+                GraphsCakeCardBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
@@ -147,9 +147,9 @@ class GraphAdapter: ListAdapter<GraphsDataModel, GraphAdapter.GraphViewHolder>(G
     {
         return when (getItem(position))
         {
-            is GraphsDataModel.Histogram -> R.layout.histogram_card
-            is GraphsDataModel.Cake -> R.layout.cake_card
-            is GraphsDataModel.Label -> R.layout.cake_card // TODO: va creato il layout label
+            is GraphsDataModel.Histogram -> R.layout.graphs_histogram_card
+            is GraphsDataModel.Cake -> R.layout.graphs_cake_card
+            is GraphsDataModel.Label -> R.layout.graphs_cake_card // TODO: va creato il layout label
         }
     }
 }

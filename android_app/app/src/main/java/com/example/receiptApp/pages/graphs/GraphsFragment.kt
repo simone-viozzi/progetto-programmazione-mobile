@@ -52,6 +52,7 @@ class GraphsFragment : Fragment(R.layout.graphs_fragment)
         {
             fab.hide() // hide the fab not useful inside graphs
             // add here modification to the main activity
+            bottomAppBar.replaceMenu(R.menu.bottom_bar_menu_hide)
         }
 
         // generate a new Graph adapter

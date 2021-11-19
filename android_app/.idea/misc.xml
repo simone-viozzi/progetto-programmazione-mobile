@@ -33,7 +33,9 @@
         <entry key="app/src/main/res/layout/dashboard_element_test_square.xml" value="0.34193840579710144" />
         <entry key="app/src/main/res/layout/dashboard_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dashboard_label.xml" value="0.34193840579710144" />
+        <entry key="app/src/main/res/layout/graphs_cake_card.xml" value="0.29257246376811596" />
         <entry key="app/src/main/res/layout/graphs_fragment.xml" value="0.31666666666666665" />
+        <entry key="app/src/main/res/layout/graphs_histogram_card.xml" value="0.29257246376811596" />
         <entry key="app/src/main/res/layout/home_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/menu/bottom_app_bar_archive.xml" value="0.30462962962962964" />
         <entry key="app/src/main/res/menu/bottom_bar_menu.xml" value="0.35989583333333336" />

@@ -4,12 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.example.receiptApp.R
-import com.example.receiptApp.databinding.DashboardElementLabelBinding
-import com.example.receiptApp.databinding.DashboardElementTestBigBinding
-import com.example.receiptApp.databinding.DashboardElementTestSquareBinding
+import com.example.receiptApp.databinding.*
 import com.example.receiptApp.pages.dashboard.DashboardDataModel
 import com.example.receiptApp.pages.dashboard.adapters.components.DashboardDiffCallback
 import com.example.receiptApp.pages.dashboard.adapters.components.DashboardViewHolder
+import com.example.receiptApp.pages.graphs.GraphAdapter
 
 
 class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(DashboardDiffCallback())
@@ -30,8 +29,8 @@ class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(Das
                 onLongClickListener,
                 onClickListener
             )
-            R.layout.dashboard_element_test_big -> DashboardViewHolder.TestBigViewHolder(
-                DashboardElementTestBigBinding.inflate(
+            R.layout.graphs_cake_card -> DashboardViewHolder.CakeCardViewHolder(
+                GraphsCakeCardBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
@@ -39,8 +38,8 @@ class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(Das
                 onLongClickListener,
                 onClickListener
             )
-            R.layout.dashboard_element_test_square -> DashboardViewHolder.TestSquareViewHolder(
-                DashboardElementTestSquareBinding.inflate(
+            R.layout.graphs_histogram_card -> DashboardViewHolder.HistogramViewHolder(
+                GraphsHistogramCardBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
@@ -56,10 +55,9 @@ class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(Das
     {
         when (holder)
         {
-            //is DashboardViewHolder.TestViewHolder -> holder.bind(getItem(position) as DashboardDataModel.Test)
-            is DashboardViewHolder.TestBigViewHolder -> holder.bind(getItem(position) as DashboardDataModel.TestBig)
-            is DashboardViewHolder.TestSquareViewHolder -> holder.bind(getItem(position) as DashboardDataModel.Square)
             is DashboardViewHolder.LabelViewHolder -> holder.bind(getItem(position) as DashboardDataModel.Label)
+            is DashboardViewHolder.CakeCardViewHolder -> holder.bind(getItem(position) as DashboardDataModel.Pie)
+            is DashboardViewHolder.HistogramViewHolder -> holder.bind(getItem(position) as DashboardDataModel.Histogram)
         }
     }
 
@@ -67,10 +65,9 @@ class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(Das
     {
         return when (getItem(position))
         {
-            //is DashboardDataModel.Test -> R.layout.dashboard_element_label
-            is DashboardDataModel.TestBig -> R.layout.dashboard_element_test_big
-            is DashboardDataModel.Square -> R.layout.dashboard_element_test_square
             is DashboardDataModel.Label -> R.layout.dashboard_element_label
+            is DashboardDataModel.Pie -> R.layout.graphs_cake_card
+            is DashboardDataModel.Histogram -> R.layout.graphs_histogram_card
         }
     }
 

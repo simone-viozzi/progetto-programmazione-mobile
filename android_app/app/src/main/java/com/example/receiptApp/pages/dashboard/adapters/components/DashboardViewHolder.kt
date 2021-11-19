@@ -3,9 +3,7 @@ package com.example.receiptApp.pages.dashboard.adapters.components
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewbinding.ViewBinding
-import com.example.receiptApp.databinding.DashboardElementLabelBinding
-import com.example.receiptApp.databinding.DashboardElementTestBigBinding
-import com.example.receiptApp.databinding.DashboardElementTestSquareBinding
+import com.example.receiptApp.databinding.*
 import com.example.receiptApp.pages.dashboard.DashboardDataModel
 
 
@@ -38,49 +36,117 @@ sealed class DashboardViewHolder(
         }
     }
 
-    class TestBigViewHolder(
-        private val binding: DashboardElementTestBigBinding,
+    //class TestBigViewHolder(
+    //    private val binding: DashboardElementTestBigBinding,
+    //    private val onLongClickListener: (() -> Unit)?,
+    //    private val onClickListener: ((DashboardDataModel) -> Unit)?
+    //) : DashboardViewHolder(binding)
+    //{
+    //    fun bind(holder: DashboardDataModel.TestBig)
+    //    {
+    //        (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
+//
+    //        binding.textView1.text = holder.id.toString()
+//
+    //        binding.cardView.setOnLongClickListener {
+    //            onLongClickListener?.invoke()
+    //            true
+    //        }
+//
+    //        binding.cardView.setOnClickListener {
+    //            onClickListener?.invoke(holder)
+    //        }
+    //    }
+    //}
+
+    //class TestSquareViewHolder(
+    //    private val binding: DashboardElementTestSquareBinding,
+    //    private val onLongClickListener: (() -> Unit)?,
+    //    private val onClickListener: ((DashboardDataModel) -> Unit)?
+    //) : DashboardViewHolder(binding)
+    //{
+//
+    //    fun bind(holder: DashboardDataModel.Square)
+    //    {
+    //        (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
+//
+    //        binding.textView1.text = holder.id.toString()
+//
+    //        binding.cardView.setOnLongClickListener {
+    //            onLongClickListener?.invoke()
+    //            true
+    //        }
+//
+    //        binding.cardView.setOnClickListener {
+    //            onClickListener?.invoke(holder)
+    //        }
+    //    }
+    //}
+
+    class CakeCardViewHolder(
+        private val binding: GraphsCakeCardBinding,
         private val onLongClickListener: (() -> Unit)?,
         private val onClickListener: ((DashboardDataModel) -> Unit)?
     ) : DashboardViewHolder(binding)
     {
-        fun bind(holder: DashboardDataModel.TestBig)
+        init
         {
-            (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
+            //binding.cardView.widthRatio = 1F
+            binding.cardView.isBig = true
+        }
 
-            binding.textView1.text = holder.id.toString()
 
-            binding.cardView.setOnLongClickListener {
-                onLongClickListener?.invoke()
-                true
-            }
+        fun bind(holder: DashboardDataModel.Pie)
+        {
+            with(binding)
+            {
+                (cardView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = cardView.isBig
 
-            binding.cardView.setOnClickListener {
-                onClickListener?.invoke(holder)
+                textView.text = holder.name
+                aaChartView.aa_drawChartWithChartModel(holder.aaChartModel)
+
+                cardView.setOnLongClickListener {
+                    onLongClickListener?.invoke()
+                    true
+                }
+
+                cardView.setOnClickListener {
+                    onClickListener?.invoke(holder)
+                }
             }
         }
     }
 
-    class TestSquareViewHolder(
-        private val binding: DashboardElementTestSquareBinding,
+    class HistogramViewHolder(
+        private val binding: GraphsHistogramCardBinding,
         private val onLongClickListener: (() -> Unit)?,
         private val onClickListener: ((DashboardDataModel) -> Unit)?
     ) : DashboardViewHolder(binding)
     {
-
-        fun bind(holder: DashboardDataModel.Square)
+        init
         {
-            (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
+            //binding.cardView.widthRatio = 1F
+            binding.cardView.isBig = true
+        }
 
-            binding.textView1.text = holder.id.toString()
 
-            binding.cardView.setOnLongClickListener {
-                onLongClickListener?.invoke()
-                true
-            }
+        fun bind(holder: DashboardDataModel.Histogram)
+        {
+            with(binding)
+            {
+                (cardView.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = cardView.isBig
 
-            binding.cardView.setOnClickListener {
-                onClickListener?.invoke(holder)
+                textView.text = holder.name
+                aaChartView.aa_drawChartWithChartModel(holder.aaChartModel)
+
+                cardView.setOnLongClickListener {
+                    onLongClickListener?.invoke()
+                    true
+                }
+
+                cardView.setOnClickListener {
+                    onClickListener?.invoke(holder)
+                }
             }
         }
     }
