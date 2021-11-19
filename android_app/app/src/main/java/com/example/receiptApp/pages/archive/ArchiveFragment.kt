@@ -44,8 +44,6 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         return binding.root
     }
 
-    var start = false
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
