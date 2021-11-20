@@ -166,27 +166,22 @@ class AddAdapter(
                     textFieldTag.editText?.text = aggregate.tag?.toEditable()
                     textFieldDate.editText?.text = aggregate.str_date?.toEditable()
 
-                    thumbnail.visibility = if (aggregate.thumbnail != null) View.VISIBLE else View.GONE
 
-                    Glide.with(binding.root.context)
-                        .load(aggregate.thumbnail)
-                        .apply(
-                            RequestOptions
-                                .centerCropTransform()
-                                .override(thumbnail.width)
-                        )
-                        .apply(
-                            RequestOptions()
-                                .placeholder(
-                                    ContextCompat.getDrawable(
-                                        binding.root.context,
-                                        R.drawable.ic_baseline_image_24
-                                    )
-                                )
-                                .override(thumbnail.width)
-                                .dontAnimate()
-                        )
-                        .into(thumbnail)
+                    if (aggregate.thumbnail == null)
+                    {
+                        thumbnail.visibility = View.INVISIBLE
+                    }
+                    else
+                    {
+                        thumbnail.visibility = View.VISIBLE
+                        Glide.with(binding.root.context)
+                            .load(aggregate.thumbnail)
+                            .apply(
+                                RequestOptions
+                                    .centerInsideTransform()
+                            )
+                            .into(thumbnail)
+                    }
                 }
             }
         }

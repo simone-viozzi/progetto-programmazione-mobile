@@ -2,16 +2,25 @@ package com.example.receiptApp.pages.add
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.Activity
+import android.content.ContentValues
+import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -263,9 +272,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
                         binding.addMotionLayout.transitionToState(R.id.start)
                     }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
-                    is GalleryDataState.Loading ->
-                    {
-                    }
                 }
             }
         }
@@ -330,24 +336,20 @@ class AddFragment : Fragment(R.layout.add_fragment)
         }
     }
 
-    // TODO debug this
+    var cameraUri: Uri? = null
+
     private fun handleCamera()
     {
         permHandler.setCallbacksAndAsk(
             permissions = arrayOf(Manifest.permission.CAMERA),
             granted = {
-                context?.let { context ->
+                val values = ContentValues()
+                values.put(MediaStore.Images.Media.TITLE, "take_picture")
+                values.put(MediaStore.Images.Media.DESCRIPTION, "take_picture_description")
+                val uri = requireContext().contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
 
-                    val imagesPath = File(context.filesDir, "images/")
-                    val newFile = File(imagesPath, "default_image.jpg")
-                    val contentUri: Uri = getUriForFile(
-                        context,
-                        "com.example.receiptApp",
-                        newFile
-                    )
-                    Timber.d("contentUri -> $contentUri")
-                    getCamera.launch(contentUri)
-                }
+                cameraUri = uri
+                getCamera.launch(uri)
             },
             denied = {
                 Timber.d("permission denied")
@@ -358,21 +360,40 @@ class AddFragment : Fragment(R.layout.add_fragment)
     // TODO this is debugged halfway
     private val getFile = registerForActivityResult(
         ActivityResultContracts.GetContent()
-    ) { uri: Uri ->
+    ) { uri: Uri? ->
         Timber.d("$uri")
 
-        binding.addMotionLayout.transitionToState(R.id.start)
 
-        viewModel.setAttachment(uri, AttachmentRepository.TYPE.PDF)
+        binding.addMotionLayout.transitionToState(R.id.start)
+        uri?.let {
+            viewModel.setAttachment(
+                AttachmentRepository.Attachment(
+                    uri = it,
+                    type = AttachmentRepository.TYPE.PDF,
+                    needToCopy = true
+                )
+            )
+        } ?: Toast.makeText(activity, "there was an error with the camera", Toast.LENGTH_SHORT).show()
+        addAdapter.notifyItemChanged(0)
     }
 
-    // TODO debug thiss
-    private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+
+    private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) { result_ok ->
 
         binding.addMotionLayout.transitionToState(R.id.start)
+        if (result_ok) Timber.d("got camera") else Timber.e("no camera")
 
+        cameraUri?.let {
+            viewModel.setAttachment(
+                AttachmentRepository.Attachment(
+                    uri = it,
+                    type = AttachmentRepository.TYPE.IMAGE,
+                    needToCopy = true
+                )
+            )
 
-        if (it) Timber.d("got camera") else Timber.e("no camera")
+        } ?: Toast.makeText(activity, "there was an error with the camera", Toast.LENGTH_SHORT).show()
+        addAdapter.notifyItemChanged(0)
     }
 
 
