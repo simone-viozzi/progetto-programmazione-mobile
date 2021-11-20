@@ -70,12 +70,5 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             recyclerViewAggregatePage.layoutManager = LinearLayoutManager(activity)
         }
     }
-
-    /**
-     * On back pressed
-     * this method override the back pression for return on the last page
-     */
-    override fun onBackPressed(){
-        findNavController().popBackStack()
-    }
+    
 }
