@@ -23,9 +23,8 @@ import timber.log.Timber
 
 class DashboardFragment : Fragment()
 {
-    val viewModel: HomeViewModel by viewModels {
-        HomeViewModelFactory(
-            (activity?.application as App).sharedPrefRepository,
+    val viewModel: DashboardViewModel by viewModels {
+        DashboardViewModelFactory(
             (activity?.application as App).dbRepository,
             (activity?.application as App).dashboardRepository
         )
@@ -97,8 +96,8 @@ class DashboardFragment : Fragment()
         viewModel.dashboardState.observe(viewLifecycleOwner) { state ->
             when (state)
             {
-                HomeViewModel.DashboardState.NoState -> {}
-                HomeViewModel.DashboardState.EmptyDashMode ->
+                DashboardViewModel.DashboardState.NoState -> {}
+                DashboardViewModel.DashboardState.EmptyDashMode ->
                 {
                     Timber.e("EMPTY STATE")
 
@@ -131,7 +130,7 @@ class DashboardFragment : Fragment()
 
                     binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
                 }
-                is HomeViewModel.DashboardState.NormalMode ->
+                is DashboardViewModel.DashboardState.NormalMode ->
                 {
                     Timber.e("NORMAL STATE")
 
@@ -165,7 +164,7 @@ class DashboardFragment : Fragment()
                     binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
 
                 }
-                is HomeViewModel.DashboardState.EditMode ->
+                is DashboardViewModel.DashboardState.EditMode ->
                 {
                     Timber.e("EDIT STATE")
                     // drag and drop are enabled in this state
@@ -215,7 +214,7 @@ class DashboardFragment : Fragment()
                     binding.recyclerViewDashboard.smoothScrollToPosition(0)
                     binding.homeMotionLayout.transitionToState(R.id.editModeConstrains)
                 }
-                is HomeViewModel.DashboardState.StoreMode ->
+                is DashboardViewModel.DashboardState.StoreMode ->
                 {
                     Timber.e("STORE STATE")
 
@@ -249,6 +248,8 @@ class DashboardFragment : Fragment()
                     dashAdapter.onClickListener = null
 
                     dashStoreAdapter.onLongClickListener = null
+
+                    // when the user click an element, it will be added to the current dashboard
                     dashStoreAdapter.onClickListener = {
                         viewModel.addToDashboard(it)
                     }
@@ -256,16 +257,17 @@ class DashboardFragment : Fragment()
                     // depending of the previous state i need to animate a transition to different contains set
                     when(viewModel.getPreviousState())
                     {
-                        is HomeViewModel.DashboardState.EmptyDashMode -> {
+                        is DashboardViewModel.DashboardState.EmptyDashMode -> {
                             // there are a constrain set that have the welcome page under the store
                             binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetWelcome)
                         }
-                        is HomeViewModel.DashboardState.EditMode -> {
+                        is DashboardViewModel.DashboardState.EditMode -> {
                             // or the normal state
                             binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetEdit)
                         }
-                        else -> throw IllegalStateException("")
+                        else -> throw IllegalStateException("from what state you come from?? how?")
                     }
+                    // without this line the graphs refuse to load
                     dashStoreAdapter.notifyDataSetChanged()
                 }
             }
@@ -283,7 +285,6 @@ class DashboardFragment : Fragment()
         fab.setImageResource(R.drawable.ic_baseline_add_24)
 
         bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
-
 
         fab.setOnClickListener {
             val action = DashboardFragmentDirections.actionHomeFragmentToAddFragment()
@@ -305,11 +306,13 @@ class DashboardFragment : Fragment()
                 }
                 R.id.bottom_bar_menu_clear_dash ->
                 {
+                    // TODO debug only
                     viewModel.clearDashboard()
                     viewModel.clearDb()
                     true
                 }
                 R.id.bottom_bar_menu_generate_data -> {
+                    // TODO debug only
                     viewLifecycleOwner.lifecycleScope.launch {
                         (activity?.application as App).dbRepository.RandomFillDatabase()
                     }

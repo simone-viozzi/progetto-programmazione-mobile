@@ -13,6 +13,7 @@ import com.example.receiptApp.pages.graphs.GraphAdapter
 
 class DashboardAdapter: ListAdapter<DashboardDataModel, DashboardViewHolder>(DashboardDiffCallback())
 {
+    // the callbacks are common for every element and every type
     var onLongClickListener: (() -> Unit)? = null
     var onClickListener: ((DashboardDataModel) -> Unit)? = null
 

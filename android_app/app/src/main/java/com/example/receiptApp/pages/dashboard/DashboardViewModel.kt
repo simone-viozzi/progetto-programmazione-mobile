@@ -4,16 +4,13 @@ import androidx.lifecycle.*
 import com.example.receiptApp.repository.DashboardRepository
 import com.example.receiptApp.repository.DbRepository
 import com.example.receiptApp.utils.StateStack
-import com.example.receiptApp.repository.SharedPrefRepository
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
-class HomeViewModel(
-    private val sharedPrefRepository: SharedPrefRepository,
+class DashboardViewModel(
     private val dbRepository: DbRepository,
     private val dashboardRepository: DashboardRepository
-
     ) : ViewModel()
 {
     private val _dashboard: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
@@ -22,6 +19,8 @@ class HomeViewModel(
     private val _store: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val store: LiveData<List<DashboardDataModel>> = _store
 
+    // the stare of the dashboard is represented as objects, this give the flexibility to pass a data class with things
+    //  in it. right now this functionality is not needed and this is equivalent to an enum.
     sealed class DashboardState
     {
         object NoState: DashboardState()
@@ -30,21 +29,25 @@ class HomeViewModel(
         object EditMode : DashboardState()
         object StoreMode : DashboardState()
 
+        // pretty print of the state
         override fun toString(): String = this.javaClass.name.replaceBeforeLast("$", "")
     }
 
+    // to know the history of the states the user transitioned i keep em in a stack
     private val homeStateStack = StateStack<DashboardState>()
+
     private val _dashboardState: MutableLiveData<DashboardState> = MutableLiveData<DashboardState>()
     val dashboardState: LiveData<DashboardState> = _dashboardState
 
-
     init
     {
+        // the dashboard start from NoState and than change in loadDashboard()
         homeStateStack.push(DashboardState.NoState)
-
         _dashboardState.value = DashboardState.NoState
-        loadDashboard()
 
+        loadDashboard()
+        
+        // TODO only for debug purposes print the db at the start of the app
         viewModelScope.launch {
             Timber.e("DATABASE: \n${
                 dbRepository.getAggregates(null)?.map { el ->
@@ -103,12 +106,16 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * helper to load the dashboard
+     */
     private fun loadDashboard() = viewModelScope.launch {
 
         val list = dashboardRepository.loadDashboard()
 
         if (list.isNotEmpty())
         {
+            // if the list is not empty i can load the data onto the dashboard and go to normal mode
             homeStateStack.push(DashboardState.NormalMode)
             Timber.e("homeStateStack -> $homeStateStack")
 
@@ -116,6 +123,7 @@ class HomeViewModel(
             _dashboardState.value = DashboardState.NormalMode
         } else
         {
+            // if the dashboard is empty i will go to EmptyDashMode and display the welcome page
             homeStateStack.push(DashboardState.EmptyDashMode)
             Timber.e("homeStateStack -> $homeStateStack")
 
@@ -126,9 +134,9 @@ class HomeViewModel(
 
 
     private fun loadStore() = viewModelScope.launch {
-
+        // to load the store i need the current dashboard so i can avoid to load things that are not needed,
+        //  like if they are already in the dashboard
         _store.value = dashboardRepository.loadStore(_dashboard.value)
-
     }
 
 
@@ -138,6 +146,8 @@ class HomeViewModel(
         homeStateStack.push(DashboardState.EditMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
+        // need to notify the store that this particular element is on the dashboard now and should not appear in the
+        //  store now
         dashboardRepository.notifyAddToDash(element)
         _dashboard.value = _dashboard.value?.toMutableList()?.also { it.add(0, element) }
         _dashboardState.value = DashboardState.EditMode
@@ -177,7 +187,7 @@ class HomeViewModel(
         homeStateStack.push(DashboardState.EmptyDashMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
-        sharedPrefRepository.clearDashboard()
+        dashboardRepository.clearDashboard()
         _dashboard.value = emptyList()
         _dashboardState.value = DashboardState.EmptyDashMode
     }
@@ -197,19 +207,17 @@ class HomeViewModel(
 }
 
 
-class HomeViewModelFactory(
-    private val sharedPrefRepository: SharedPrefRepository,
+class DashboardViewModelFactory(
     private val dbRepository: DbRepository,
     private val dashboardRepository: DashboardRepository
     ) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
     {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java))
+        if (modelClass.isAssignableFrom(DashboardViewModel::class.java))
         {
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(
-                sharedPrefRepository,
+            return DashboardViewModel(
                 dbRepository,
                 dashboardRepository
             ) as T

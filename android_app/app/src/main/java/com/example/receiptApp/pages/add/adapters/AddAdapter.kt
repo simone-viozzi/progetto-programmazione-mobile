@@ -132,22 +132,26 @@ class AddAdapter(
                         if (position != NO_POSITION && count > 0)
                         {
                             textEditCallback.invoke(
-                                // adapterPosition -> Returns the Adapter position of the item represented by this ViewHolder.
                                 AddDataModel.Aggregate(vId = position, tag = text.toString())
                             )
+                            // when the user write something, show the Suggestions
                             showSuggestions(this, autocomplete, context)
                         }
                     }
 
+                    // show suggestions when the user move the focus to this edittext
                     setOnFocusChangeListener { _, hasFocus ->
                         if (hasFocus) showSuggestions(this, autocomplete, context)
                     }
                 }
 
+                // it was too difficult to handle the click on the editText so we just added a transparent frame layout
+                //  that handle the click
                 binding.dateOverlay.setOnClickListener {
                     calendarClick.invoke()
                 }
 
+                // this callback will be called when the user try to save and there are incomplete elements
                 SelfCheckCallbacks.selfCheckAggregate = {
                     if (binding.dateText.text.isNullOrEmpty())
                     {
@@ -165,7 +169,7 @@ class AddAdapter(
                     textFieldTag.editText?.text = aggregate.tag?.toEditable()
                     textFieldDate.editText?.text = aggregate.str_date?.toEditable()
 
-
+                    // the image view appear/disappears depending of if there is an attachment
                     if (aggregate.thumbnail == null)
                     {
                         thumbnail.visibility = View.GONE

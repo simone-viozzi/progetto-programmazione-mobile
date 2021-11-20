@@ -6,15 +6,12 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.provider.OpenableColumns
-import androidx.lifecycle.viewModelScope
 import com.example.receiptApp.R
-import com.example.receiptApp.THUMBNAIL_SIZE
 import com.example.receiptApp.repository.sources.GalleryImages
 import com.example.receiptApp.repository.sources.GalleryImagesPaginated
 import com.example.receiptApp.utils.FileUtils
 import com.example.receiptApp.utils.ImageUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -32,6 +29,9 @@ class AttachmentRepository(private val applicationContext: Context)
         val type: TYPE
     )
 
+    // generate a thumbnail for a given attachment
+    //  if the attachment is an image, it will load the thumbnail for that
+    //  if it's a pdf just load the pdf icon
     fun generateThumbnail(attachment: Attachment): Bitmap?
     {
         return when(attachment.type)
@@ -41,10 +41,10 @@ class AttachmentRepository(private val applicationContext: Context)
                     attachment.uri
                     ).let {
                 it?.let { bitmap ->
+                    // i don't want portrait images, if an images is in portrait format just rotate it
                     if (bitmap.height  < bitmap.width)
                     {
                         val matrix = Matrix();
-
                         matrix.postRotate(90F);
 
                         Bitmap.createBitmap(it, 0, 0, it.width, it.height, matrix, true)
@@ -60,13 +60,12 @@ class AttachmentRepository(private val applicationContext: Context)
     }
 
 
-    fun generateThumbnailFromUri(uri: Uri?): Bitmap?{
-
-        return if(uri != null){
-
+    fun generateThumbnailFromUri(uri: Uri?): Bitmap?
+    {
+        return uri?.let {
             val uriPath = uri.path?.split("/")
             
-            val attachemnt = Attachment(
+            val attachment = Attachment(
                 uri = uri,
                 type = when(uriPath?.get(uriPath.size-2)){
                     "app_images" -> TYPE.IMAGE
@@ -74,10 +73,7 @@ class AttachmentRepository(private val applicationContext: Context)
                     else -> throw IllegalStateException("unexpected uri type!")
                 }
             )
-            generateThumbnail(attachemnt)
-
-        }else{
-            null
+            generateThumbnail(attachment)
         }
     }
 
