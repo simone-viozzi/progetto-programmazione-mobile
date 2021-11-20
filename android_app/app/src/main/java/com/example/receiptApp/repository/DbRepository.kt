@@ -586,6 +586,14 @@ class DbRepository(
         )
     }
 
+    suspend fun getAggregateWithElementsById(id: Long): Map<Aggregate, List<Element>>{
+        return aggregateDao.getAggregateWithElementsById(id)
+    }
+
+    suspend fun getFisrtAggregateId(): Long?{
+        return aggregateDao.getFisrtAggregateId()
+    }
+
     // ##########################################################################
     // UPDATE METHODS
 

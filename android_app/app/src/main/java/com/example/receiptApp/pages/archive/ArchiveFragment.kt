@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
@@ -72,7 +73,8 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         }
 
         archiveAdapter = ArchiveAdapter(
-            (activity?.application as App).attachmentRepository
+            (activity?.application as App).attachmentRepository,
+            findNavController()
         )
 
         // observe the graph list view

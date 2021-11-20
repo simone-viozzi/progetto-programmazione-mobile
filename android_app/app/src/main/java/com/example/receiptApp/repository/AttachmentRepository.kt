@@ -144,4 +144,7 @@ class AttachmentRepository(private val applicationContext: Context)
         return result ?: uri.lastPathSegment
     }
 
+    fun getDefaultBitmap(): Bitmap {
+        return BitmapFactory.decodeResource(applicationContext.resources, R.drawable.bill_ico)
+    }
 }

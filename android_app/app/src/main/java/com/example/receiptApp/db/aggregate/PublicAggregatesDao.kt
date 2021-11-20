@@ -222,6 +222,9 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
     //////////////////////////////////////////////////////////////////////////////////
     // Get queries aggregates without elements
 
+    @Query("SELECT id FROM aggregate ORDER BY id ASC LIMIT 1")
+    suspend fun getFisrtAggregateId(): Long?
+
     @Transaction
     suspend fun getAggregates(start_date: Date = Date(0), end_date: Date = Date(0), tag_id: Long?): List<Aggregate>?{
 

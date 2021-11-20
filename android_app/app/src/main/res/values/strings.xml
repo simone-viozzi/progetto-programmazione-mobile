@@ -19,4 +19,9 @@
     <string name="date">Date:</string>
     <string name="ammount">Ammount:</string>
 
+    <string name="num">Num:</string>
+    <string name="cost">Cost:</string>
+    <string name="name">Name:</string>
+
+
 </resources>

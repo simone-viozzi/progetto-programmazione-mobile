@@ -20,5 +20,4 @@
     <item android:id="@+id/bottom_bar_menu_generate_data"
         android:title="generate"
         app:showAsAction="never" />
-
 </menu>
