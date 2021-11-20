@@ -37,14 +37,21 @@ class ImageUtils
                     )
                 } else
                 {
-                    Timber.d("$contentUri")
-                    Timber.d("contentUri.lastPathSegment -> ${ContentUris.parseId(contentUri)}")
-                    MediaStore.Images.Thumbnails.getThumbnail(
-                        contentResolver,
-                        id ?: ContentUris.parseId(contentUri),
-                        MediaStore.Images.Thumbnails.MINI_KIND,
-                        BitmapFactory.Options()
-                    )
+                    if (contentUri.scheme == "content")
+                    {
+                        Timber.d("$contentUri")
+                        Timber.d("contentUri.lastPathSegment -> ${ContentUris.parseId(contentUri)}")
+                        MediaStore.Images.Thumbnails.getThumbnail(
+                            contentResolver,
+                            id ?: ContentUris.parseId(contentUri),
+                            MediaStore.Images.Thumbnails.MINI_KIND,
+                            BitmapFactory.Options()
+                        )
+                    }
+                    else
+                    {
+                        null
+                    }
                 }
 
             } catch (e: FileNotFoundException)

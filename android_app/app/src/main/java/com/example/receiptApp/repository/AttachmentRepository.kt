@@ -56,11 +56,11 @@ class AttachmentRepository(private val applicationContext: Context)
                 }
             }
             TYPE.PDF -> BitmapFactory.decodeResource(applicationContext.resources, R.drawable.pdf).let {
-                //TODO("debug this")
-                //val aspectRatio = it.width / it.height
-                //val height = THUMBNAIL_SIZE
-                //Bitmap.createScaledBitmap(it, height*aspectRatio, height, true)
-                it
+
+
+                val aspectRatio = it.width.toDouble() / it.height.toDouble()
+                val height = THUMBNAIL_SIZE
+                Bitmap.createScaledBitmap(it, (height*aspectRatio).toInt(), height, true)
             }
         }
     }
