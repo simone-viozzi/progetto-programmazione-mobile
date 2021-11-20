@@ -197,26 +197,60 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
         return _countAllAggregatesByTagId(tag_id)
     }
 
-    @Query("SELECT COUNT(*) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date AND aggregate.tag_id = :tag_id")
+    @Query("SELECT COUNT(*) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date < :end_date AND aggregate.tag_id = :tag_id")
     suspend fun countAllAggregatesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Long?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate")
     suspend fun countAllExpenses(): Float?
 
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date <= :date")
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date < :date")
     suspend fun countAllExpensesBeforeDate(date: Date): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :date")
     suspend fun countAllExpensesAfterDate(date: Date): Float?
 
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date")
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date < :end_date")
         suspend fun countAllExpensesBetweenDates(start_date: Date, end_date: Date): Float?
 
     @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.tag_id = :tag_id")
     suspend fun countAllExpensesByTag(tag_id: Long?): Float?
 
-    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date <= :end_date AND aggregate.tag_id = :tag_id")
+    @Query("SELECT SUM(aggregate.total_cost) FROM aggregate WHERE aggregate.date >= :start_date AND aggregate.date < :end_date AND aggregate.tag_id = :tag_id")
     suspend fun countAllExpensesBetweenDatesByTag(start_date: Date, end_date: Date, tag_id: Long?): Float?
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+    // Get queries aggregates without elements
+
+    @Transaction
+    suspend fun getAggregates(start_date: Date = Date(0), end_date: Date = Date(0), tag_id: Long?): List<Aggregate>?{
+
+        var aggregates: List<Aggregate>?
+
+        if(tag_id == null){
+            if(start_date == Date(0) && end_date == Date(0)){
+                // richiamo tutti gli aggregati dal database
+                aggregates = _getAllAggregates()
+            }else{
+                // richiamo gli aggregati dal database in base alle date
+                aggregates = _getAggregatesBetweenDate(start_date, end_date)
+            }
+        }else{
+            if(start_date == Date(0) && end_date == Date(0)){
+                // richiamo gli aggregati dal database solo in base al tag
+                aggregates = _getAggregatesByTag(tag_id)
+            }else{
+                // richiamo gli aggregati dal database in base alle date e al  tag
+                aggregates = _getAggregatesBetweenDateByTag(start_date, end_date, tag_id)
+            }
+        }
+
+        return if(aggregates != null){
+            _addTagNameToAggregatesList(aggregates)
+        }else{
+            null
+        }
+    }
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
@@ -259,7 +293,7 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
     }
 
     @Transaction
-    suspend fun getAggregateWithElementsBetweenDate(
+    suspend fun getAggregateWithElementsBetweenDates(
         start_date: Date,
         end_date: Date
     ): Map<Aggregate, List<Element>> {

@@ -81,7 +81,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:clipToPadding="false"/>
+            android:clipToPadding="false"
+            tools:listitem="@layout/archive_aggregate"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

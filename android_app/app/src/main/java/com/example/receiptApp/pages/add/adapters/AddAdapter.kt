@@ -28,8 +28,7 @@ class AddAdapter(
     private var autocompleteAggregate: (() -> Array<String?>?),
     private var autocompleteElement: (() -> Array<String?>?),
     private var calendarClick: (() -> Unit)
-) :
-    ListAdapter<AddDataModel, AddAdapter.AddViewHolder>(AddDiffCallback())
+) : ListAdapter<AddDataModel, AddAdapter.AddViewHolder>(AddDiffCallback())
 {
 
     object SelfCheckCallbacks

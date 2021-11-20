@@ -15,4 +15,8 @@
     <string name="expense">spesa</string>
     <string name="count">conteggio</string>
 
+    <string name="tag">Tag:</string>
+    <string name="date">Data:</string>
+    <string name="ammount">Ammontare:</string>
+
 </resources>

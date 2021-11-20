@@ -84,9 +84,12 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
             recyclerView.layoutManager = LinearLayoutManager(activity)
         }
 
+<<<<<<< HEAD
+=======
         //testAdapter.submitList((0..20).map { DashboardDataModel.TestBig(id = it) })
 
 
+>>>>>>> 8551cb84f24394e911cae8f40716381753692bd0
         val lp = binding.collapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
         lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
 

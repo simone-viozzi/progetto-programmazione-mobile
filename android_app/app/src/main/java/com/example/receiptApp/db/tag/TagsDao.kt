@@ -46,10 +46,10 @@ interface TagsDao {
     // Get tag count queries
 
     @Query("SELECT COUNT(*) FROM tag WHERE tag.aggregate = 1")
-    suspend fun getAggregateTagsCount(): Int
+    suspend fun getAggregateTagsCount(): Long
 
     @Query("SELECT COUNT(*) FROM tag WHERE tag.aggregate = 0")
-    suspend fun getElementTagsCount(): Int
+    suspend fun getElementTagsCount(): Long
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////

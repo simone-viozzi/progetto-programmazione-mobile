@@ -18,6 +18,12 @@ fun Double.round(decimals: Int): Double {
     return round(this * multiplier) / multiplier
 }
 
+fun Float.round(decimals: Int): Float {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return (round(this * multiplier) / multiplier).toFloat()
+}
+
 fun <T> Array<T>.mapInPlace(transform: (T) -> T) {
     for (i in this.indices) {
         this[i] = transform(this[i])

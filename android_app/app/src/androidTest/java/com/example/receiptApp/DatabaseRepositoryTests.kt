@@ -7,6 +7,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.receiptApp.Utils.DatabaseTestHelper
 import com.example.receiptApp.db.AppDatabase
 import com.example.receiptApp.db.aggregate.Aggregate
 import com.example.receiptApp.db.aggregate.PublicAggregatesDao
@@ -88,7 +89,7 @@ class DatabaseRepositoryTests {
         val listOfElementsLists = mutableListOf<List<Element>>()
         val aggregateIdsList = mutableListOf<Long>()
 
-        databaseTestHelper.generatePredictableAgregatesAndElements(
+        DatabaseTestHelper.generatePredictableAgregatesAndElements(
             aggregatesList = aggregatesList,
             listOfElementsLists = listOfElementsLists,
             aggregateIdsList = aggregateIdsList,
