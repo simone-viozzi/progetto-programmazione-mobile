@@ -17,12 +17,11 @@ import android.R
 import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
-
-
+import com.example.receiptApp.repository.AttachmentRepository
 
 
 class ArchiveAdapter(
-
+    val attachemntRepository: AttachmentRepository
 ) : ListAdapter<ArchiveDataModel, ArchiveAdapter.ArchiveViewHolder>(ArchiveAdapter.ArchiveDiffCallback()){
 
     /**
@@ -64,7 +63,8 @@ class ArchiveAdapter(
     ) : RecyclerView.ViewHolder(binding.root)
     {
         class AggregateViewHolder(
-            private val binding: ArchiveAggregateBinding
+            private val binding: ArchiveAggregateBinding,
+            private val attachemntRepository: AttachmentRepository
         ): ArchiveViewHolder(binding) {
             // the callbacks need to be in the init section
             init {
@@ -78,8 +78,9 @@ class ArchiveAdapter(
                     costTextView.text = aggregate.tot_cost?.round(2).toString() + "€"
                     aggregate.thumbnail?.let{
                         // add procedure to load bitmap from uri at runtime
-                        //generateThumbnail()
-                        //imageAttachment.setImageBitmap(it)
+                        attachemntRepository.generateThumbnailFromUri(it)?.let{ it2 ->
+                            imageAttachment.setImageBitmap(it2)
+                        }
                     }
                 }
             }
@@ -97,7 +98,8 @@ class ArchiveAdapter(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                )
+                ),
+                attachemntRepository
             )
             // the else case is needed, but should never be called
             else -> throw IllegalStateException("the view type in the RecyclerView is wrongggg! ")

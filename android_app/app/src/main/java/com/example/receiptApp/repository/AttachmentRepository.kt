@@ -28,7 +28,7 @@ class AttachmentRepository(private val applicationContext: Context)
         var name: String? = null,
         var uri: Uri,
         var thumbnail: Bitmap? = null,
-        var needToCopy: Boolean,
+        var needToCopy: Boolean = false,
         val type: TYPE
     )
 
@@ -62,6 +62,28 @@ class AttachmentRepository(private val applicationContext: Context)
                 //Bitmap.createScaledBitmap(it, height*aspectRatio, height, true)
                 it
             }
+        }
+    }
+
+
+    fun generateThumbnailFromUri(uri: Uri?): Bitmap?{
+
+        return if(uri != null){
+
+            val uriPath = uri.path?.split("/")
+            
+            val attachemnt = Attachment(
+                uri = uri,
+                type = when(uriPath?.get(uriPath.size-2)){
+                    "images" -> TYPE.IMAGE
+                    "files" -> TYPE.PDF
+                    else -> throw IllegalStateException("unexpected uri type!")
+                }
+            )
+            generateThumbnail(attachemnt)
+
+        }else{
+            null
         }
     }
 
@@ -112,15 +134,14 @@ class AttachmentRepository(private val applicationContext: Context)
                 null,
                 null,
                 null
-            )
-                ?.use { cursor ->
+            )?.use { cursor ->
 
-                    if (cursor.moveToFirst())
-                    {
-                        result = cursor.getString(
-                            cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).also { if (it <= 0) return null })
-                    }
+                if (cursor.moveToFirst())
+                {
+                    result = cursor.getString(
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).also { if (it <= 0) return null })
                 }
+            }
         }
         return result ?: uri.lastPathSegment
     }

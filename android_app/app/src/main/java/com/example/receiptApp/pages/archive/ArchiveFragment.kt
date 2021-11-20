@@ -71,7 +71,9 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
             }
         }
 
-        archiveAdapter = ArchiveAdapter()
+        archiveAdapter = ArchiveAdapter(
+            (activity?.application as App).attachmentRepository
+        )
 
         // observe the graph list view
         viewModel.rvList.observe(viewLifecycleOwner){
