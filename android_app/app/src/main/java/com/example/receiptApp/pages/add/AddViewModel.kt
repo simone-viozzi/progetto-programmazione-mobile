@@ -1,7 +1,5 @@
 package com.example.receiptApp.pages.add
 
-import android.graphics.Bitmap
-import android.net.Uri
 import android.text.format.DateFormat
 import androidx.lifecycle.*
 import androidx.paging.Pager
@@ -9,7 +7,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.repository.DbRepository
-import com.example.receiptApp.utils.ImageUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -74,17 +71,16 @@ class AddViewModel(
                 {
                     newList?.also { list ->
                         val lastIndex = list.lastIndex
-                        list[lastIndex] = AddDataModel.Element(vId = lastIndex, elem_tag = el.elem_tag)
+                        //list[lastIndex] = AddDataModel.Element(vId = lastIndex, elem_tag = el.elem_tag)
                     }
                 }
 
                 _rvList.value = newList?.also {
-                    if (el.vId == getLastId(false) && update)
+                    if (el.vId == getLastId(false))
                     {
                         it.add(
                             AddDataModel.Element(
                                 vId = getLastId(),
-                                elem_tag = oldEl.elem_tag
                             )
                         )
                     }
@@ -192,7 +188,13 @@ class AddViewModel(
         val attachmentUri =
             attachment?.let { if (!it.needToCopy) it.uri else attachmentRepository.copyAttachment(it) }
 
-        dbRepository.insertAggregateWithElements(aggregate, elements, attachmentUri)
+        Timber.e("aggregate -> $aggregate")
+        Timber.e("elements -> $elements")
+        Timber.e("attachment -> $attachmentUri")
+
+        dbRepository.insertAggregateWithElements(aggregate, elements.also {
+            it.toMutableList().remove(it.last())
+        }, attachmentUri)
 
         Timber.e("fine inserimento")
     }
