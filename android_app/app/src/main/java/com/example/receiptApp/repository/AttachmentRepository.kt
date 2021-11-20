@@ -79,8 +79,8 @@ class AttachmentRepository(private val applicationContext: Context)
 
         val filesPath = when (attachment.type)
         {
-            TYPE.IMAGE ->  "images/"
-            TYPE.PDF -> "files/"
+            TYPE.IMAGE ->  "images"
+            TYPE.PDF -> "files"
         }
 
         attachment.name = attachment.name
@@ -89,16 +89,14 @@ class AttachmentRepository(private val applicationContext: Context)
 
         val newFile = File(
             applicationContext.getDir(filesPath, Context.MODE_PRIVATE),
-            "/${FileUtils.getUniqueFilename(attachment.name!!)}"
+            "/${attachment.name}"
         )
 
         applicationContext.contentResolver.openInputStream(attachment.uri)?.use { stream ->
             Timber.d("newFile.absolutePath -> ${newFile.absolutePath}")
 
-            return@use FileUtils.saveFile(stream, newFile, applicationContext)
+            return@withContext FileUtils.saveFile(stream, newFile, applicationContext)
         }
-
-        return@withContext null
     }
 
     fun getFileName(uri: Uri): String?

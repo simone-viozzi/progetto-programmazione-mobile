@@ -37,6 +37,9 @@ class FileUtils
             outStream.close()
             inStream.close()
 
+            Timber.e("file -> $file")
+            Timber.e("file -> ${file.toUri()}")
+
             return file.toUri()
         }
 

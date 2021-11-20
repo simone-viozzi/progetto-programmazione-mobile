@@ -44,6 +44,19 @@ class HomeViewModel(
 
         _homeState.value = HomeState.NoState
         loadDashboard()
+
+        viewModelScope.launch {
+            Timber.e("DATABASE: \n${
+                dbRepository.getAggregates(null)?.map { el ->
+                    el.also {
+                        it.location = null
+                        it.date = null
+                    }
+                }?.joinToString {
+                    "${it}\n"
+                }
+            }")
+        }
     }
 
     fun setEditMode()
