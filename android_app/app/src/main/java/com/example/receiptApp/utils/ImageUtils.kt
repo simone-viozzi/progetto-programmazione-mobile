@@ -35,10 +35,9 @@ class ImageUtils
                     contentResolver.loadThumbnail(
                         contentUri, Size(THUMBNAIL_SIZE, THUMBNAIL_SIZE), null
                     )
-                } else
-                {
-                    if (contentUri.scheme == "content")
-                    {
+                } else {
+                    if (contentUri.scheme == "content") {
+
                         Timber.d("$contentUri")
                         Timber.d("contentUri.lastPathSegment -> ${ContentUris.parseId(contentUri)}")
                         MediaStore.Images.Thumbnails.getThumbnail(
