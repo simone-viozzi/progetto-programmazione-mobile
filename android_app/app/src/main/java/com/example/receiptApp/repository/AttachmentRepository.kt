@@ -75,8 +75,8 @@ class AttachmentRepository(private val applicationContext: Context)
             val attachemnt = Attachment(
                 uri = uri,
                 type = when(uriPath?.get(uriPath.size-2)){
-                    "images" -> TYPE.IMAGE
-                    "files" -> TYPE.PDF
+                    "app_images" -> TYPE.IMAGE
+                    "app_files" -> TYPE.PDF
                     else -> throw IllegalStateException("unexpected uri type!")
                 }
             )
