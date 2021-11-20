@@ -77,7 +77,9 @@ class ArchiveAdapter(
                     dateTextView.text = aggregate.str_date
                     costTextView.text = aggregate.tot_cost?.round(2).toString() + "€"
                     aggregate.thumbnail?.let{
-                        imageAttachment.setImageBitmap(it)
+                        // add procedure to load bitmap from uri at runtime
+                        //generateThumbnail()
+                        //imageAttachment.setImageBitmap(it)
                     }
                 }
             }
@@ -126,4 +128,6 @@ class ArchiveAdapter(
             else -> throw IllegalStateException("only ArchiveDataModel.Aggregate item expected, something goes wrong.")
         }
     }
+
+
 }

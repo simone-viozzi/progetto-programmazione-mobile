@@ -95,8 +95,7 @@ object DatabaseTestHelper {
                 location = Location("").also{
                     it.latitude=(-900..900).random().toDouble()/10.0
                     it.longitude=(-1800..1800).random().toDouble()/10.0
-                },
-                attachment = Uri.parse("/test/" + (0..1000).random().toString()),
+                }
             )
             // tag isn't in the constructor must be added later
             new_aggr.tag = aggregateTagsList.random()
@@ -182,8 +181,7 @@ object DatabaseTestHelper {
                 location = Location("").also{
                     it.latitude=(-900..900).random().toDouble()/10.0
                     it.longitude=(-1800..1800).random().toDouble()/10.0
-                },
-                attachment = Uri.parse("/test/" + (0..1000).random().toString()),
+                }
             )
             // tag isn't in the constructor must be added later
             new_aggr.tag = aggregateTagsList[aTagIdx++]

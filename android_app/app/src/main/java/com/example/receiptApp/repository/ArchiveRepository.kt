@@ -33,24 +33,15 @@ class ArchiveRepository(
 
         var idx = 0
         val format = SimpleDateFormat("dd/MM/yyyy") // output date format
+
         dbAggregateList?.forEach {
-
-            // check for the attachemnt presence
-            val attachment: Bitmap = if(it.attachment == null){
-                // if there isn't any attachment
-                BitmapFactory.decodeResource(applicationContext.resources, R.drawable.bill_ico)
-            }else{
-                // if attachment is present
-                // TODO: sostituire con il recupero dell'attachment effettivo
-                BitmapFactory.decodeResource(applicationContext.resources, R.drawable.bill_ico)
-            }
-
             archiveAggregateList.add(
                 ArchiveDataModel.Aggregate(
                     id = idx++,
+                    aggr_id= it.id!!,
                     tag = it.tag,
                     str_date = format.format(it.date),
-                    thumbnail = attachment,
+                    thumbnail = it.attachment,
                     tot_cost = it.total_cost
                 )
             )
