@@ -9,6 +9,7 @@ class DashboardDiffCallback : DiffUtil.ItemCallback<DashboardDataModel>()
 {
     override fun areItemsTheSame(oldItem: DashboardDataModel, newItem: DashboardDataModel): Boolean
     {
+        // the id need to be always unique
         return oldItem.id == newItem.id
     }
 

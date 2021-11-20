@@ -47,6 +47,7 @@ class FixedAspectCardView(
     {
         val width = MeasureSpec.getSize(widthMeasureSpec)
 
+        // if the aspect ratio was not set, revert to default behavior
         if (widthRatio == 0F)
         {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)

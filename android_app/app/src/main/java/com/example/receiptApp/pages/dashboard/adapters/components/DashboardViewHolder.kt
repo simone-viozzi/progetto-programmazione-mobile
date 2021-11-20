@@ -36,53 +36,6 @@ sealed class DashboardViewHolder(
         }
     }
 
-    //class TestBigViewHolder(
-    //    private val binding: DashboardElementTestBigBinding,
-    //    private val onLongClickListener: (() -> Unit)?,
-    //    private val onClickListener: ((DashboardDataModel) -> Unit)?
-    //) : DashboardViewHolder(binding)
-    //{
-    //    fun bind(holder: DashboardDataModel.TestBig)
-    //    {
-    //        (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
-//
-    //        binding.textView1.text = holder.id.toString()
-//
-    //        binding.cardView.setOnLongClickListener {
-    //            onLongClickListener?.invoke()
-    //            true
-    //        }
-//
-    //        binding.cardView.setOnClickListener {
-    //            onClickListener?.invoke(holder)
-    //        }
-    //    }
-    //}
-
-    //class TestSquareViewHolder(
-    //    private val binding: DashboardElementTestSquareBinding,
-    //    private val onLongClickListener: (() -> Unit)?,
-    //    private val onClickListener: ((DashboardDataModel) -> Unit)?
-    //) : DashboardViewHolder(binding)
-    //{
-//
-    //    fun bind(holder: DashboardDataModel.Square)
-    //    {
-    //        (binding.cardView.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.isFullSpan = binding.cardView.isBig
-//
-    //        binding.textView1.text = holder.id.toString()
-//
-    //        binding.cardView.setOnLongClickListener {
-    //            onLongClickListener?.invoke()
-    //            true
-    //        }
-//
-    //        binding.cardView.setOnClickListener {
-    //            onClickListener?.invoke(holder)
-    //        }
-    //    }
-    //}
-
     class CakeCardViewHolder(
         private val binding: GraphsCakeCardBinding,
         private val onLongClickListener: (() -> Unit)?,
@@ -91,7 +44,7 @@ sealed class DashboardViewHolder(
     {
         init
         {
-            //binding.cardView.widthRatio = 1F
+            // i don't have control of the xml of this view so i set it here
             binding.cardView.isBig = true
         }
 
@@ -125,7 +78,7 @@ sealed class DashboardViewHolder(
     {
         init
         {
-            //binding.cardView.widthRatio = 1F
+            // i don't have control of the xml of this view so i set it here
             binding.cardView.isBig = true
         }
 

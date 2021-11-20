@@ -2,29 +2,19 @@ package com.example.receiptApp.pages.add
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.CallSuper
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.core.content.FileProvider.getUriForFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -50,12 +40,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
-
-
-/**
- * TODO -> WARNING: rotating the phone with the attachment is visible bring the UI to an unstable state
- */
 
 
 class AddFragment : Fragment(R.layout.add_fragment)
@@ -65,24 +49,15 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private val viewModel: AddViewModel by viewModels {
         AddViewModelFactory(
             (activity?.application as App).attachmentRepository,
-                (activity?.application as App).dbRepository
+            (activity?.application as App).dbRepository
         )
     }
 
     private lateinit var binding: AddFragmentBinding
     private lateinit var addAdapter: AddAdapter
 
-    private val onPermissionGranted: () -> Unit = {
-        setAttachmentVisible(false)
-        viewModel.galleryCollect()
-    }
-
-    private var onPermissionDenied: () -> Unit = {
-        (activity as MainActivity)
-            .binding
-            .bottomAppBar
-            .replaceMenu(R.menu.bottom_bar_menu_hide)
-    }
+    // temp var to store the uri of the photo the user is taking
+    var cameraUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -107,21 +82,26 @@ class AddFragment : Fragment(R.layout.add_fragment)
             lifecycleOwner = viewLifecycleOwner
         }
 
+        // the app bar need to be transformed to the needs of this fragment
         with((activity as MainActivity).binding)
         {
             bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
 
+            // from here the user must not open the navigation drawer (this is not a top level destination)
             bottomAppBar.navigationIcon = null
 
             fab.setImageResource(R.drawable.ic_baseline_check_24)
-            fab.setOnClickListener {
-                Timber.d("\nlist -> \n${viewModel.rvList.value}")
 
+            // the fab is used as save button, before saving it will be performed a self check
+            fab.setOnClickListener {
                 viewModel.selfCheckAggregate = AddAdapter.SelfCheckCallbacks.selfCheckAggregate
                 viewModel.selfCheckElements = AddAdapter.SelfCheckCallbacks.selfCheckElements
 
+                // the test is passed i can start the save and return to the previous page
                 if (viewModel.selfIntegrityCheck())
                 {
+                    // this is done asynchronously using a global scope, with the view model scope the coroutine will
+                    //  get killed before completing
                     viewModel.saveToDb()
 
                     Timber.e("going up")
@@ -137,6 +117,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         // ask the permission for the attachment
         permHandler.setCallbacksAndAsk(
+            // depending on the sdk i need different permissions
             permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             {
                 arrayOf(
@@ -150,8 +131,18 @@ class AddFragment : Fragment(R.layout.add_fragment)
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                 )
             },
-            granted = onPermissionGranted,
-            denied = onPermissionDenied
+            // if the user grant the permissions i can start loading the images
+            granted = {
+                setAttachmentVisible(false)
+                viewModel.galleryCollect()
+            },
+            // otherwise just hide the button
+            denied = {
+                (activity as MainActivity)
+                    .binding
+                    .bottomAppBar
+                    .replaceMenu(R.menu.bottom_bar_menu_hide)
+            }
         )
 
         // in this fragment the animation will perform first and than the graphics change, this is a bit laggy
@@ -187,11 +178,11 @@ class AddFragment : Fragment(R.layout.add_fragment)
         // handling of the up button in the appbar
         binding.topAppBar.setNavigationOnClickListener {
             MaterialAlertDialogBuilder(activity as MainActivity)
-                .setMessage("are you sure?")
-                .setNegativeButton("decline") { dialog, which ->
+                .setMessage(getString(R.string.sure_to_exit))
+                .setNegativeButton(getString(R.string.no)) { _, _ ->
                     // Respond to negative button press
                 }
-                .setPositiveButton("accept") { dialog, which ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     // Respond to positive button press
                     findNavController().navigateUp()
                 }
@@ -202,15 +193,14 @@ class AddFragment : Fragment(R.layout.add_fragment)
         val dateValidatorMax: DateValidator = DateValidatorPointBackward.before(MaterialDatePicker.todayInUtcMilliseconds())
 
         val datePicker = MaterialDatePicker.Builder.datePicker()
-            // TODO get the string out of here!
-            .setTitleText("Select date")
+            .setTitleText(getString(R.string.select_date))
             // select today as default date
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .setCalendarConstraints(CalendarConstraints.Builder().setValidator(dateValidatorMax).build())
             .build()
 
 
-        // the adapter take the four callBacks, 3 are in the View model and the other here
+        // the adapter take the four callBacks, 3 are in the View model and the other one here
         addAdapter = AddAdapter(
             viewModel.textEditCallback,
             viewModel.autoCompleteAggregateCallback,
@@ -317,6 +307,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
                         }
                         R.id.attach_file ->
                         {
+                            // start the standard file picker filtering only pdfs
                             getFile.launch("application/pdf")
                             true
                         }
@@ -336,10 +327,11 @@ class AddFragment : Fragment(R.layout.add_fragment)
         }
     }
 
-    var cameraUri: Uri? = null
 
+    // helper function to open the camera
     private fun handleCamera()
     {
+        // need to always check for permissions
         permHandler.setCallbacksAndAsk(
             permissions = arrayOf(Manifest.permission.CAMERA),
             granted = {
@@ -353,18 +345,20 @@ class AddFragment : Fragment(R.layout.add_fragment)
             },
             denied = {
                 Timber.d("permission denied")
+                Toast.makeText(activity, getString(R.string.no_camera_permission), Toast.LENGTH_SHORT).show()
             }
         )
     }
 
-    // TODO this is debugged halfway
+
     private val getFile = registerForActivityResult(
         ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+    )
+    { uri: Uri? ->
         Timber.d("$uri")
 
-
         binding.addMotionLayout.transitionToState(R.id.start)
+
         uri?.let {
             viewModel.setAttachment(
                 AttachmentRepository.Attachment(
@@ -373,7 +367,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
                     needToCopy = true
                 )
             )
-        } ?: Toast.makeText(activity, "there was an error with the camera", Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(activity, getString(R.string.file_error), Toast.LENGTH_SHORT).show()
         addAdapter.notifyItemChanged(0)
     }
 
@@ -381,7 +375,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
     private val getCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) { result_ok ->
 
         binding.addMotionLayout.transitionToState(R.id.start)
-        if (result_ok) Timber.d("got camera") else Timber.e("no camera")
 
         cameraUri?.let {
             viewModel.setAttachment(
@@ -392,7 +385,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 )
             )
 
-        } ?: Toast.makeText(activity, "there was an error with the camera", Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(activity, getString(R.string.camera_error), Toast.LENGTH_SHORT).show()
         addAdapter.notifyItemChanged(0)
     }
 

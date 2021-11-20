@@ -272,4 +272,9 @@ class DashboardRepository(
         currentStore.add(element)
         Timber.d("add -> $element")
     }
+
+    fun clearDashboard()
+    {
+        sharedPrefRepository.clearDashboard()
+    }
 }

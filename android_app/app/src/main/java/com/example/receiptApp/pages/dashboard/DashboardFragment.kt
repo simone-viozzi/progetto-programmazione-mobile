@@ -23,9 +23,8 @@ import timber.log.Timber
 
 class DashboardFragment : Fragment()
 {
-    val viewModel: HomeViewModel by viewModels {
-        HomeViewModelFactory(
-            (activity?.application as App).sharedPrefRepository,
+    val viewModel: DashboardViewModel by viewModels {
+        DashboardViewModelFactory(
             (activity?.application as App).dbRepository,
             (activity?.application as App).dashboardRepository
         )
@@ -53,17 +52,16 @@ class DashboardFragment : Fragment()
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        binding.homeMotionLayout.setDebugMode(1)
-
+        // force the start state of motion layout
         binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
 
+        ///// dashboard setup section /////
         val dashAdapter = DashboardAdapter()
-
         val rvLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
+        // to setup drag and drop
         val callback = DragManageAdapter(viewModel)
-
         val helper = ItemTouchHelper(callback)
 
         binding.recyclerViewDashboard.apply {
@@ -72,10 +70,11 @@ class DashboardFragment : Fragment()
         }
 
         viewModel.dashboard.observe(viewLifecycleOwner) {
-            Timber.d("list -> $it")
             dashAdapter.submitList(it)
         }
+        ////////////////////////////////////
 
+        ///// store setup section /////
         val dashStoreAdapter = DashboardAdapter()
 
         val rvStoreLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -85,29 +84,42 @@ class DashboardFragment : Fragment()
             adapter = dashStoreAdapter
             layoutManager = rvStoreLayoutManager
         }
+        ///////////////////////////////
 
-        viewModel.homeState.observe(viewLifecycleOwner) { state ->
+
+        // the state of the dashboard are:
+        //  -> NoState      -> initial state
+        //  -> EmptyDashMode-> when the dashboard do not have any widget
+        //  -> NormalMode   -> dashboard is displaying widget
+        //  -> EditMode     -> the user want to edit the dashboard
+        //  -> StoreMode    -> the store is open
+        viewModel.dashboardState.observe(viewLifecycleOwner) { state ->
             when (state)
             {
-                HomeViewModel.HomeState.EmptyDashMode ->
+                DashboardViewModel.DashboardState.NoState -> {}
+                DashboardViewModel.DashboardState.EmptyDashMode ->
                 {
                     Timber.e("EMPTY STATE")
+
+                    // drag and drop are disabled in this state
                     helper.attachToRecyclerView(null)
 
                     with((activity as MainActivity).binding)
                     {
+                        // the settings of the appbar are common for EmptyDashMode and NormalMode
                         setAppbarToNormalMode()
                     }
 
                     with(binding)
                     {
+                        // when the user tap into the screen it will switch to store mode
                         welcomeScreen.setOnClickListener {
                             viewModel?.setStoreMode()
                         }
 
                         scrim.setOnClickListener(null)
                     }
-
+                    // the store does not have to be filled in this state
                     viewModel.store.removeObservers(viewLifecycleOwner)
 
                     dashAdapter.onLongClickListener = null
@@ -118,9 +130,11 @@ class DashboardFragment : Fragment()
 
                     binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
                 }
-                is HomeViewModel.HomeState.NormalMode ->
+                is DashboardViewModel.DashboardState.NormalMode ->
                 {
                     Timber.e("NORMAL STATE")
+
+                    // drag and drop are disabled in this state
                     helper.attachToRecyclerView(null)
 
                     with((activity as MainActivity).binding)
@@ -137,6 +151,7 @@ class DashboardFragment : Fragment()
 
                     viewModel.store.removeObservers(viewLifecycleOwner)
 
+                    // when the user will do a long click on an element of the dashboard it will switch to edit mode
                     dashAdapter.onLongClickListener = {
                         Timber.e("viewModel.setEditMode()")
                         viewModel.setEditMode()
@@ -149,11 +164,13 @@ class DashboardFragment : Fragment()
                     binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
 
                 }
-                is HomeViewModel.HomeState.EditMode ->
+                is DashboardViewModel.DashboardState.EditMode ->
                 {
                     Timber.e("EDIT STATE")
+                    // drag and drop are enabled in this state
                     helper.attachToRecyclerView(binding.recyclerViewDashboard)
 
+                    // the app bar need to be transformed to match the needs of this state
                     with((activity as MainActivity).binding)
                     {
                         fab.show()
@@ -193,13 +210,19 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
+                    // always restroll to position 0, when adding elements from the store this create a nice animation
                     binding.recyclerViewDashboard.smoothScrollToPosition(0)
                     binding.homeMotionLayout.transitionToState(R.id.editModeConstrains)
                 }
-                is HomeViewModel.HomeState.StoreMode ->
+                is DashboardViewModel.DashboardState.StoreMode ->
                 {
-                    helper.attachToRecyclerView(null)
                     Timber.e("STORE STATE")
+
+                    // disable drag and drop
+                    helper.attachToRecyclerView(null)
+
+                    // this state is reachable only from edit or welcome, so i don't need to edit all the
+                    // aspect of the appbar
                     with((activity as MainActivity).binding)
                     {
                         fab.hide()
@@ -225,18 +248,26 @@ class DashboardFragment : Fragment()
                     dashAdapter.onClickListener = null
 
                     dashStoreAdapter.onLongClickListener = null
+
+                    // when the user click an element, it will be added to the current dashboard
                     dashStoreAdapter.onClickListener = {
                         viewModel.addToDashboard(it)
                     }
 
-                    if (viewModel.getPreviousState() is HomeViewModel.HomeState.EmptyDashMode)
+                    // depending of the previous state i need to animate a transition to different contains set
+                    when(viewModel.getPreviousState())
                     {
-                        binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetWelcome)
+                        is DashboardViewModel.DashboardState.EmptyDashMode -> {
+                            // there are a constrain set that have the welcome page under the store
+                            binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetWelcome)
+                        }
+                        is DashboardViewModel.DashboardState.EditMode -> {
+                            // or the normal state
+                            binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetEdit)
+                        }
+                        else -> throw IllegalStateException("from what state you come from?? how?")
                     }
-                    else if (viewModel.getPreviousState() is HomeViewModel.HomeState.EditMode)
-                    {
-                        binding.homeMotionLayout.transitionToState(R.id.storeConstraintSetEdit)
-                    }
+                    // without this line the graphs refuse to load
                     dashStoreAdapter.notifyDataSetChanged()
                 }
             }
@@ -254,7 +285,6 @@ class DashboardFragment : Fragment()
         fab.setImageResource(R.drawable.ic_baseline_add_24)
 
         bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
-
 
         fab.setOnClickListener {
             val action = DashboardFragmentDirections.actionHomeFragmentToAddFragment()
@@ -276,11 +306,13 @@ class DashboardFragment : Fragment()
                 }
                 R.id.bottom_bar_menu_clear_dash ->
                 {
+                    // TODO debug only
                     viewModel.clearDashboard()
                     viewModel.clearDb()
                     true
                 }
                 R.id.bottom_bar_menu_generate_data -> {
+                    // TODO debug only
                     viewLifecycleOwner.lifecycleScope.launch {
                         (activity?.application as App).dbRepository.RandomFillDatabase()
                     }
@@ -292,5 +324,7 @@ class DashboardFragment : Fragment()
     }
 
 }
+
+
 
 

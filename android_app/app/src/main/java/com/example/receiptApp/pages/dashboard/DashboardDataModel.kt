@@ -2,6 +2,9 @@ package com.example.receiptApp.pages.dashboard
 
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 
+/**
+ * this is what of every element of the dashboard get saved into the shared preferences
+ */
 interface DashboardElement
 {
     var id: Int
@@ -9,13 +12,16 @@ interface DashboardElement
     var content: String
 }
 
+/**
+ * every type have it's own object
+ */
 enum class TYPE()
 {
     LABEL,
     PIE,
     HISTOGRAM;
 
-
+    // with this i can convert the type into the actual object
     fun getObj(): DashboardDataModel
     {
         return when (this)
@@ -27,7 +33,8 @@ enum class TYPE()
     }
 }
 
-
+// those are the objects that will be displayed in the recyclerview
+//  every type have it's own field but all of them implement DashboardElement
 sealed class DashboardDataModel : DashboardElement
 {
     data class Label(

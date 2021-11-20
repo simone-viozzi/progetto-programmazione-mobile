@@ -12,11 +12,17 @@ import com.example.receiptApp.R
 import com.example.receiptApp.databinding.AddImgBinding
 import com.example.receiptApp.repository.AttachmentRepository.Attachment
 
-
-class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : PagingDataAdapter<Attachment, GalleryAdapter.ImgViewHolder>(DiffCallback())
+/**
+ * Gallery adapter
+ *  this adapter get paginated data and display it
+ */
+class GalleryAdapter(
+    private val clickListener: ((Attachment) -> Unit)
+) : PagingDataAdapter<Attachment, GalleryAdapter.ImgViewHolder>(DiffCallback())
 {
     class DiffCallback : DiffUtil.ItemCallback<Attachment>()
     {
+        // the uri act as id
         override fun areItemsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem.uri == newItem.uri
         override fun areContentsTheSame(oldItem: Attachment, newItem: Attachment): Boolean = oldItem == newItem
     }
@@ -30,6 +36,7 @@ class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : Paging
 
         init
         {
+            // the click listner is commor for every element
             binding.imageView.setOnClickListener {
                 img?.let { it1 -> clickListener.invoke(it1) }
             }
@@ -37,6 +44,7 @@ class GalleryAdapter(private val clickListener: ((Attachment) -> Unit)) : Paging
 
         fun bind(item: Attachment)
         {
+            // loading images with glide using placeholder
             img = item
             val size = binding.imageView.width
             Glide.with(binding.root.context)

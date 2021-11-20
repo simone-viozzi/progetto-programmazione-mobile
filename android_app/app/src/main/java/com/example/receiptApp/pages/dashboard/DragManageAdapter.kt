@@ -4,9 +4,15 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 
-
+/**
+ * Drag manage adapter
+ *  will set and menage frag and drop and swipe
+ *
+ * @property viewModel
+ * @constructor Create empty Drag manage adapter
+ */
 class DragManageAdapter(
-    var viewModel: HomeViewModel,
+    var viewModel: DashboardViewModel,
 ) : ItemTouchHelper.Callback()
 {
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int
@@ -23,10 +29,12 @@ class DragManageAdapter(
         target: RecyclerView.ViewHolder
     ): Boolean
     {
+        // this doesn't seems to work
+        (viewHolder.itemView as? MaterialCardView)?.isDragged = true
+
+        // when the user overlap an element with another, we swap the positions of the two element
         val from = viewHolder.bindingAdapterPosition
         val to = target.bindingAdapterPosition
-
-        (viewHolder.itemView as? MaterialCardView)?.isDragged = true
 
         viewModel.swapItems(from, to)
         return true
@@ -34,6 +42,7 @@ class DragManageAdapter(
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
     {
+        // when the user swipe an element, we delete the element
         viewModel.removeItemFromDashBoard(viewHolder.absoluteAdapterPosition)
     }
 
@@ -51,6 +60,7 @@ class DragManageAdapter(
         y: Int
     )
     {
+        // this doesn't seems to work
         (viewHolder.itemView as? MaterialCardView)?.isDragged = false
         super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
     }
