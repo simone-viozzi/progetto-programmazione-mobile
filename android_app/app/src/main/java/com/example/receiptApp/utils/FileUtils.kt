@@ -1,9 +1,12 @@
 package com.example.receiptApp.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -12,35 +15,29 @@ class FileUtils
 {
     companion object
     {
-        fun saveFile(bis: InputStream, destinationFile: File): Uri?
+        fun saveFile(inStream: InputStream, file: File, context: Context): Uri
         {
-            var contentUri: Uri? = null
-            var bos: BufferedOutputStream? = null
-            try
-            {
-                bos = BufferedOutputStream(FileOutputStream(destinationFile.absolutePath, false))
-                val buf = ByteArray(1024)
-                bis.read(buf)
-                do
-                {
-                    bos.write(buf)
-                } while (bis.read(buf) != -1)
-            } catch (e: IOException)
-            {
-                e.printStackTrace()
-            } finally
-            {
-                try
-                {
-                    bis.close()
-                    bos?.close()
-                    contentUri = Uri.fromFile(destinationFile)
-                } catch (e: IOException)
-                {
-                    e.printStackTrace()
-                }
+            Timber.d("$file")
+
+            if (file.exists()) {
+                file.delete()
             }
-            return contentUri
+            file.createNewFile()
+
+            val outStream = FileOutputStream(file)
+            val buff = ByteArray(5 * 1024)
+
+            var len: Int
+            while(inStream.read(buff).also { len = it } >= 0)
+            {
+                outStream.write(buff, 0, len)
+            }
+
+            outStream.flush()
+            outStream.close()
+            inStream.close()
+
+            return file.toUri()
         }
 
 

@@ -1,5 +1,6 @@
 package com.example.receiptApp.pages.add
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.text.format.DateFormat
 import androidx.lifecycle.*
@@ -8,6 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.repository.DbRepository
+import com.example.receiptApp.utils.ImageUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +17,10 @@ import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
 
-class AddViewModel(private val attachmentRepository: AttachmentRepository, private val dbRepository: DbRepository) :
-    ViewModel()
+class AddViewModel(
+    private val attachmentRepository: AttachmentRepository,
+    private val dbRepository: DbRepository
+    ) : ViewModel()
 {
 
     // the list observed by the recyclerview
@@ -115,17 +119,6 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
         return if (autoincrement) ++lastId else lastId
     }
 
-    fun setAttachment(attachment: AttachmentRepository.Attachment)
-    {
-        _rvList.value = _rvList.value?.toMutableList().also { li ->
-            val header = li?.get(0) as AddDataModel.Aggregate
-            li[0] = header.also {
-                it.thumbnail = attachment.thumbnail
-            }
-        }
-        this.attachment = attachment
-    }
-
     private val flow = Pager(
         PagingConfig(
             pageSize = 32,
@@ -204,11 +197,21 @@ class AddViewModel(private val attachmentRepository: AttachmentRepository, priva
         Timber.e("fine inserimento")
     }
 
-    fun setAttachment(uri: Uri, type: AttachmentRepository.TYPE)
+    fun setAttachment(attachment: AttachmentRepository.Attachment)
     {
-        attachmentRepository.getFileName(uri)?.let {
-            attachment = AttachmentRepository.Attachment(it, uri, null, true, type)
+        attachment.name = attachment.name ?: attachmentRepository.getFileName(attachment.uri)
+        attachment.thumbnail = attachment.thumbnail ?: attachmentRepository.generateThumbnail(attachment)
+
+        Timber.d("${attachment.thumbnail}")
+
+        _rvList.value = _rvList.value?.toMutableList().also { li ->
+            val header = li?.get(0) as AddDataModel.Aggregate
+            li[0] = header.also {
+                it.thumbnail = attachment.thumbnail
+            }
         }
+
+        this.attachment = attachment
     }
 
 

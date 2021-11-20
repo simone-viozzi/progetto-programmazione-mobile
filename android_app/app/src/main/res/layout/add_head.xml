@@ -12,10 +12,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textFieldTag"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="tag"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textFieldDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -24,9 +24,9 @@
                 style="@style/Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:completionThreshold="0"
                 android:inputType="text"
-                android:maxLines="1"
-                android:completionThreshold="0"/>
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -37,9 +37,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
             android:clickable="false"
             android:hint="date"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/thumbnail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textFieldTag"
             app:startIconDrawable="@drawable/ic_baseline_calendar_today_24">
@@ -60,42 +61,34 @@
             app:layout_constraintBottom_toBottomOf="@+id/textFieldDate"
             app:layout_constraintEnd_toEndOf="@+id/textFieldDate"
             app:layout_constraintStart_toStartOf="@+id/textFieldDate"
-            app:layout_constraintTop_toTopOf="@+id/textFieldDate" />
+            app:layout_constraintTop_toTopOf="@+id/textFieldDate" >
+
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:visibility="gone"
-            app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textFieldDate"
-            tools:srcCompat="@tools:sample/avatars"
-            tools:visibility="visible"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline4"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.35" />
-
-        <TextView
-            android:id="@+id/attachment_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="TextView"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
+            android:layout_height="0dp"
+            android:scaleType="center"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/textFieldDate"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:visibility="visible"
-            app:layout_constraintStart_toStartOf="@+id/guideline4"
-            app:layout_constraintTop_toTopOf="@+id/thumbnail" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="409dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textFieldDate" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
