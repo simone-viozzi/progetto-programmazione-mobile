@@ -573,7 +573,7 @@ class DbRepository(
     // GET METHODS
 
     suspend fun getAggregates(
-        tag_name: String?,
+        tag_name: String? = null,
         start: Date? = null, // by default take 1-1-1970 as start date as filter
         end: Date? = null // by default take the call moment as end date as filter
     ): List<Aggregate>?{
