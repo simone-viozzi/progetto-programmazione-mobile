@@ -55,13 +55,7 @@ class AttachmentRepository(private val applicationContext: Context)
                     }
                 }
             }
-            TYPE.PDF -> BitmapFactory.decodeResource(applicationContext.resources, R.drawable.pdf).let {
-
-
-                val aspectRatio = it.width.toDouble() / it.height.toDouble()
-                val height = THUMBNAIL_SIZE
-                Bitmap.createScaledBitmap(it, (height*aspectRatio).toInt(), height, true)
-            }
+            TYPE.PDF -> BitmapFactory.decodeResource(applicationContext.resources, R.drawable.pdf)
         }
     }
 
@@ -106,8 +100,8 @@ class AttachmentRepository(private val applicationContext: Context)
         }
 
         attachment.name = attachment.name
-            ?: getFileName(attachment.uri)
-                    ?: FileUtils.getUniqueFilename(attachment.type.name)
+            ?: FileUtils.getUniqueFilename(getFileName(attachment.uri) ?: attachment.type.name)
+
 
         val newFile = File(
             applicationContext.getDir(filesPath, Context.MODE_PRIVATE),

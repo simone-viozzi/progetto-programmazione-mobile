@@ -168,7 +168,7 @@ class AddAdapter(
 
                     if (aggregate.thumbnail == null)
                     {
-                        thumbnail.visibility = View.INVISIBLE
+                        thumbnail.visibility = View.GONE
                     }
                     else
                     {

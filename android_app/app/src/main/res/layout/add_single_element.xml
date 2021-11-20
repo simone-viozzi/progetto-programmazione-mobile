@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="24dp"
-    android:paddingTop="12dp"
+    android:paddingTop="10dp"
     android:paddingEnd="24dp"
-    android:paddingBottom="12dp">
+    android:paddingBottom="0dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textFieldName"
@@ -24,10 +25,10 @@
             android:id="@+id/textFieldNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
             android:inputType="text"
             android:maxLines="1"
-            android:imeOptions="actionNext"
-            android:nextFocusForward="@+id/textFieldNumEditText"/>
+            android:nextFocusForward="@+id/textFieldNumEditText" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,11 +47,11 @@
             android:id="@+id/textFieldNumEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
             android:inputType="number"
             android:maxLines="1"
-            android:singleLine="true"
-            android:imeOptions="actionNext"
-            android:nextFocusForward="@+id/textFieldTagEditText" />
+            android:nextFocusForward="@+id/textFieldTagEditText"
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,11 +79,11 @@
             style="@style/Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:completionThreshold="0"
+            android:imeOptions="actionNext"
             android:inputType="text"
             android:maxLines="1"
-            android:imeOptions="actionNext"
-            android:nextFocusForward="@+id/textFieldCostEditText"
-            android:completionThreshold="0"/>
+            android:nextFocusForward="@+id/textFieldCostEditText" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,9 +103,9 @@
             android:id="@+id/textFieldCostEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
             android:inputType="numberDecimal"
             android:maxLines="1"
-            android:imeOptions="actionNext"
             android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -116,5 +117,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.6" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textFieldTag" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,20 +34,22 @@ class ImageUtils
                     )
                 } else
                 {
-                    if (uri.scheme == "content")
+                    when (uri.scheme)
                     {
-                        Timber.d("$uri")
-                        Timber.d("contentUri.lastPathSegment -> ${ContentUris.parseId(uri)}")
-                        MediaStore.Images.Thumbnails.getThumbnail(
-                            contentResolver,
-                            id ?: ContentUris.parseId(uri),
-                            MediaStore.Images.Thumbnails.MINI_KIND,
-                            BitmapFactory.Options()
-                        )
-                    }
-                    else
-                    {
-                        MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                        "content" ->
+                        {
+                            MediaStore.Images.Thumbnails.getThumbnail(
+                                contentResolver,
+                                id ?: ContentUris.parseId(uri),
+                                MediaStore.Images.Thumbnails.MINI_KIND,
+                                BitmapFactory.Options()
+                            )
+                        }
+                        "file" ->
+                        {
+                            MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                        }
+                        else -> throw IllegalArgumentException("uri.scheme -> ${uri.scheme} is not yet supported")
                     }
                 }
             } catch (e: FileNotFoundException)

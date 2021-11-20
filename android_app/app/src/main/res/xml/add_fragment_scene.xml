@@ -6,7 +6,7 @@
     <Transition
         motion:constraintSetEnd="@+id/end"
         motion:constraintSetStart="@id/start"
-        motion:duration="700"
+        motion:duration="300"
         motion:autoTransition="none"
         motion:pathMotionArc="none">
        <KeyFrameSet>
@@ -16,7 +16,7 @@
     <Transition
         motion:constraintSetEnd="@+id/start"
         motion:constraintSetStart="@id/end"
-        motion:duration="400"
+        motion:duration="300"
         motion:autoTransition="none"
         motion:pathMotionArc="none">
         <KeyFrameSet>

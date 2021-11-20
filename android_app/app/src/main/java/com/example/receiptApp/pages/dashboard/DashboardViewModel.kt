@@ -22,27 +22,27 @@ class HomeViewModel(
     private val _store: MutableLiveData<List<DashboardDataModel>> = MutableLiveData<List<DashboardDataModel>>()
     val store: LiveData<List<DashboardDataModel>> = _store
 
-    sealed class HomeState
+    sealed class DashboardState
     {
-        object NoState: HomeState()
-        object EmptyDashMode : HomeState()
-        object NormalMode : HomeState()
-        object EditMode : HomeState()
-        object StoreMode : HomeState()
+        object NoState: DashboardState()
+        object EmptyDashMode : DashboardState()
+        object NormalMode : DashboardState()
+        object EditMode : DashboardState()
+        object StoreMode : DashboardState()
 
         override fun toString(): String = this.javaClass.name.replaceBeforeLast("$", "")
     }
 
-    private val homeStateStack = StateStack<HomeState>()
-    private val _homeState: MutableLiveData<HomeState> = MutableLiveData<HomeState>()
-    val homeState: LiveData<HomeState> = _homeState
+    private val homeStateStack = StateStack<DashboardState>()
+    private val _dashboardState: MutableLiveData<DashboardState> = MutableLiveData<DashboardState>()
+    val dashboardState: LiveData<DashboardState> = _dashboardState
 
 
     init
     {
-        homeStateStack.push(HomeState.NoState)
+        homeStateStack.push(DashboardState.NoState)
 
-        _homeState.value = HomeState.NoState
+        _dashboardState.value = DashboardState.NoState
         loadDashboard()
 
         viewModelScope.launch {
@@ -61,21 +61,21 @@ class HomeViewModel(
 
     fun setEditMode()
     {
-        if (homeStateStack.peek() == HomeState.EditMode) return
+        if (homeStateStack.peek() == DashboardState.EditMode) return
 
-        homeStateStack.push(HomeState.EditMode)
+        homeStateStack.push(DashboardState.EditMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
-        _homeState.value = HomeState.EditMode
+        _dashboardState.value = DashboardState.EditMode
     }
 
 
     fun setStoreMode()
     {
-        homeStateStack.push(HomeState.StoreMode)
+        homeStateStack.push(DashboardState.StoreMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
-        _homeState.value = HomeState.StoreMode
+        _dashboardState.value = DashboardState.StoreMode
 
         loadStore()
     }
@@ -88,17 +88,17 @@ class HomeViewModel(
                 dashboardRepository.saveDashboard(it)
 
                 homeStateStack.clear()
-                homeStateStack.push(HomeState.NormalMode)
+                homeStateStack.push(DashboardState.NormalMode)
                 Timber.e("homeStateStack -> $homeStateStack")
 
-                _homeState.value = HomeState.NormalMode
+                _dashboardState.value = DashboardState.NormalMode
             }
             else
             {
-                homeStateStack.push(HomeState.EmptyDashMode)
+                homeStateStack.push(DashboardState.EmptyDashMode)
                 Timber.e("homeStateStack -> $homeStateStack")
 
-                _homeState.value = HomeState.EmptyDashMode
+                _dashboardState.value = DashboardState.EmptyDashMode
             }
         }
     }
@@ -109,18 +109,18 @@ class HomeViewModel(
 
         if (list.isNotEmpty())
         {
-            homeStateStack.push(HomeState.NormalMode)
+            homeStateStack.push(DashboardState.NormalMode)
             Timber.e("homeStateStack -> $homeStateStack")
 
             _dashboard.value = list
-            _homeState.value = HomeState.NormalMode
+            _dashboardState.value = DashboardState.NormalMode
         } else
         {
-            homeStateStack.push(HomeState.EmptyDashMode)
+            homeStateStack.push(DashboardState.EmptyDashMode)
             Timber.e("homeStateStack -> $homeStateStack")
 
             _dashboard.value = emptyList()
-            _homeState.value = HomeState.EmptyDashMode
+            _dashboardState.value = DashboardState.EmptyDashMode
         }
     }
 
@@ -135,12 +135,12 @@ class HomeViewModel(
     fun addToDashboard(element: DashboardDataModel)
     {
         homeStateStack.clear()
-        homeStateStack.push(HomeState.EditMode)
+        homeStateStack.push(DashboardState.EditMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
         dashboardRepository.notifyAddToDash(element)
         _dashboard.value = _dashboard.value?.toMutableList()?.also { it.add(0, element) }
-        _homeState.value = HomeState.EditMode
+        _dashboardState.value = DashboardState.EditMode
     }
 
     fun swapItems(from: Int, to: Int)
@@ -156,30 +156,30 @@ class HomeViewModel(
     {
         homeStateStack.peekPrevious()?.let {
             homeStateStack.push(it)
-            _homeState.value = it
+            _dashboardState.value = it
             Timber.e("homeStateStack -> $homeStateStack")
         }
     }
 
-    fun getPreviousState(): HomeState
+    fun getPreviousState(): DashboardState
     {
         val state = homeStateStack.peekPrevious()
 
         Timber.e("state -> $state")
         Timber.e("homeStateStack -> $homeStateStack")
 
-        return state ?: HomeState.NoState
+        return state ?: DashboardState.NoState
     }
 
     fun clearDashboard()
     {
         homeStateStack.clear()
-        homeStateStack.push(HomeState.EmptyDashMode)
+        homeStateStack.push(DashboardState.EmptyDashMode)
         Timber.e("homeStateStack -> $homeStateStack")
 
         sharedPrefRepository.clearDashboard()
         _dashboard.value = emptyList()
-        _homeState.value = HomeState.EmptyDashMode
+        _dashboardState.value = DashboardState.EmptyDashMode
     }
 
     fun clearDb() = viewModelScope.launch {
