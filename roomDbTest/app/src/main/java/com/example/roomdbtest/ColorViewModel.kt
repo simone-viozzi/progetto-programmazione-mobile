@@ -1,5 +1,6 @@
 package com.example.roomdbtest
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.roomdbtest.db.ColorRepository
 import com.example.roomdbtest.db.MyColor
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 
 /**
  * Color view model get initialized from App, for this simple app it is basically a wrapper for the
