@@ -87,6 +87,7 @@ class AttachmentRepository(private val applicationContext: Context)
     private val galleryImages: GalleryImages = GalleryImages(applicationContext.contentResolver)
     val galleryImagesPaginated = GalleryImagesPaginated(galleryImages)
 
+
     suspend fun copyAttachment(attachment: Attachment): Uri? = withContext(Dispatchers.IO) {
 
         val filesPath = when (attachment.type)
@@ -111,6 +112,8 @@ class AttachmentRepository(private val applicationContext: Context)
         }
     }
 
+    // if i have a content uri i cannot know directly what is the name of the file, so i need to query the system
+    //  for that
     fun getFileName(uri: Uri): String?
     {
         var result: String? = null
@@ -131,7 +134,7 @@ class AttachmentRepository(private val applicationContext: Context)
                 }
             }
         }
-        return result ?: uri.lastPathSegment
+        return result
     }
 
 }
