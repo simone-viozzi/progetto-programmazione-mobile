@@ -17,6 +17,7 @@ import com.example.receiptApp.databinding.ActivityMainBinding
 import com.example.receiptApp.databinding.DashboardFragmentBinding
 import com.example.receiptApp.pages.dashboard.adapters.DashboardAdapter
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -128,6 +129,10 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
+                    (activity as MainActivity).onBackPressedCallback = {
+                        confirmExit()
+                    }
+
                     binding.homeMotionLayout.transitionToState(R.id.welcomeScreenConstraint)
                 }
                 is DashboardViewModel.DashboardState.NormalMode ->
@@ -160,6 +165,10 @@ class DashboardFragment : Fragment()
 
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
+
+                    (activity as MainActivity).onBackPressedCallback = {
+                        confirmExit()
+                    }
 
                     binding.homeMotionLayout.transitionToState(R.id.normalStateConstrains)
 
@@ -210,6 +219,20 @@ class DashboardFragment : Fragment()
                     dashStoreAdapter.onLongClickListener = null
                     dashStoreAdapter.onClickListener = null
 
+                    (activity as MainActivity).onBackPressedCallback = {
+                        MaterialAlertDialogBuilder(activity as MainActivity)
+                            .setMessage(getString(R.string.want_to_save))
+                            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                                // Respond to negative button press
+                                viewModel.reloadDashboard()
+                            }
+                            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                                // Respond to positive button press
+                                viewModel.saveDashboard()
+                            }
+                            .show()
+                    }
+
                     // always restroll to position 0, when adding elements from the store this create a nice animation
                     binding.recyclerViewDashboard.smoothScrollToPosition(0)
                     binding.homeMotionLayout.transitionToState(R.id.editModeConstrains)
@@ -254,6 +277,10 @@ class DashboardFragment : Fragment()
                         viewModel.addToDashboard(it)
                     }
 
+                    (activity as MainActivity).onBackPressedCallback = {
+                        viewModel.setEditMode()
+                    }
+
                     // depending of the previous state i need to animate a transition to different contains set
                     when(viewModel.getPreviousState())
                     {
@@ -273,6 +300,20 @@ class DashboardFragment : Fragment()
             }
         }
 
+    }
+
+    private fun confirmExit()
+    {
+        MaterialAlertDialogBuilder(activity as MainActivity)
+            .setMessage(getString(R.string.sure_to_exit))
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                // Respond to negative button press
+            }
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                // Respond to positive button press
+                requireActivity().finish()
+            }
+            .show()
     }
 
     private fun ActivityMainBinding.setAppbarToNormalMode()

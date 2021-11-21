@@ -45,7 +45,7 @@ class DashboardViewModel(
         homeStateStack.push(DashboardState.NoState)
         _dashboardState.value = DashboardState.NoState
 
-        loadDashboard()
+        reloadDashboard()
         
         // TODO only for debug purposes print the db at the start of the app
         viewModelScope.launch {
@@ -117,7 +117,7 @@ class DashboardViewModel(
     /**
      * helper to load the dashboard
      */
-    private fun loadDashboard() = viewModelScope.launch {
+    fun reloadDashboard() = viewModelScope.launch {
 
         val list = dashboardRepository.loadDashboard()
 
