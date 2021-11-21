@@ -13,6 +13,13 @@
         <argument
             android:name="BottomBarMenu"
             android:defaultValue="@menu/bottom_bar_menu_main"/>
+        <action
+            android:id="@+id/action_archiveFragment_to_aggregateFragment"
+            app:destination="@id/aggregateFragment">
+            <argument
+                android:name="aggregate_id"
+                app:argType="long"/>
+        </action>
     </fragment>
 
     <fragment
@@ -50,6 +57,16 @@
         android:name="com.example.receiptApp.pages.about.AboutFragment"
         android:label="about_fragment"
         tools:layout="@layout/about_fragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/aggregateFragment"
+        android:name="com.example.receiptApp.pages.aggregatePage.AggregatePageFragment"
+        android:label="aggregate_fragment"
+        tools:layout="@layout/aggregate_page_fragment">
+        <argument
+            android:name="aggregate_id"
+            app:argType="long"/>
     </fragment>
 
 </navigation>

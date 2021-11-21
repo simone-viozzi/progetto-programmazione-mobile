@@ -19,6 +19,10 @@
     <string name="date">Data:</string>
     <string name="ammount">Ammontare:</string>
 
+    <string name="num">Num:</string>
+    <string name="cost">Cost:</string>
+    <string name="name">Nome:</string>
+
     <string name="sure_to_exit">Sei sicuro?</string>
     <string name="yes">si</string>
     <string name="no">no</string>
@@ -26,5 +30,6 @@
     <string name="no_camera_permission">quest\'app non ha i permessi per aprire la fotocamera</string>
     <string name="camera_error">c\'e\' stato un\'errore con la fotocamera</string>
     <string name="file_error">c\'e\' stato un\'errore con il file</string>
+
 
 </resources>

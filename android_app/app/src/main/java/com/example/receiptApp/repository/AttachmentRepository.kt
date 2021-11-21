@@ -137,4 +137,7 @@ class AttachmentRepository(private val applicationContext: Context)
         return result
     }
 
+    fun getDefaultBitmap(): Bitmap {
+        return BitmapFactory.decodeResource(applicationContext.resources, R.drawable.bill_ico)
+    }
 }

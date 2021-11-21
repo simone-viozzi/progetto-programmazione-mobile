@@ -27,4 +27,9 @@
     <string name="camera_error">there was an error with the camera</string>
     <string name="file_error">there was an error with the file</string>
 
+    <string name="num">Num:</string>
+    <string name="cost">Cost:</string>
+    <string name="name">Name:</string>
+
+
 </resources>
