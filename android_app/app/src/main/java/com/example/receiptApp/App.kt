@@ -21,7 +21,7 @@ class App : Application()
 
     val attachmentRepository by lazy { AttachmentRepository(this) }
 
-    val sharedPrefRepository by lazy { SharedPrefRepository(this) }
+    private val sharedPrefRepository by lazy { SharedPrefRepository(this) }
 
     val graphsRepository by lazy { GraphsRepository(this, dbRepository) }
 

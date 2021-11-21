@@ -201,8 +201,12 @@ class AddViewModel(
         Timber.e("fine inserimento")
     }
 
+    /**
+     * Set the attachment and display the thumbnail
+     */
     fun setAttachment(attachment: AttachmentRepository.Attachment)
     {
+        // the name is not used right now
         attachment.name = attachment.name ?: attachmentRepository.getFileName(attachment.uri)
         attachment.thumbnail = attachment.thumbnail ?: attachmentRepository.generateThumbnail(attachment)
 
@@ -218,7 +222,9 @@ class AddViewModel(
         this.attachment = attachment
     }
 
-
+    /**
+     * Load the autocomplete values so they are ready when the user move the focus around
+     */
     private fun loadAutocomplete() = viewModelScope.launch {
         autoCompleteAggregateValue = dbRepository.getAggregateTagNames()
         autoCompleteElementValue = dbRepository.getElementTagNames()

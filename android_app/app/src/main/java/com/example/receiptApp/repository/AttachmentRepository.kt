@@ -17,8 +17,10 @@ import timber.log.Timber
 import java.io.File
 
 
-
-
+/**
+ * Attachment repository
+ *  this repository menage all about the attachments
+ */
 class AttachmentRepository(private val applicationContext: Context)
 {
     data class Attachment(
@@ -87,15 +89,24 @@ class AttachmentRepository(private val applicationContext: Context)
     private val galleryImages: GalleryImages = GalleryImages(applicationContext.contentResolver)
     val galleryImagesPaginated = GalleryImagesPaginated(galleryImages)
 
-
+    /**
+     * Copy attachment
+     *  some attachment need to be copied to the app private memory to save them.
+     *  this helper will copy the file and return the new uri
+     */
     suspend fun copyAttachment(attachment: Attachment): Uri? = withContext(Dispatchers.IO) {
 
+        // in provider_paths there are defined two paths:
+        //      <files-path name="Images" path="images/"/>
+        //      <files-path name="Files" path="files/"/>
+        // this need to mirror that
         val filesPath = when (attachment.type)
         {
             TYPE.IMAGE ->  "images"
             TYPE.PDF -> "files"
         }
 
+        // if i don't have a name for the file generate one
         attachment.name = attachment.name
             ?: FileUtils.getUniqueFilename(getFileName(attachment.uri) ?: attachment.type.name)
 
@@ -105,10 +116,12 @@ class AttachmentRepository(private val applicationContext: Context)
             "/${attachment.name}"
         )
 
+
         applicationContext.contentResolver.openInputStream(attachment.uri)?.use { stream ->
             Timber.d("newFile.absolutePath -> ${newFile.absolutePath}")
 
-            return@withContext FileUtils.saveFile(stream, newFile, applicationContext)
+            // the actual copy is done in an utility
+            return@withContext FileUtils.saveFile(stream, newFile)
         }
     }
 

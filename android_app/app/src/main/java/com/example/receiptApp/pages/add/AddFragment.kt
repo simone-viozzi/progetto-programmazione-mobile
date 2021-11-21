@@ -253,7 +253,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.galleryState.collectLatest { state ->
 
-                // TODO set the states of simplify this code
                 when (state)
                 {
                     is GalleryDataState.Error ->
@@ -262,6 +261,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
                         binding.addMotionLayout.transitionToState(R.id.start)
                     }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
+                    GalleryDataState.Idle -> { }
+                    GalleryDataState.Loading -> { }
                 }
             }
         }

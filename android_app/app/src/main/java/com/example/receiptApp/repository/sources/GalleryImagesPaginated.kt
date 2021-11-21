@@ -6,9 +6,13 @@ import com.example.receiptApp.repository.AttachmentRepository.Attachment
 import timber.log.Timber
 import java.io.FileNotFoundException
 
+
+/**
+ * Gallery images paginated
+ *  the paginated data source that will be displayed in the recyclerview in the addAdapter
+ */
 class GalleryImagesPaginated(private val dataSource: GalleryImages) : PagingSource<Int, Attachment>()
 {
-
     private var initialLoadSize: Int = 0
 
     override fun getRefreshKey(state: PagingState<Int, Attachment>): Int?
