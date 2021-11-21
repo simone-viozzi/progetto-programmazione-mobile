@@ -49,5 +49,10 @@ class AboutFragment : Fragment()
             bottomAppBar.replaceMenu(R.menu.bottom_bar_menu_hide)
             bottomAppBar.navigationIcon = null
         }
+
+        (activity as MainActivity).onBackPressedCallback = {
+            findNavController().navigateUp()
+        }
+
     }
 }

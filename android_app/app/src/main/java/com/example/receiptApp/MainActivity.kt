@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity()
     private lateinit var navController: NavController
     lateinit var binding: ActivityMainBinding
 
+    var onBackPressedCallback: (() -> Unit)? = null
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -93,7 +95,8 @@ class MainActivity : AppCompatActivity()
 
     override fun onBackPressed()
     {
-        Toast.makeText(this, "halooo", Toast.LENGTH_SHORT).show()
+        onBackPressedCallback?.invoke()
+        //Toast.makeText(this, "halooo", Toast.LENGTH_SHORT).show()
     }
 
 

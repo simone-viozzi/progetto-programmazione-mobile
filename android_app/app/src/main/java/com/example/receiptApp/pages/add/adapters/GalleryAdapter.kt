@@ -36,7 +36,7 @@ class GalleryAdapter(
 
         init
         {
-            // the click listner is commor for every element
+            // the click listener is common for every element
             binding.imageView.setOnClickListener {
                 img?.let { it1 -> clickListener.invoke(it1) }
             }

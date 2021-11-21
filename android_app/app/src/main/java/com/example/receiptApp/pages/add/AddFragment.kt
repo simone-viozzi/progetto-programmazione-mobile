@@ -177,16 +177,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         // handling of the up button in the appbar
         binding.topAppBar.setNavigationOnClickListener {
-            MaterialAlertDialogBuilder(activity as MainActivity)
-                .setMessage(getString(R.string.sure_to_exit))
-                .setNegativeButton(getString(R.string.no)) { _, _ ->
-                    // Respond to negative button press
-                }
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    // Respond to positive button press
-                    findNavController().navigateUp()
-                }
-                .show()
+            confirmExit()
         }
 
 
@@ -253,7 +244,6 @@ class AddFragment : Fragment(R.layout.add_fragment)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.galleryState.collectLatest { state ->
 
-                // TODO set the states of simplify this code
                 when (state)
                 {
                     is GalleryDataState.Error ->
@@ -262,11 +252,27 @@ class AddFragment : Fragment(R.layout.add_fragment)
                         binding.addMotionLayout.transitionToState(R.id.start)
                     }
                     is GalleryDataState.Data -> galleryAdapter.submitData(state.tasks)
+                    GalleryDataState.Idle -> { }
+                    GalleryDataState.Loading -> { }
                 }
             }
         }
 
         setAttachmentVisible(false)
+    }
+
+    private fun confirmExit()
+    {
+        MaterialAlertDialogBuilder(activity as MainActivity)
+            .setMessage(getString(R.string.sure_to_exit))
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                // Respond to negative button press
+            }
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                // Respond to positive button press
+                findNavController().navigateUp()
+            }
+            .show()
     }
 
     /**
@@ -324,6 +330,18 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 }
             }
             bottomAppBar.setOnMenuItemClickListener(menuItemClickListener)
+
+            (activity as MainActivity).onBackPressedCallback = {
+                if (visible)
+                {
+                    binding.addMotionLayout.transitionToState(R.id.start)
+                }
+                else
+                {
+                    confirmExit()
+                }
+            }
+
         }
     }
 

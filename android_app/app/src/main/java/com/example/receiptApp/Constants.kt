@@ -6,6 +6,10 @@ import android.view.View
 import androidx.constraintlayout.motion.widget.MotionLayout
 import kotlin.math.round
 
+/*
+ * in this file there are the extension functions used around the app and some constants
+ */
+
 
 fun String.toEditable(): Editable = Editable.Factory().newEditable(this)
 

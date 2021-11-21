@@ -5,6 +5,9 @@ import com.example.receiptApp.pages.dashboard.DashboardDataModel
 import timber.log.Timber
 import java.util.*
 
+
+// TODO add docs
+
 class DashboardRepository(
     private val sharedPrefRepository: SharedPrefRepository,
     private val dbRepository: DbRepository,
@@ -13,14 +16,18 @@ class DashboardRepository(
 {
     private val currentStore: MutableList<DashboardDataModel> = mutableListOf()
 
+    // helper to store the last id
     private object StoreId
     {
         var lastId: Int = 0
         fun getId() = ++lastId
     }
 
-
-
+    /**
+     * Save dashboard
+     *
+     * @param dashboard
+     */
     suspend fun saveDashboard(dashboard: List<DashboardDataModel>)
     {
         val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
@@ -34,7 +41,7 @@ class DashboardRepository(
 
     suspend fun loadDashboard(): MutableList<DashboardDataModel>
     {
-        val currentDashboard = sharedPrefRepository.readDashboard().toMutableMap()
+        val currentDashboard = sharedPrefRepository.readDashboard()
 
         val list: MutableList<DashboardDataModel> = mutableListOf()
 

@@ -24,9 +24,12 @@ sealed class AddDataModel {
     ) : AddDataModel()
 }
 
-
+/**
+ * to wrap some code and functionality the update is done here
+ */
 fun AddDataModel.update(new: AddDataModel): Boolean
 {
+    // right now update is useless, maybe will used in the future
     var update = false
     if (this is AddDataModel.Element && new is AddDataModel.Element)
     {

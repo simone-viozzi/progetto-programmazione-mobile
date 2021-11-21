@@ -41,11 +41,11 @@ class DashboardViewModel(
 
     init
     {
-        // the dashboard start from NoState and than change in loadDashboard()
+        // the dashboard start from NoState and than it will change in loadDashboard()
         homeStateStack.push(DashboardState.NoState)
         _dashboardState.value = DashboardState.NoState
 
-        loadDashboard()
+        reloadDashboard()
         
         // TODO only for debug purposes print the db at the start of the app
         viewModelScope.launch {
@@ -64,6 +64,7 @@ class DashboardViewModel(
 
     fun setEditMode()
     {
+        // sometimes i get spurious setEditMode, so before doing something i check if i'm already in EditMode
         if (homeStateStack.peek() == DashboardState.EditMode) return
 
         homeStateStack.push(DashboardState.EditMode)
@@ -85,9 +86,11 @@ class DashboardViewModel(
 
     fun saveDashboard() = viewModelScope.launch {
 
+        // the value of _dashboard can change while i'm looking at it, to fix it to a value i use let
         _dashboard.value.let {
             if (!it.isNullOrEmpty())
             {
+                // if the user have something in the dashboard save it
                 dashboardRepository.saveDashboard(it)
 
                 homeStateStack.clear()
@@ -98,10 +101,15 @@ class DashboardViewModel(
             }
             else
             {
+                // otherwise goto EmptyDashMode
+                homeStateStack.clear()
                 homeStateStack.push(DashboardState.EmptyDashMode)
                 Timber.e("homeStateStack -> $homeStateStack")
 
                 _dashboardState.value = DashboardState.EmptyDashMode
+
+                // and clear the dashboard so that the next start won't load the old values
+                dashboardRepository.clearDashboard()
             }
         }
     }
@@ -109,7 +117,7 @@ class DashboardViewModel(
     /**
      * helper to load the dashboard
      */
-    private fun loadDashboard() = viewModelScope.launch {
+    fun reloadDashboard() = viewModelScope.launch {
 
         val list = dashboardRepository.loadDashboard()
 
@@ -153,6 +161,9 @@ class DashboardViewModel(
         _dashboardState.value = DashboardState.EditMode
     }
 
+    /**
+     * handler of the drag and drop
+     */
     fun swapItems(from: Int, to: Int)
     {
         _dashboard.value?.let {
@@ -192,6 +203,8 @@ class DashboardViewModel(
         _dashboardState.value = DashboardState.EmptyDashMode
     }
 
+
+    // DEBUG ONLY
     fun clearDb() = viewModelScope.launch {
         dbRepository.clearDb()
     }

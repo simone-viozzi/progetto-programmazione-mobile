@@ -1,5 +1,10 @@
 package com.example.receiptApp.utils
 
+
+/**
+ * State stack
+ *  i needed a stack with some particular functionalities, so i created this
+ */
 class StateStack<T>
 {
     private val stack: MutableList<T> = mutableListOf()

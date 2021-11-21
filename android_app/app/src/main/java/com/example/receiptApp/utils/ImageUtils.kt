@@ -1,5 +1,6 @@
 package com.example.receiptApp.utils
 
+import android.R.attr
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.graphics.Bitmap
@@ -10,7 +11,11 @@ import android.provider.MediaStore
 import android.util.Size
 import com.example.receiptApp.THUMBNAIL_SIZE
 import timber.log.Timber
+import java.io.File
 import java.io.FileNotFoundException
+import android.R.attr.path
+import android.database.Cursor
+
 
 class ImageUtils
 {
@@ -29,9 +34,30 @@ class ImageUtils
             {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                 {
-                    contentResolver.loadThumbnail(
-                        uri, Size(THUMBNAIL_SIZE, THUMBNAIL_SIZE), null
-                    )
+                    when (uri.scheme)
+                    {
+                        "content" ->
+                        {
+                            contentResolver.loadThumbnail(
+                                uri, Size(THUMBNAIL_SIZE, THUMBNAIL_SIZE), null
+                            )
+                        }
+                        "file" ->
+                        {
+                            uri.path?.let {
+                                val image = File(it)
+                                val bounds = BitmapFactory.Options()
+                                bounds.inJustDecodeBounds = true
+                                BitmapFactory.decodeFile(image.path, bounds)
+                                if (bounds.outWidth == -1 || bounds.outHeight == -1) return null
+                                val originalSize = if (bounds.outHeight > bounds.outWidth) bounds.outHeight else bounds.outWidth
+                                val opts = BitmapFactory.Options()
+                                opts.inSampleSize = originalSize / THUMBNAIL_SIZE
+                                return BitmapFactory.decodeFile(image.path, opts)
+                            }
+                        }
+                        else -> throw IllegalArgumentException("uri.scheme -> ${uri.scheme} is not yet supported")
+                    }
                 } else
                 {
                     when (uri.scheme)
@@ -54,10 +80,14 @@ class ImageUtils
                 }
             } catch (e: FileNotFoundException)
             {
+                Timber.e(e)
                 Timber.e("$uri not found")
                 null
             }
         }
+
+
+
 
     }
 }
