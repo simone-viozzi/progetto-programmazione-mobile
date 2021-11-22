@@ -13,7 +13,7 @@ import 'DataWidgets/main_fragment_data.dart';
 import 'Fragments/main_fragment.dart';
 
 // importing themes
-import 'package:flutter_app/styles/recipteapp_theme.dart';
+import 'package:flutter_app/Styles/recipteapp_theme.dart';
 
 void main() {
   runApp(
