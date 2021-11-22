@@ -70,5 +70,5 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             recyclerViewAggregatePage.layoutManager = LinearLayoutManager(activity)
         }
     }
-    
+
 }
