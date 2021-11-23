@@ -13,7 +13,7 @@ import 'Widgets/bottom_navigation_drawer.dart';
 import 'package:flutter_app/Widgets/home_settings_menu.dart';
 
 // importing themes
-import 'package:flutter_app/styles/recipteapp_theme.dart';
+import 'package:flutter_app/Styles/recipteapp_theme.dart';
 
 void main() {
   runApp(

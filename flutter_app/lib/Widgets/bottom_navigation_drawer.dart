@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
 // importing themes
-import 'package:flutter_app/styles/recipteapp_theme.dart';
+import 'package:flutter_app/Styles/recipteapp_theme.dart';
 
 // import definitions
 import 'package:flutter_app/definitions.dart';
