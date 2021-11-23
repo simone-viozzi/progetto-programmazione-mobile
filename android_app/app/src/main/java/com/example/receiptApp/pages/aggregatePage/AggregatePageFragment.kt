@@ -41,6 +41,10 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             false
         )
 
+        (activity as MainActivity).onBackPressedCallback = {
+            findNavController().popBackStack()
+        }
+
         return binding.root
     }
 
@@ -70,5 +74,4 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             recyclerViewAggregatePage.layoutManager = LinearLayoutManager(activity)
         }
     }
-
 }

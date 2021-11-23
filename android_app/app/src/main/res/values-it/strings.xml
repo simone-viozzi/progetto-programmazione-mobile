@@ -32,5 +32,6 @@
     <string name="camera_error">c\'e\' stato un\'errore con la fotocamera</string>
     <string name="file_error">c\'e\' stato un\'errore con il file</string>
 
+    <string name="searchTag">cerca un tag</string>
 
 </resources>

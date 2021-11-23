@@ -19,6 +19,10 @@
     <string name="date">Date:</string>
     <string name="ammount">Amount:</string>
 
+    <string name="num">Num:</string>
+    <string name="cost">Cost:</string>
+    <string name="name">Name:</string>
+
     <string name="sure_to_exit">Are you sure?</string>
     <string name="want_to_save">Do you want to save the edits?</string>
     <string name="yes">yes</string>
@@ -28,9 +32,6 @@
     <string name="camera_error">there was an error with the camera</string>
     <string name="file_error">there was an error with the file</string>
 
-    <string name="num">Num:</string>
-    <string name="cost">Cost:</string>
-    <string name="name">Name:</string>
-
+    <string name="searchTag">search a tag</string>
 
 </resources>

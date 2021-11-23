@@ -17,17 +17,17 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:expanded="false">
+            android:layout_height="160dp"
+            app:expanded="true">
 
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsingToolbarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleGravity="top"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:contentScrim="?attr/colorPrimary">
+                app:layout_scrollFlags="scroll|enterAlways">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -35,40 +35,53 @@
                     android:padding="16dp">
 
 
-                    <com.google.android.material.chip.ChipGroup
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/searchView"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="32dp"
+                        android:alwaysDrawnWithCache="true"
+                        android:inputType="textFilter"
+                        android:queryHint="@string/searchTag"
+                        app:iconifiedByDefault="false"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:iconifiedByDefault="false">
 
-                        <com.google.android.material.chip.Chip
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="test 1" />
+                    </androidx.appcompat.widget.SearchView>
 
-                        <com.google.android.material.chip.Chip
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="test 2" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toBottomOf="@+id/searchView"
+                        tools:layout_editor_absoluteX="0dp">
 
-                        <com.google.android.material.chip.Chip
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="test 3" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/startDateText"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:textSize="16sp" />
 
-                        <com.google.android.material.chip.Chip
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="test 4" />
-
-                    </com.google.android.material.chip.ChipGroup>
-
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/endDateText"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_weight="1"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:textSize="16sp" />
+                    </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 

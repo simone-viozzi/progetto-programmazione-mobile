@@ -18,11 +18,11 @@ class ArchiveRepository(
     // ##########################################################################
     // GET METHODS
 
-
     suspend fun getAggregates(
         tag_name: String? = null,
         start: Date = Date(0), // by default take 1-1-1970 as start date as filter
-        end: Date = Date() // by default take the call moment as end date as filter
+        end: Date = Date(), // by default take the call moment as end date as filter
+        order: Boolean = true
     ): List<ArchiveDataModel.Aggregate>{
 
         // get aggregates from db
@@ -33,6 +33,9 @@ class ArchiveRepository(
 
         var idx = 0
         val format = SimpleDateFormat("dd/MM/yyyy") // output date format
+
+        // reorder the result by date
+        if (order) dbAggregateList?.sortedByDescending { it.date?.time }
 
         dbAggregateList?.forEach {
             archiveAggregateList.add(
@@ -64,12 +67,10 @@ class ArchiveRepository(
         val aggregateWithElements = dbRepository.getAggregateWithElementsById(id)
 
         if(aggregateWithElements != null) {
+
             val reformattedElements = mutableListOf<ArchiveDataModel>()
-
             val aggregate = aggregateWithElements.keys.toList()[0]
-
             val format = SimpleDateFormat("dd/MM/yyyy") // output date format
-
             var idx = 0
 
             reformattedElements.add(
@@ -102,5 +103,14 @@ class ArchiveRepository(
             // if aggregateWithElements is null
             return null
         }
+    }
+
+    /**
+     * Get aggregates tags list
+     *
+     * @return a list of all the aggregate tags in the database
+     */
+    suspend fun getAggregatesTagsList(): List<String>{
+        return dbRepository.getAggregateTagNames().toList().filterNotNull()
     }
 }
