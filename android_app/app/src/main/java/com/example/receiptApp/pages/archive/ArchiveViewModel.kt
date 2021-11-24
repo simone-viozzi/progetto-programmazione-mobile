@@ -34,14 +34,23 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
     val rvList: LiveData<List<ArchiveDataModel>>
         get() = _rvList
 
+    //
     private val _startDate = MutableLiveData<Date>()
     val startDate: LiveData<Date>
-        get() = startDate
+        get() = _startDate
 
+    //
     private val _endDate = MutableLiveData<Date>()
     val endDate: LiveData<Date>
-        get() = endDate
+        get() = _endDate
 
+    // list of all aggregates tag inside the database
+    private val _tagList = MutableLiveData<List<String>>()
+    val tagList: LiveData<List<String>>
+        get() = _tagList
+
+    //
+    private var selectedTag: String? = null
 
     init {
         // set date filter parameters
@@ -50,18 +59,38 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
         cal.add(Calendar.YEAR, -1)
         _startDate.value = cal.time // put as start date of the filter one year ago
 
+        loadingTags()
+
+        reloadAggregatesList()
+    }
+
+    /**
+     * Set tag
+     * method that change the tag filter
+     * @param tag
+     */
+    fun setTag(tag: String?){
+        selectedTag = tag
+    }
+
+    fun loadingTags(){
+        viewModelScope.launch {
+            // loading tags list
+            _tagList.value = archiveRepository.getAggregatesTagsList()
+        }
+    }
+
+    fun reloadAggregatesList(){
         viewModelScope.launch {
 
             // generate aggregate list
             _rvList.value = archiveRepository.getAggregates(
                 start = _startDate.value as Date,
                 end = _endDate.value as Date,
+                tag_name =  selectedTag
             )
-
         }
     }
-
-
 }
 
 class ArchiveViewModelFactory(private val repository: ArchiveRepository) : ViewModelProvider.Factory

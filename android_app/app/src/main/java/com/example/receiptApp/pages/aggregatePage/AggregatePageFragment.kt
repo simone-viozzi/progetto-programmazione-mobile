@@ -41,6 +41,10 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             false
         )
 
+        (activity as MainActivity).onBackPressedCallback = {
+            findNavController().popBackStack()
+        }
+
         return binding.root
     }
 
@@ -51,8 +55,8 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
         binding.lifecycleOwner = viewLifecycleOwner
 
         with((activity as MainActivity).binding){
-            // here modify bottom bar aspect
-
+            // remove the search button on the appBar
+            bottomAppBar.menu.clear()
         }
 
         aggregatePageAdapter = AggregatePageAdapter(
@@ -70,5 +74,4 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             recyclerViewAggregatePage.layoutManager = LinearLayoutManager(activity)
         }
     }
-
 }

@@ -23,7 +23,6 @@ class AggregatePageViewModel(
             _rvList.value = archiveRepository.getAggregatesWithElementsByIdInArchiveFormat(aggregate_id)
         }
     }
-
 }
 
 class AggregatePageViewModelFactory(
