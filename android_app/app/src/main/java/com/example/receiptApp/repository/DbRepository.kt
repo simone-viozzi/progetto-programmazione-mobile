@@ -578,7 +578,7 @@ class DbRepository(
         end: Date? = null // by default take the call moment as end date as filter
     ): List<Aggregate>?{
 
-        val tag: Tag? = tag_name?.let{ tagDao.getElementTagByName(tag_name) }
+        val tag: Tag? = tag_name?.let{ tagDao.getAggregateTagByName(tag_name) }
         return aggregateDao.getAggregates(
             start_date = start ?: Date(0),
             end_date = end ?: Date(0),

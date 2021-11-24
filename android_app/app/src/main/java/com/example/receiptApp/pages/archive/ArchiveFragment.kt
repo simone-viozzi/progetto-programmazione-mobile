@@ -110,20 +110,24 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
             recyclerView.adapter = archiveAdapter
             recyclerView.layoutManager = LinearLayoutManager(activity)
 
+            reloadButton.setOnClickListener {
+                viewModel?.setTag(null)
+                viewModel?.reloadAggregatesList()
+            }
+
             // set the number of characters before showing the suggestions
             searchView.findViewById<AutoCompleteTextView>(R.id.search_src_text).threshold = 1
+            searchView.queryHint = "Search a tag"
 
             val from = arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1)
             val to = intArrayOf(R.id.item_label)
             val cursorAdapter = SimpleCursorAdapter(context, R.layout.suggestion_layout, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
 
-
-
             searchView.suggestionsAdapter = cursorAdapter
-
 
             searchView.setOnQueryTextListener(
                 object: androidx.appcompat.widget.SearchView.OnQueryTextListener {
+
                     override fun onQueryTextChange(newText: String?): Boolean {
 
                         val cursor = MatrixCursor(
@@ -147,12 +151,14 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
                     override fun onQueryTextSubmit(query: String?): Boolean {
 
                         if (query != null) {
-                            // if the passed query is contained inside tag list
-                            if (tagList.indexOf(query) > 0) {
 
+                            // if the passed query is contained inside tag list
+                            if (tagList.indexOf(query) > -1) {
                                 viewModel?.setTag(query)
-                                viewModel?.reloadAggregatesList()
+                            }else{
+                                viewModel?.setTag(null)
                             }
+                            viewModel?.reloadAggregatesList()
                         }
 
                         hideKeyboard()
@@ -174,6 +180,15 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
                     val selection = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)) // segna errore ma è farlocco
                     searchView.setQuery(selection, false)
 
+                    // after selection applay same beahviour of submit
+                    if (selection != null) {
+                        // if the passed query is contained inside tag list
+                        if (tagList.indexOf(selection) > -1) {
+                            viewModel?.setTag(selection)
+                            viewModel?.reloadAggregatesList()
+                        }
+                    }
+
                     // Do something with selection
                     return true
                 }
@@ -189,11 +204,12 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         appBarLayoutParams.height = 0
         binding.appBarLayout.layoutParams = appBarLayoutParams
 
+        ///////////////////////////////////////////////////////
+        // override of back button function
         (activity as MainActivity).onBackPressedCallback = {
             if(!start){
                 // chiudo l'app
                 confirmExit()
-
             }else{
                 // chiudo l'appBar
                 lockToolbar(start, binding.appBarLayout, binding.collapsingToolbarLayout)

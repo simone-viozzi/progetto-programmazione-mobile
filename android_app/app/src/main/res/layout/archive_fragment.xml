@@ -30,6 +30,7 @@
                 app:layout_scrollFlags="scroll|enterAlways">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/reloadButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="16dp">
@@ -40,7 +41,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="10dp"
-                        android:layout_marginEnd="32dp"
+                        android:layout_marginEnd="50dp"
                         android:alwaysDrawnWithCache="true"
                         android:inputType="textFilter"
                         android:queryHint="@string/searchTag"
@@ -80,6 +81,16 @@
                             android:focusable="false"
                             android:textSize="16sp" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@android:drawable/stat_notify_sync_noanim" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
