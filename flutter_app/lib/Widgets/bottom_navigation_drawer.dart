@@ -29,7 +29,6 @@ void openBottomNavigationDrawer(BuildContext context){
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.min,
-
             children: <Widget>[
               GestureDetector(
               onTap: (){
