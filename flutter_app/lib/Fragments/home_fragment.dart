@@ -29,7 +29,7 @@ class HomeFragment extends StatelessWidget{
       ),
       // BODY ---------------------------
       body: const Center(
-        child: null,
+        child: Text("home fragment"),
       ),
       // BOTTOM -------------------------
       floatingActionButton: AdaptiveFab(

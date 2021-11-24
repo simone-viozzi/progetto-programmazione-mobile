@@ -1,5 +1,6 @@
 // importing main components
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Fragments/archive_fragment.dart';
 
 // import constants
 import 'package:flutter_app/definitions.dart';
@@ -9,6 +10,8 @@ import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
 // import fragments
 import 'package:flutter_app/Fragments/home_fragment.dart';
+
+import 'graphs_fragment.dart';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,11 +48,11 @@ class MainFragState extends State<MainFrag>{
             title: 'home'
         );
       case PageMap.archiveId:
-        return HomeFragment(
+        return ArchiveFragment(
             title: 'archive'
         );
       case PageMap.graphsId:
-        return HomeFragment(
+        return GraphsFragment(
             title: 'graphs'
         );
       default:
