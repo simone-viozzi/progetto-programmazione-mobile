@@ -34,30 +34,26 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
     val rvList: LiveData<List<ArchiveDataModel>>
         get() = _rvList
 
-    //
-    private val _startDate = MutableLiveData<Date>()
-    val startDate: LiveData<Date>
-        get() = _startDate
-
-    //
-    private val _endDate = MutableLiveData<Date>()
-    val endDate: LiveData<Date>
-        get() = _endDate
-
     // list of all aggregates tag inside the database
     private val _tagList = MutableLiveData<List<String>>()
     val tagList: LiveData<List<String>>
         get() = _tagList
 
-    //
+    // tag filter
     private var selectedTag: String? = null
+
+    // start filter date
+    var startDate = Date(0)
+
+    // end filter date
+    var endDate = Date()
 
     init {
         // set date filter parameters
         val cal = Calendar.getInstance()
-        _endDate.value = cal.time // put as end date now
+        endDate = cal.time // put as end date now
         cal.add(Calendar.YEAR, -1)
-        _startDate.value = cal.time // put as start date of the filter one year ago
+        startDate = cal.time // put as start date of the filter one year ago
 
         loadingTags()
 
@@ -85,8 +81,8 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
 
             // generate aggregate list
             _rvList.value = archiveRepository.getAggregates(
-                start = _startDate.value as Date,
-                end = _endDate.value as Date,
+                start = startDate,
+                end = endDate,
                 tag_name =  selectedTag
             )
         }

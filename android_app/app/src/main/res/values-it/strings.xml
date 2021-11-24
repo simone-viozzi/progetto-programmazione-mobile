@@ -33,5 +33,8 @@
     <string name="file_error">c\'e\' stato un\'errore con il file</string>
 
     <string name="searchTag">cerca un tag</string>
-
+    <string name="select_start_filter_date">Seleziona gli aggregati a partire dal:</string>
+    <string name="select_end_filter_date">Seleziona gli aggregati fino al:</string>
+    <string name="start_date_filter_label">da: </string>
+    <string name="end_date_filter_label">a: </string>
 </resources>

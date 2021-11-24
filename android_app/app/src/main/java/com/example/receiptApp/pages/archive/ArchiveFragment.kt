@@ -11,24 +11,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
-import android.widget.SearchView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isVisible
 import androidx.cursoradapter.widget.CursorAdapter
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.receiptApp.App
-import com.example.receiptApp.MainActivity
-import com.example.receiptApp.R
+import com.example.receiptApp.*
 import com.example.receiptApp.databinding.ArchiveFragmentBinding
-import com.example.receiptApp.hideKeyboard
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
+import java.text.SimpleDateFormat
 import kotlin.math.abs
 
 
@@ -194,6 +195,50 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
                 }
             })
 
+            // datapickers setup()
+
+            val df = SimpleDateFormat("dd/MM/yyyy")
+            startDateText.text = (requireContext().getString(R.string.start_date_filter_label) + " " + df.format(viewModel?.startDate)).toEditable()
+            endDateText.text = (requireContext().getString(R.string.end_date_filter_label) + " " + df.format(viewModel?.endDate)).toEditable()
+
+            val dateValidatorMax: CalendarConstraints.DateValidator = DateValidatorPointBackward.before(
+                MaterialDatePicker.todayInUtcMilliseconds())
+
+            val startDatePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(getString(R.string.select_start_filter_date))
+                // select today as default date
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setCalendarConstraints(CalendarConstraints.Builder().setValidator(dateValidatorMax).build())
+                .build()
+
+            val endDatePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(getString(R.string.select_end_filter_date))
+                // select today as default date
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setCalendarConstraints(CalendarConstraints.Builder().setValidator(dateValidatorMax).build())
+                .build()
+
+            startDateText.setOnClickListener {
+                    startDatePicker.show(childFragmentManager, DATE_PICKER_TAG)
+            }
+
+            // if the user select a date and press ok, set it into the view model
+            startDatePicker.addOnPositiveButtonClickListener {
+                startDatePicker.selection?.let { viewModel?.startDate?.time = it }
+                viewModel?.reloadAggregatesList()
+                startDateText.text = (requireContext().getString(R.string.start_date_filter_label) + df.format(viewModel?.startDate)).toEditable()
+            }
+
+            endDateText.setOnClickListener {
+                    endDatePicker.show(childFragmentManager, DATE_PICKER_TAG)
+            }
+
+            // if the user select a date and press ok, set it into the view model
+            endDatePicker.addOnPositiveButtonClickListener {
+                endDatePicker.selection?.let { viewModel?.endDate?.time = it }
+                viewModel?.reloadAggregatesList()
+                endDateText.text = (requireContext().getString(R.string.end_date_filter_label) + df.format(viewModel?.endDate)).toEditable()
+            }
         }
         val lp = binding.collapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
         lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL

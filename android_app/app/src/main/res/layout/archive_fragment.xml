@@ -67,9 +67,13 @@
                             android:layout_height="50dp"
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"
-                            android:clickable="false"
+                            android:clickable="true"
                             android:focusable="false"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            tools:text="from: 24/11/2021"/>
+
+
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/endDateText"
@@ -77,9 +81,11 @@
                             android:layout_height="50dp"
                             android:layout_marginLeft="10dp"
                             android:layout_weight="1"
-                            android:clickable="false"
+                            android:clickable="true"
                             android:focusable="false"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            tools:text="to: 27/11/2021"/>
                     </LinearLayout>
 
                     <ImageView

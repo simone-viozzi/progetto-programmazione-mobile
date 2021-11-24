@@ -33,5 +33,9 @@
     <string name="file_error">there was an error with the file</string>
 
     <string name="searchTag">search a tag</string>
+    <string name="select_start_filter_date">Select aggregates from:</string>
+    <string name="select_end_filter_date">Select aggregates until:</string>
+    <string name="start_date_filter_label">from: </string>
+    <string name="end_date_filter_label">to: </string>
 
 </resources>
