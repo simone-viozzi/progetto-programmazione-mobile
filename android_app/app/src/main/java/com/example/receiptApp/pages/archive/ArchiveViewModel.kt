@@ -43,10 +43,10 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
     private var selectedTag: String? = null
 
     // start filter date
-    var startDate = Date(0)
+    var startDate: Date
 
     // end filter date
-    var endDate = Date()
+    var endDate: Date
 
     init {
         // set date filter parameters

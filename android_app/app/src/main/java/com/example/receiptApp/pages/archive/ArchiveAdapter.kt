@@ -6,23 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.example.receiptApp.databinding.AddHeadBinding
-import com.example.receiptApp.databinding.AddSingleElementBinding
 import com.example.receiptApp.databinding.ArchiveAggregateBinding
-import com.example.receiptApp.pages.add.AddDataModel
-import com.example.receiptApp.pages.add.adapters.AddAdapter
 import com.example.receiptApp.round
-import android.R
-
-import android.graphics.BitmapFactory
-
-import android.graphics.Bitmap
-import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment.findNavController
-import androidx.navigation.fragment.findNavController
 import com.example.receiptApp.repository.AttachmentRepository
 
 

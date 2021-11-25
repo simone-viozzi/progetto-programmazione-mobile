@@ -35,9 +35,9 @@ class ArchiveRepository(
         val format = SimpleDateFormat("dd/MM/yyyy") // output date format
 
         // reorder the result by date
-        if (order) dbAggregateList?.sortedByDescending { it.date?.time }
+        val ordDbAggregateList = if (order) dbAggregateList?.sortedByDescending { it.date?.time } else dbAggregateList
 
-        dbAggregateList?.forEach {
+        ordDbAggregateList?.forEach {
             archiveAggregateList.add(
                 ArchiveDataModel.Aggregate(
                     id = idx++,
