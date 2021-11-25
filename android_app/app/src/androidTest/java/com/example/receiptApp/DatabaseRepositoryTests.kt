@@ -10,7 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.example.receiptApp.Utils.DatabaseTestHelper
 import com.example.receiptApp.db.AppDatabase
 import com.example.receiptApp.db.aggregate.Aggregate
-import com.example.receiptApp.db.aggregate.PublicAggregateDao
+import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.TagsDao
@@ -26,7 +26,7 @@ import java.util.concurrent.Executors
 @RunWith(AndroidJUnit4::class)
 class DatabaseRepositoryTests {
 
-    private lateinit var aggregatesDao: PublicAggregateDao
+    private lateinit var aggregatesDao: PublicAggregatesDao
     private lateinit var elementsDao: PublicElementsDao
     private lateinit var tagsDao: TagsDao
     private lateinit var db: AppDatabase

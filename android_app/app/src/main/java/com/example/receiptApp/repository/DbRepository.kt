@@ -3,7 +3,7 @@ package com.example.receiptApp.repository
 import android.net.Uri
 import com.example.receiptApp.Utils.DatabaseTestHelper
 import com.example.receiptApp.db.aggregate.Aggregate
-import com.example.receiptApp.db.aggregate.PublicAggregateDao
+import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.Tag
@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class DbRepository(
-    private val aggregateDao: PublicAggregateDao,
+    private val aggregateDao: PublicAggregatesDao,
     private val elementDao: PublicElementsDao,
     private val tagDao: TagsDao
 ){

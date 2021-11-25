@@ -4,7 +4,7 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.receiptApp.db.aggregate.Aggregate
-import com.example.receiptApp.db.aggregate.PublicAggregateDao
+import com.example.receiptApp.db.aggregate.PublicAggregatesDao
 import com.example.receiptApp.db.element.Element
 import java.util.*
 
@@ -74,7 +74,7 @@ object DatabaseTestHelper {
         aggregateIdsList: MutableList<Long>,
         aggregateTagsList: List<String>,
         elementTagsList: List<String>,
-        aggregatesDao: PublicAggregateDao,
+        aggregatesDao: PublicAggregatesDao,
         aggr_num: Long = 10,
         elem_num: Long = 10,
         elem_num_casual: Boolean = false,
@@ -156,7 +156,7 @@ object DatabaseTestHelper {
         aggregateIdsList: MutableList<Long>,
         aggregateTagsList: List<String>,
         elementTagsList: List<String>,
-        aggregatesDao: PublicAggregateDao,
+        aggregatesDao: PublicAggregatesDao,
         aggr_num: Long = 10,
         elem_num: Long = 10,
         elem_cost: Float = 10.0f,

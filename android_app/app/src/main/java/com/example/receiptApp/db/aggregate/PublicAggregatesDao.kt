@@ -10,7 +10,7 @@ import com.example.receiptApp.db.element.Element
 import java.util.*
 
 @Dao
-interface PublicAggregateDao : AggregateDao, BaseAggregatesDao, BaseElementsDao {
+interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDao {
 
     //////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
