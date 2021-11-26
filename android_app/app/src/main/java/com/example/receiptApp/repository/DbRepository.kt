@@ -629,6 +629,10 @@ class DbRepository(
         aggregateDao.deleteAll()
     }
 
+    suspend fun deleteAggregateWithElements(id: Long){
+        aggregateDao.deleteAggregateById(id)
+    }
+
     // ##########################################################################
     // HELPER METHODS
 
@@ -642,6 +646,7 @@ class DbRepository(
         attachmentUri: Uri?,
         elements: List<EditDataModel.Element>
     ): Pair<Aggregate, List<Element>> {
+
         var date: Date? = null
         aggregate.str_date?.let { strDate ->
             date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)

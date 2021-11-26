@@ -71,6 +71,7 @@ interface PublicAggregatesDao : AggregatesDao, BaseAggregatesDao, BaseElementsDa
             aggregate.total_cost += newNum * newCost
             _updateAggregate(aggregate)
 
+
             element.elem_id = null // the id isn't null reset it
             element.parent_tag_id = aggregate.tag_id
             element.aggregate_id = aggregateId
