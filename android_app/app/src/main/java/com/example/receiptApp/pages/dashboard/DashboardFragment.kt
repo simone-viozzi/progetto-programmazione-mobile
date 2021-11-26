@@ -226,6 +226,10 @@ class DashboardFragment : Fragment()
                         scrim.setOnClickListener(null)
                     }
 
+                    viewModel.dashboard.observe(viewLifecycleOwner) {
+                        dashAdapter.submitList(it)
+                    }
+
                     dashAdapter.onLongClickListener = null
                     dashAdapter.onClickListener = null
 
