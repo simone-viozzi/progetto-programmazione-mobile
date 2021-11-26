@@ -5,6 +5,7 @@ import com.example.receiptApp.pages.archive.ArchiveDataModel
 import com.example.receiptApp.repository.ArchiveRepository
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.repository.DbRepository
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AggregatePageViewModel(
@@ -12,7 +13,6 @@ class AggregatePageViewModel(
     private val archiveRepository: ArchiveRepository,
     private val aggregate_id : Long
 ) : ViewModel() {
-
     // the list observed by the recyclerview
     private val _rvList = MutableLiveData<List<ArchiveDataModel>>()
     val rvList: LiveData<List<ArchiveDataModel>>
@@ -22,6 +22,10 @@ class AggregatePageViewModel(
         viewModelScope.launch {
             _rvList.value = archiveRepository.getAggregatesWithElementsByIdInArchiveFormat(aggregate_id)
         }
+    }
+
+    fun deleteAggregate() = GlobalScope.launch {
+        archiveRepository.deleteAggregate(aggregate_id)
     }
 }
 

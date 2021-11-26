@@ -61,10 +61,10 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
 
         with((activity as MainActivity).binding){
             // remove the search button on the appBar
-            bottomAppBar.menu.clear()
             bottomAppBar.navigationIcon = null
             fab.show()
             bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
+            bottomAppBar.replaceMenu(R.menu.bottom_app_bar_aggregate)
             fab.setImageResource(R.drawable.ic_baseline_edit_24)
 
             fab.setOnClickListener {
@@ -76,6 +76,15 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
                             args.aggregateId
                         )
                 )
+            }
+            bottomAppBar.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.bottom_app_bar_delete -> {
+                        viewModel.deleteAggregate()
+                        true
+                    }
+                    else -> false
+                }
             }
         }
 
