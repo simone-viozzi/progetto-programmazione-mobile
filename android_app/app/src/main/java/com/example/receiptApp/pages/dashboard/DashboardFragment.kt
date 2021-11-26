@@ -53,8 +53,7 @@ class DashboardFragment : Fragment()
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        // force the start state of motion layout
-        binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
+
 
         with((activity as MainActivity))
         {
@@ -80,10 +79,6 @@ class DashboardFragment : Fragment()
             adapter = dashAdapter
             layoutManager = rvLayoutManager
         }
-
-        viewModel.dashboard.observe(viewLifecycleOwner) {
-            dashAdapter.submitList(it)
-        }
         ////////////////////////////////////
 
         ///// store setup section /////
@@ -108,7 +103,10 @@ class DashboardFragment : Fragment()
         viewModel.dashboardState.observe(viewLifecycleOwner) { state ->
             when (state)
             {
-                DashboardViewModel.DashboardState.NoState -> {}
+                DashboardViewModel.DashboardState.NoState -> {
+                    // force the start state of motion layout
+                    binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
+                }
                 DashboardViewModel.DashboardState.EmptyDashMode ->
                 {
                     Timber.e("EMPTY STATE")
@@ -166,6 +164,10 @@ class DashboardFragment : Fragment()
                     }
 
                     viewModel.store.removeObservers(viewLifecycleOwner)
+
+                    viewModel.dashboard.observe(viewLifecycleOwner) {
+                        dashAdapter.submitList(it)
+                    }
 
                     // when the user will do a long click on an element of the dashboard it will switch to edit mode
                     dashAdapter.onLongClickListener = {
@@ -244,7 +246,7 @@ class DashboardFragment : Fragment()
                             .show()
                     }
 
-                    // always restroll to position 0, when adding elements from the store this create a nice animation
+                    // always rescroll to position 0, when adding elements from the store this create a nice animation
                     binding.recyclerViewDashboard.smoothScrollToPosition(0)
                     binding.homeMotionLayout.transitionToState(R.id.editModeConstrains)
                 }
@@ -310,7 +312,6 @@ class DashboardFragment : Fragment()
                 }
             }
         }
-
     }
 
     private fun confirmExit()

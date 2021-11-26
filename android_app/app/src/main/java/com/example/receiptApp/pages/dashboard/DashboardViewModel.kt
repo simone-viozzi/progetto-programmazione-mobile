@@ -46,20 +46,20 @@ class DashboardViewModel(
         _dashboardState.value = DashboardState.NoState
 
         reloadDashboard()
-        
-        // TODO only for debug purposes print the db at the start of the app
-        viewModelScope.launch {
-            Timber.e("DATABASE: \n${
-                dbRepository.getAggregates(null)?.map { el ->
-                    el.also {
-                        it.location = null
-                        it.date = null
-                    }
-                }?.joinToString {
-                    "${it}\n"
-                }
-            }")
-        }
+        //// TODO only for debug purposes print the db at the start of the app
+        //viewModelScope.launch {
+        //    Timber.e("DATABASE: \n${
+        //        dbRepository.getAggregates(null)?.map { el ->
+        //            el.also {
+        //                it.location = null
+        //                it.date = null
+        //            }
+        //        }?.joinToString {
+        //            "${it}\n"
+        //        }
+        //    }")
+        //}
+        Timber.e("DashboardViewModel INIT")
     }
 
     fun setEditMode()
@@ -121,14 +121,23 @@ class DashboardViewModel(
 
         val list = dashboardRepository.loadDashboard()
 
-        if (list.isNotEmpty())
-        {
+        if (list.isNotEmpty()) {
             // if the list is not empty i can load the data onto the dashboard and go to normal mode
+
+                homeStateStack.clear()
+
+            homeStateStack.push(DashboardState.NoState)
+            _dashboardState.value = DashboardState.NoState
+
             homeStateStack.push(DashboardState.NormalMode)
-            Timber.e("homeStateStack -> $homeStateStack")
 
             _dashboard.value = list
+
             _dashboardState.value = DashboardState.NormalMode
+
+
+
+            Timber.e("homeStateStack -> $homeStateStack")
         } else
         {
             // if the dashboard is empty i will go to EmptyDashMode and display the welcome page
@@ -142,9 +151,14 @@ class DashboardViewModel(
 
 
     private fun loadStore() = viewModelScope.launch {
-        // to load the store i need the current dashboard so i can avoid to load things that are not needed,
-        //  like if they are already in the dashboard
-        _store.value = dashboardRepository.loadStore(_dashboard.value)
+
+        if (_store.value == null) {
+            _store.value = dashboardRepository.loadStoreFromScratch(_dashboard.value)
+        } else {
+            // to load the store i need the current dashboard so i can avoid to load things that are not needed,
+            //  like if they are already in the dashboard
+            _store.value = dashboardRepository.loadStore(_dashboard.value)
+        }
     }
 
 

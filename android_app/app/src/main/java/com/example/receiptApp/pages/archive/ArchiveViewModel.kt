@@ -3,6 +3,7 @@ package com.example.receiptApp.pages.archive
 import androidx.lifecycle.*
 import com.example.receiptApp.repository.ArchiveRepository
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewModel()
@@ -36,6 +37,8 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
         loadingTags()
 
         reloadAggregatesList()
+
+        Timber.e("ArchiveViewModel INIT")
     }
 
     /**
@@ -56,7 +59,6 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
 
     fun reloadAggregatesList(){
         viewModelScope.launch {
-
             // generate aggregate list
             _rvList.value = archiveRepository.getAggregates(
                 start = startDate,

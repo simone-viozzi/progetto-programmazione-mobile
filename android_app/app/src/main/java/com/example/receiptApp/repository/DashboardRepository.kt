@@ -143,6 +143,12 @@ class DashboardRepository(
         return currentStore
     }
 
+    suspend fun loadStoreFromScratch(dashboard: List<DashboardDataModel>?): MutableList<DashboardDataModel>
+    {
+        currentStore.clear()
+        return loadStore(dashboard)
+    }
+
     private suspend fun loadStoreTagExpense(dashboard: List<DashboardDataModel>?)
     {
         val period = DbRepository.Period.MONTH
