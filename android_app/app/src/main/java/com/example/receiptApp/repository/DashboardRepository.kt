@@ -32,6 +32,8 @@ class DashboardRepository(
     {
         val needToSave: MutableMap<Int, DashboardDataModel> = mutableMapOf()
 
+        // to save the position and the order of the dashboard i save the map between the index in
+        // the array and it's value
         dashboard.forEachIndexed { i, element ->
             needToSave[i] = element
         }
@@ -39,6 +41,13 @@ class DashboardRepository(
         sharedPrefRepository.writeDashboard(needToSave)
     }
 
+    /**
+     * Load dashboard
+     *  this will load only valid widgets. if a type of widget change or change in it's function it
+     *  will be ignored in the loading phase.
+     *
+     * @return
+     */
     suspend fun loadDashboard(): MutableList<DashboardDataModel>
     {
         val currentDashboard = sharedPrefRepository.readDashboard()
@@ -46,34 +55,39 @@ class DashboardRepository(
         val list: MutableList<DashboardDataModel> = mutableListOf()
 
         currentDashboard.entries.forEach {
-            loadSingleElement(it)?.let { it1 -> list.add(it1) }
+            loadSingleElement(it.value)?.let { it1 -> list.add(it1) }
         }
 
         return list
     }
 
-    private suspend fun loadSingleElement(it: Map.Entry<Int, DashboardDataModel>): DashboardDataModel?
+    /**
+     * Load single element
+     *  this function load the values of each type of widget and each subtype into the correct slots.
+     *
+     * @param el -> the widget that need to be filled
+     * @return
+     */
+    private suspend fun loadSingleElement(el: DashboardDataModel): DashboardDataModel?
     {
-        return when (val el = it.value)
+        return when (el)
         {
             is DashboardDataModel.Label ->
             {
                 val contentParsing = el.content.split(":")
 
-                when (contentParsing[0])
-                {
-                    "sumTag" ->
-                    {
+                when (contentParsing[0]) {
+                    "sumTag" -> {
                         val tag = contentParsing[1]
                         val period = DbRepository.Period.valueOf(contentParsing[2])
 
                         el.name = tag
-                        el.value = dbRepository.getAggregateExpensesByTagAndPeriod(tag, period) ?: return null
+                        el.value = dbRepository.getAggregateExpensesByTagAndPeriod(tag, period)
+                            ?: return null
                         el.id = StoreId.getId()
                         el
                     }
-                    "sum" ->
-                    {
+                    "sum" -> {
                         val period = DbRepository.Period.valueOf(contentParsing[1])
 
                         el.name = period.name.lowercase(Locale.getDefault())
@@ -88,17 +102,17 @@ class DashboardRepository(
             {
                 val contentParsing = el.content.split(":")
 
-                when (contentParsing[0])
-                {
-                    "monthAggrCount" ->
-                    {
+                when (contentParsing[0]) {
+                    "monthAggrCount" -> {
                         el.name = graphsRepository.getStrings(R.string.pie_count_by_atag)
                         el.aaChartModel = graphsRepository.monthAggrCountByTagPie()
+                        el.id = StoreId.getId()
                         el
                     }
                     "monthElemCount" -> {
                         el.name = graphsRepository.getStrings(R.string.pie_count_by_etag)
                         el.aaChartModel = graphsRepository.monthElemCountByTagPie()
+                        el.id = StoreId.getId()
                         el
                     }
                     else -> null
@@ -108,21 +122,23 @@ class DashboardRepository(
             {
                 val contentParsing = el.content.split(":")
 
-                when (contentParsing[0])
-                {
-                    "monthExpenses" ->{
+                when (contentParsing[0]) {
+                    "monthExpenses" -> {
                         el.name = graphsRepository.getStrings(R.string.histo_month_expenses)
                         el.aaChartModel = graphsRepository.monthExpensesHistogram()
+                        el.id = StoreId.getId()
                         el
                     }
                     "yearExpenses" -> {
                         el.name = graphsRepository.getStrings(R.string.histo_year_expenses)
                         el.aaChartModel = graphsRepository.yearExpensesHistogram()
+                        el.id = StoreId.getId()
                         el
                     }
                     "monthAggrTagExpenses" -> {
                         el.name = graphsRepository.getStrings(R.string.histo_month_expenses_by_atag)
                         el.aaChartModel = graphsRepository.monthAggrTagExpensesHistogram()
+                        el.id = StoreId.getId()
                         el
                     }
                     else -> null

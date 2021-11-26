@@ -618,7 +618,6 @@ class DbRepository(
                     cost = el.cost
                 )
             } ?: aggregateDao.addElementToAggregateById(el, dbAggregate.id)
-
         }
     }
 
