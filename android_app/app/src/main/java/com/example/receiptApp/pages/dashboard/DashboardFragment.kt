@@ -56,10 +56,21 @@ class DashboardFragment : Fragment()
         // force the start state of motion layout
         binding.homeMotionLayout.setState(R.id.baseConstraint, -1, -1)
 
+        with((activity as MainActivity))
+        {
+            onBottomSheetOpen = {
+                binding.fab.hide()
+            }
+            onBottomSheetClose = {
+                binding.fab.show()
+            }
+        }
+
         ///// dashboard setup section /////
         val dashAdapter = DashboardAdapter()
         val rvLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        rvLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+        rvLayoutManager.gapStrategy =
+            StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
         // to setup drag and drop
         val callback = DragManageAdapter(viewModel)

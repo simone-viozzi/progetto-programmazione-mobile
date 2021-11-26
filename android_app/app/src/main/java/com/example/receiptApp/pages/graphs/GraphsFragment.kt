@@ -48,6 +48,12 @@ class GraphsFragment : Fragment(R.layout.graphs_fragment)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        with((activity as MainActivity))
+        {
+            onBottomSheetOpen = null
+            onBottomSheetClose = null
+        }
+
         with((activity as MainActivity).binding)
         {
             fab.hide() // hide the fab not useful inside graphs

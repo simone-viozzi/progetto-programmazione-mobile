@@ -10,9 +10,9 @@
         android:name="com.example.receiptApp.pages.archive.ArchiveFragment"
         android:label="archive_fragment"
         tools:layout="@layout/archive_fragment" >
-        <argument
-            android:name="BottomBarMenu"
-            android:defaultValue="@menu/bottom_bar_menu_main"/>
+<!--        <argument-->
+<!--            android:name="BottomBarMenu"-->
+<!--            android:defaultValue="@menu/bottom_bar_menu_main"/>-->
         <action
             android:id="@+id/action_archiveFragment_to_aggregateFragment"
             app:destination="@id/aggregateFragment">
@@ -36,7 +36,7 @@
         tools:layout="@layout/dashboard_fragment" >
         <action
             android:id="@+id/action_homeFragment_to_addFragment"
-            app:destination="@id/addFragment"
+            app:destination="@id/editFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:launchSingleTop="false" />
@@ -46,10 +46,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/addFragment"
-        android:name="com.example.receiptApp.pages.add.AddFragment"
-        android:label="add_fragment"
-        tools:layout="@layout/add_fragment">
+        android:id="@+id/editFragment"
+        android:name="com.example.receiptApp.pages.add.EditFragment"
+        android:label="edit_fragment"
+        tools:layout="@layout/edit_fragment">
+        <argument
+            android:name="aggregate_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
     </fragment>
 
     <fragment
@@ -67,6 +71,13 @@
         <argument
             android:name="aggregate_id"
             app:argType="long"/>
+        <action
+            android:id="@+id/action_aggregateFragment_to_addFragment"
+            app:destination="@id/editFragment" >
+            <argument
+                android:name="aggregate_id"
+                app:argType="long"/>
+        </action>
     </fragment>
 
 </navigation>

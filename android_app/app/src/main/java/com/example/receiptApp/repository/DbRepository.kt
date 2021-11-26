@@ -8,7 +8,7 @@ import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
-import com.example.receiptApp.pages.add.AddDataModel
+import com.example.receiptApp.pages.add.EditDataModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -514,12 +514,15 @@ class DbRepository(
         tag_name: String,
         start: Date = Date(0), // by default take 1-1-1970 as start date as filter
         end: Date = Date() // by default take the call moment as end date as filter
-    ): Float?{
+    ): Float? {
         val tag = tagDao.getElementTagByName(tag_name)
-        return if(tag != null)
-            elementDao.countAllExpensesBetweenDatesByElementTagId(start_date = start, end_date = end, tag.tag_id)
-        else
-            null
+        return tag?.let {
+            elementDao.countAllExpensesBetweenDatesByElementTagId(
+                start_date = start,
+                end_date = end,
+                it.tag_id
+            )
+        }
     }
 
     /**
@@ -543,28 +546,16 @@ class DbRepository(
     // INSERT METHODS
 
     suspend fun insertAggregateWithElements(
-        aggregate: AddDataModel.Aggregate,
-        elements: List<AddDataModel.Element>,
+        aggregate: EditDataModel.Aggregate,
+        elements: List<EditDataModel.Element>,
         attachmentUri: Uri?
     ) = withContext(Dispatchers.IO) {
 
-        var date: Date? = null
-        aggregate.str_date?.let { strDate ->
-            date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)
-        }
-
-        val dbAggregate = Aggregate(date = date, attachment = attachmentUri).also { it.tag = aggregate.tag }
-        val dbElements = elements.map {
-            if (it.cost == null || it.cost == null) throw IllegalArgumentException("cost or num cannot be null")
-
-            Element(
-                cost = it.cost?.toFloat() ?: 0f,
-                name = it.name,
-                num = it.num?.toLong() ?: 0L
-            ).also { el ->
-                el.elem_tag = it.elem_tag
-            }
-        }
+        val (dbAggregate, dbElements) = convertAggregateElementsToDbFormat(
+            aggregate,
+            attachmentUri,
+            elements
+        )
 
         aggregateDao.insertAggregateWithElements(dbAggregate, dbElements)
     }
@@ -590,29 +581,91 @@ class DbRepository(
         return aggregateDao.getAggregateWithElementsById(id)
     }
 
-    suspend fun getFisrtAggregateId(): Long?{
+    suspend fun getFisrtAggregateId(): Long? {
         return aggregateDao.getFisrtAggregateId()
     }
 
     // ##########################################################################
     // UPDATE METHODS
 
+    suspend fun updateAggregateWithElements(
+        aggregate: EditDataModel.Aggregate,
+        elements: List<EditDataModel.Element>,
+        attachmentUri: Uri?
+    ) {
+        val (dbAggregate, dbElements) = convertAggregateElementsToDbFormat(
+            aggregate,
+            attachmentUri,
+            elements
+        )
+
+        aggregateDao.updateAggregateById(
+            dbAggregate.id
+                ?: throw java.lang.IllegalArgumentException("cannot update something if the id is not present"),
+            tag_name = dbAggregate.tag,
+            date = dbAggregate.date,
+            location = null,
+            attachment = dbAggregate.attachment
+        )
+
+        dbElements.forEach { el ->
+            el.elem_id?.let { id ->
+                elementDao.updateElementById(
+                    id = id,
+                    name = el.name,
+                    num = el.num,
+                    elem_tag = el.elem_tag,
+                    cost = el.cost
+                )
+            } ?: aggregateDao.addElementToAggregateById(el, dbAggregate.id)
+
+        }
+    }
 
 
     // ##########################################################################
     // DELETE METHODS
 
-    suspend fun clearDb()
-    {
+    suspend fun clearDb() {
         aggregateDao.deleteAll()
     }
 
     // ##########################################################################
     // HELPER METHODS
 
-    suspend fun dbIsEmpty(): Boolean{
+    suspend fun dbIsEmpty(): Boolean {
         val aggrNum = aggregateDao.countAllAggregates()
         return aggrNum == null || aggrNum == 0L
+    }
+
+    private fun convertAggregateElementsToDbFormat(
+        aggregate: EditDataModel.Aggregate,
+        attachmentUri: Uri?,
+        elements: List<EditDataModel.Element>
+    ): Pair<Aggregate, List<Element>> {
+        var date: Date? = null
+        aggregate.str_date?.let { strDate ->
+            date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)
+        }
+
+        val dbAggregate = Aggregate(
+            id = aggregate.dbId,
+            date = date,
+            attachment = attachmentUri
+        ).also { it.tag = aggregate.tag }
+        val dbElements = elements.map {
+            if (it.cost == null || it.cost == null) throw IllegalArgumentException("cost or num cannot be null")
+
+            Element(
+                elem_id = it.dbId,
+                cost = it.cost?.toFloat() ?: 0f,
+                name = it.name,
+                num = it.num?.toLong() ?: 0L
+            ).also { el ->
+                el.elem_tag = it.elem_tag
+            }
+        }
+        return Pair(dbAggregate, dbElements)
     }
 
     // ##########################################################################
@@ -660,4 +713,6 @@ class DbRepository(
             elem_num_casual = true
         )
     }
+
+
 }

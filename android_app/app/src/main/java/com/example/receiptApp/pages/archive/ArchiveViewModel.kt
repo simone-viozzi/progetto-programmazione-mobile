@@ -1,30 +1,8 @@
 package com.example.receiptApp.pages.archive
 
-import android.R
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView
-import androidx.core.content.ContextCompat
-import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.*
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.receiptApp.databinding.AddHeadBinding
-import com.example.receiptApp.databinding.AddSingleElementBinding
-import com.example.receiptApp.pages.add.AddDataModel
-import com.example.receiptApp.pages.add.adapters.AddAdapter
-import com.example.receiptApp.pages.graphs.GraphsViewModel
 import com.example.receiptApp.repository.ArchiveRepository
-import com.example.receiptApp.repository.GraphsRepository
-import com.example.receiptApp.toEditable
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
 
 class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewModel()

@@ -12,17 +12,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
+import java.text.SimpleDateFormat
 
 
 class AddViewModel(
     private val attachmentRepository: AttachmentRepository,
-    private val dbRepository: DbRepository
-    ) : ViewModel()
-{
+    private val dbRepository: DbRepository,
+    private val aggregateId: Long
+) : ViewModel() {
 
     // the list observed by the recyclerview
-    private val _rvList = MutableLiveData<List<AddDataModel>>()
-    val rvList: LiveData<List<AddDataModel>>
+    private val _rvList = MutableLiveData<List<EditDataModel>>()
+    val rvList: LiveData<List<EditDataModel>>
         get() = _rvList
 
     // the gallery is governed by a MutableStateFlow
@@ -45,13 +46,11 @@ class AddViewModel(
 
     // the callback used by every element of the views in the textWatcher to update the corresponding element in the
     // view model, it pass an element with only the updated field and the id != null
-    var textEditCallback: ((el: AddDataModel) -> (Unit)) = { el ->
+    var textEditCallback: ((el: EditDataModel) -> (Unit)) = { el ->
         // need to separate the two types
-        when (el)
-        {
-            is AddDataModel.Aggregate ->
-            {
-                val oldEl = _rvList.value?.get(0) as AddDataModel.Aggregate
+        when (el) {
+            is EditDataModel.Aggregate -> {
+                val oldEl = _rvList.value?.get(0) as EditDataModel.Aggregate
 
                 el.str_date?.let { oldEl.str_date = it }
                 el.tag?.let { oldEl.tag = it }
@@ -59,9 +58,8 @@ class AddViewModel(
                 _rvList.value = _rvList.value?.toMutableList().also { it?.set(0, oldEl) }
             }
 
-            is AddDataModel.Element ->
-            {
-                val oldEl = _rvList.value?.get(el.vId) as AddDataModel.Element
+            is EditDataModel.Element -> {
+                val oldEl = _rvList.value?.get(el.vId) as EditDataModel.Element
 
                 val update = oldEl.update(el)
                 Timber.d("update -> $update")
@@ -69,10 +67,9 @@ class AddViewModel(
                 val newList = _rvList.value?.toMutableList().also { it?.set(el.vId, oldEl) }
 
                 _rvList.value = newList?.also {
-                    if (el.vId == getLastId(false))
-                    {
+                    if (el.vId == getLastId(false)) {
                         it.add(
-                            AddDataModel.Element(
+                            EditDataModel.Element(
                                 vId = getLastId(),
                             )
                         )
@@ -82,22 +79,68 @@ class AddViewModel(
         }
     }
 
-    init
-    {
-        _rvList.value = listOf(
-            AddDataModel.Aggregate(vId = 0),
-            AddDataModel.Element(vId = getLastId())
-        )
+    init {
+        if (aggregateId == -1L) {
+            _rvList.value = listOf(
+                EditDataModel.Aggregate(vId = 0),
+                EditDataModel.Element(vId = getLastId())
+            )
+        } else {
+            viewModelScope.launch {
+                val (aggregate, elements) = preloadAggregateElements()
+                _rvList.value = mutableListOf(aggregate as EditDataModel).also {it.addAll(elements) }
+            }
+        }
         loadAutocomplete()
+    }
+
+    private suspend fun preloadAggregateElements(): Pair<EditDataModel.Aggregate, List<EditDataModel.Element>> = withContext(Dispatchers.IO) {
+        val (dbAggregate, dbElements) = dbRepository.getAggregateWithElementsById(
+            aggregateId
+        ).asIterable().first()
+
+        Timber.d("dbAggregate -> $dbAggregate")
+        Timber.d("dbElements -> $dbElements")
+
+        val aggregate = EditDataModel.Aggregate(
+            vId = 0,
+            tag = dbAggregate.tag,
+            str_date = dbAggregate.date?.let { date ->
+                SimpleDateFormat("dd/MM/yyyy").format(
+                    date
+                )
+            },
+            thumbnail = dbAggregate.attachment?.let { uri ->
+                AttachmentRepository.Attachment(
+                    name = attachmentRepository.getFileName(uri),
+                    uri = uri,
+                ).let { a ->
+                    attachment = a
+                    attachmentRepository.generateThumbnail(a)
+                }
+            },
+            dbId = dbAggregate.id
+        )
+
+        val elements = dbElements.map {
+            EditDataModel.Element(
+                vId = getLastId(),
+                name = it.name,
+                num = it.num.toInt(),
+                elem_tag = it.elem_tag,
+                cost = it.cost.toDouble(),
+                dbId = it.elem_id
+            )
+        }
+        return@withContext Pair(aggregate, elements)
     }
 
 
     // this get called when the date picker return
-    fun setDate(millis: Long)
-    {
+    fun setDate(millis: Long) {
         val date = DateFormat.format("dd/MM/yyyy", millis).toString()
         _rvList.value = _rvList.value?.toMutableList().also { li ->
-            val header = li?.get(0) as AddDataModel.Aggregate
+            val header = li?.get(0) as EditDataModel.Aggregate
             li[0] = header.also { it.str_date = date }
         }
     }
@@ -132,13 +175,13 @@ class AddViewModel(
     }
 
     // helper function to retrieve the aggregate and the list of elements separately
-    private fun spitAggregateAndElements(): Pair<AddDataModel.Aggregate, List<AddDataModel.Element>>
-    {
+    private fun splitAggregateAndElements(): Pair<EditDataModel.Aggregate, List<EditDataModel.Element>> {
         _rvList.value?.let { currList ->
 
             // split the list taking the aggregate and all the elements
-            val aggregate = currList[0] as AddDataModel.Aggregate
-            val elements = currList.subList(1, currList.lastIndex).map { it as AddDataModel.Element }
+            val aggregate = currList[0] as EditDataModel.Aggregate
+            val elements =
+                currList.subList(1, currList.lastIndex).map { it as EditDataModel.Element }
 
             return Pair(aggregate, elements)
         }
@@ -150,7 +193,7 @@ class AddViewModel(
     //  the values needed by the db. this is done synchronously and before starting the save into the db
     fun selfIntegrityCheck(): Boolean
     {
-        val (aggregate, elements) = spitAggregateAndElements()
+        val (aggregate, elements) = splitAggregateAndElements()
 
         // the essential values are: the date for the aggregate, the cost and num for the elements
 
@@ -182,7 +225,7 @@ class AddViewModel(
     @DelicateCoroutinesApi
     fun saveToDb() = GlobalScope.launch {
 
-        val (aggregate, elements) = spitAggregateAndElements()
+        val (aggregate, elements) = splitAggregateAndElements()
 
         // if the attachment is not into the private memory of the app i need to copy it there
         val attachmentUri = attachment?.let {
@@ -193,10 +236,21 @@ class AddViewModel(
         Timber.e("elements -> $elements")
         Timber.e("attachment -> $attachmentUri")
 
-        dbRepository.insertAggregateWithElements(aggregate, elements.also {
-            // the last element is always blank
-            it.toMutableList().remove(it.last())
-        }, attachmentUri)
+        if (aggregateId == -1L) {
+            dbRepository.insertAggregateWithElements(aggregate, elements.also {
+                // the last element is always blank
+                it.toMutableList().remove(it.last())
+            }, attachmentUri)
+        }
+        else
+        {
+            dbRepository.updateAggregateWithElements(
+                aggregate, elements.also {
+                    // the last element is always blank
+                    it.toMutableList().remove(it.last())
+                }, attachmentUri
+            )
+        }
 
         Timber.e("fine inserimento")
     }
@@ -213,7 +267,7 @@ class AddViewModel(
         Timber.d("${attachment.thumbnail}")
 
         _rvList.value = _rvList.value?.toMutableList().also { li ->
-            val header = li?.get(0) as AddDataModel.Aggregate
+            val header = li?.get(0) as EditDataModel.Aggregate
             li[0] = header.also {
                 it.thumbnail = attachment.thumbnail
             }
@@ -236,7 +290,8 @@ class AddViewModel(
 
 class AddViewModelFactory(
     private val attachmentRepository: AttachmentRepository,
-    private val dbRepository: DbRepository
+    private val dbRepository: DbRepository,
+    private val aggregateId: Long
 ) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
@@ -244,7 +299,11 @@ class AddViewModelFactory(
         if (modelClass.isAssignableFrom(AddViewModel::class.java))
         {
             @Suppress("UNCHECKED_CAST")
-            return AddViewModel(attachmentRepository, dbRepository) as T
+            return AddViewModel(
+                attachmentRepository,
+                dbRepository,
+                aggregateId
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -67,9 +67,17 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        with((activity as MainActivity))
+        {
+            onBottomSheetOpen = null
+            onBottomSheetClose = null
+        }
+
         with((activity as MainActivity).binding)
         {
             bottomAppBar.replaceMenu(R.menu.bottom_app_bar_archive)
+            fab.hide()
+            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
 
             bottomAppBar.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId)

@@ -28,7 +28,7 @@ class AttachmentRepository(private val applicationContext: Context)
         var uri: Uri,
         var thumbnail: Bitmap? = null,
         var needToCopy: Boolean = false,
-        val type: TYPE
+        var type: TYPE? = null
     )
 
     // generate a thumbnail for a given attachment
@@ -36,16 +36,14 @@ class AttachmentRepository(private val applicationContext: Context)
     //  if it's a pdf just load the pdf icon
     fun generateThumbnail(attachment: Attachment): Bitmap?
     {
-        return when(attachment.type)
-        {
+        return when (attachment.type ?: getAttachmentType(attachment)) {
             TYPE.IMAGE -> ImageUtils.getThumbnail(
-                    applicationContext.contentResolver,
-                    attachment.uri
-                    ).let {
+                applicationContext.contentResolver,
+                attachment.uri
+            ).let {
                 it?.let { bitmap ->
                     // i don't want portrait images, if an images is in portrait format just rotate it
-                    if (bitmap.height  < bitmap.width)
-                    {
+                    if (bitmap.height < bitmap.width) {
                         val matrix = Matrix();
                         matrix.postRotate(90F);
 
@@ -69,7 +67,7 @@ class AttachmentRepository(private val applicationContext: Context)
             
             val attachment = Attachment(
                 uri = uri,
-                type = when(uriPath?.get(uriPath.size-2)){
+                type = when (uriPath?.get(uriPath.size - 2)) {
                     "app_images" -> TYPE.IMAGE
                     "app_files" -> TYPE.PDF
                     else -> throw IllegalStateException("unexpected uri type!")
@@ -79,9 +77,18 @@ class AttachmentRepository(private val applicationContext: Context)
         }
     }
 
+    fun getAttachmentType(attachment: Attachment): TYPE {
+        val uriPath = attachment.uri.path?.split("/")
 
-    enum class TYPE()
-    {
+        return when (uriPath?.get(uriPath.size - 2)) {
+            "app_images" -> TYPE.IMAGE
+            "app_files" -> TYPE.PDF
+            else -> throw IllegalStateException("unexpected uri type!")
+        }
+    }
+
+
+    enum class TYPE() {
         IMAGE,
         PDF;
     }
@@ -100,15 +107,17 @@ class AttachmentRepository(private val applicationContext: Context)
         //      <files-path name="Images" path="images/"/>
         //      <files-path name="Files" path="files/"/>
         // this need to mirror that
-        val filesPath = when (attachment.type)
-        {
-            TYPE.IMAGE ->  "images"
+        val filesPath = when (attachment.type ?: getAttachmentType(attachment)) {
+            TYPE.IMAGE -> "images"
             TYPE.PDF -> "files"
         }
 
         // if i don't have a name for the file generate one
         attachment.name = attachment.name
-            ?: FileUtils.getUniqueFilename(getFileName(attachment.uri) ?: attachment.type.name)
+            ?: FileUtils.getUniqueFilename(
+                getFileName(attachment.uri) ?:
+                (attachment.type ?: getAttachmentType(attachment)).name
+            )
 
 
         val newFile = File(

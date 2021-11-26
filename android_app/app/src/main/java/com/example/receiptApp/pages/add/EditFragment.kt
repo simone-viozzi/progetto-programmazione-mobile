@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,8 +27,8 @@ import com.example.receiptApp.App
 import com.example.receiptApp.DATE_PICKER_TAG
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
-import com.example.receiptApp.databinding.AddFragmentBinding
-import com.example.receiptApp.pages.add.adapters.AddAdapter
+import com.example.receiptApp.databinding.EditFragmentBinding
+import com.example.receiptApp.pages.add.adapters.EditAdapter
 import com.example.receiptApp.pages.add.adapters.GalleryAdapter
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.utils.PermissionsHandling
@@ -42,19 +43,24 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
-class AddFragment : Fragment(R.layout.add_fragment)
+class EditFragment : Fragment(R.layout.edit_fragment)
 {
     private lateinit var permHandler: PermissionsHandling
+
+    // args passed via navigation call
+    private val args: EditFragmentArgs by navArgs()
+
 
     private val viewModel: AddViewModel by viewModels {
         AddViewModelFactory(
             (activity?.application as App).attachmentRepository,
-            (activity?.application as App).dbRepository
+            (activity?.application as App).dbRepository,
+            args.aggregateId
         )
     }
 
-    private lateinit var binding: AddFragmentBinding
-    private lateinit var addAdapter: AddAdapter
+    private lateinit var binding: EditFragmentBinding
+    private lateinit var editAdapter: EditAdapter
 
     // temp var to store the uri of the photo the user is taking
     var cameraUri: Uri? = null
@@ -65,7 +71,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
         savedInstanceState: Bundle?
     ): View
     {
-        binding = AddFragmentBinding.inflate(inflater, container, false)
+        binding = EditFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -94,8 +100,8 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
             // the fab is used as save button, before saving it will be performed a self check
             fab.setOnClickListener {
-                viewModel.selfCheckAggregate = AddAdapter.SelfCheckCallbacks.selfCheckAggregate
-                viewModel.selfCheckElements = AddAdapter.SelfCheckCallbacks.selfCheckElements
+                viewModel.selfCheckAggregate = EditAdapter.SelfCheckCallbacks.selfCheckAggregate
+                viewModel.selfCheckElements = EditAdapter.SelfCheckCallbacks.selfCheckElements
 
                 // the test is passed i can start the save and return to the previous page
                 if (viewModel.selfIntegrityCheck())
@@ -192,7 +198,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
 
         // the adapter take the four callBacks, 3 are in the View model and the other one here
-        addAdapter = AddAdapter(
+        editAdapter = EditAdapter(
             viewModel.textEditCallback,
             viewModel.autoCompleteAggregateCallback,
             viewModel.autoCompleteElementCallback
@@ -208,12 +214,12 @@ class AddFragment : Fragment(R.layout.add_fragment)
             datePicker.selection?.let { it1 -> viewModel.setDate(it1) }
 
             // need to notify that this element changed otherwise it doesn't update the value
-            addAdapter.notifyItemChanged(0)
+            editAdapter.notifyItemChanged(0)
         }
 
         // observe the list of elements and submit it to the adapter
         viewModel.rvList.observe(viewLifecycleOwner) {
-            addAdapter.submitList(it)
+            editAdapter.submitList(it)
         }
 
         // pressing on the scrim close the attachment recyclerView with the animation
@@ -223,13 +229,13 @@ class AddFragment : Fragment(R.layout.add_fragment)
 
         binding.recyclerViewAdd.apply {
             layoutManager = LinearLayoutManager(activity)
-            adapter = addAdapter
+            adapter = editAdapter
         }
 
         val galleryAdapter = GalleryAdapter {
             viewModel.setAttachment(it)
 
-            addAdapter.notifyItemChanged(0)
+            editAdapter.notifyItemChanged(0)
             binding.addMotionLayout.transitionToState(R.id.start)
         }
 
@@ -386,7 +392,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
                 )
             )
         } ?: Toast.makeText(activity, getString(R.string.file_error), Toast.LENGTH_SHORT).show()
-        addAdapter.notifyItemChanged(0)
+        editAdapter.notifyItemChanged(0)
     }
 
 
@@ -404,7 +410,7 @@ class AddFragment : Fragment(R.layout.add_fragment)
             )
 
         } ?: Toast.makeText(activity, getString(R.string.camera_error), Toast.LENGTH_SHORT).show()
-        addAdapter.notifyItemChanged(0)
+        editAdapter.notifyItemChanged(0)
     }
 
 

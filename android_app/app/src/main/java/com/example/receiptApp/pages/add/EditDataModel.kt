@@ -7,13 +7,14 @@ import android.graphics.Bitmap
  * those are the data structures that will be displayed in the recyclerview
  */
 
-sealed class AddDataModel {
+sealed class EditDataModel {
     data class Aggregate(
         var vId: Int = 0,
         var tag: String? = null,
         var str_date: String? = null,
-        var thumbnail: Bitmap? = null
-    ) : AddDataModel()
+        var thumbnail: Bitmap? = null,
+        var dbId: Long? = null
+    ) : EditDataModel()
 
     data class Element(
         var vId: Int = -1,
@@ -21,17 +22,18 @@ sealed class AddDataModel {
         var num: Int? = null,
         var elem_tag: String? = null,
         var cost: Double? = null,
-    ) : AddDataModel()
+        var dbId: Long? = null
+    ) : EditDataModel()
 }
 
 /**
  * to wrap some code and functionality the update is done here
  */
-fun AddDataModel.update(new: AddDataModel): Boolean
+fun EditDataModel.update(new: EditDataModel): Boolean
 {
     // right now update is useless, maybe will used in the future
     var update = false
-    if (this is AddDataModel.Element && new is AddDataModel.Element)
+    if (this is EditDataModel.Element && new is EditDataModel.Element)
     {
         if (this.name != new.name && new.name != null) {
             this.name = new.name

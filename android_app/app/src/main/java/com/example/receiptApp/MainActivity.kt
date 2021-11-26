@@ -26,6 +26,8 @@ class MainActivity : AppCompatActivity()
     lateinit var binding: ActivityMainBinding
 
     var onBackPressedCallback: (() -> Unit)? = null
+    var onBottomSheetOpen: (() -> Unit)? = null
+    var onBottomSheetClose: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity()
             // open the navigation drawer
             binding.scrim.visibility = View.VISIBLE
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            binding.fab.hide()
+            onBottomSheetOpen?.invoke()
         }
 
 
@@ -66,8 +68,9 @@ class MainActivity : AppCompatActivity()
 
         binding.scrim.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            binding.fab.show()
             binding.scrim.visibility = View.GONE
+
+            onBottomSheetClose?.invoke()
         }
 
 
@@ -96,7 +99,6 @@ class MainActivity : AppCompatActivity()
     override fun onBackPressed()
     {
         onBackPressedCallback?.invoke()
-        //Toast.makeText(this, "halooo", Toast.LENGTH_SHORT).show()
     }
 
 

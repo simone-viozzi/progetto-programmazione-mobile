@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
-import com.example.receiptApp.databinding.AddImgBinding
+import com.example.receiptApp.databinding.EditGalleryImgBinding
 import com.example.receiptApp.repository.AttachmentRepository.Attachment
 
 /**
@@ -28,7 +28,7 @@ class GalleryAdapter(
     }
 
     class ImgViewHolder(
-        private val binding: AddImgBinding,
+        private val binding: EditGalleryImgBinding,
         clickListener: ((Attachment) -> Unit)
     ) : RecyclerView.ViewHolder(binding.root)
     {
@@ -73,7 +73,7 @@ class GalleryAdapter(
     {
         return ImgViewHolder(
             // this is the binding!
-            AddImgBinding.inflate(
+            EditGalleryImgBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false

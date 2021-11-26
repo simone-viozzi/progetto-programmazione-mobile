@@ -1,8 +1,6 @@
 package com.example.receiptApp.pages.archive
 
-import android.graphics.Bitmap
 import android.net.Uri
-import com.example.receiptApp.pages.add.AddDataModel
 
 sealed class ArchiveDataModel {
     data class Aggregate(
