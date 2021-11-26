@@ -618,7 +618,6 @@ class DbRepository(
                     cost = el.cost
                 )
             } ?: aggregateDao.addElementToAggregateById(el, dbAggregate.id)
-
         }
     }
 
@@ -628,6 +627,10 @@ class DbRepository(
 
     suspend fun clearDb() {
         aggregateDao.deleteAll()
+    }
+
+    suspend fun deleteAggregateWithElements(id: Long){
+        aggregateDao.deleteAggregateById(id)
     }
 
     // ##########################################################################
@@ -643,6 +646,7 @@ class DbRepository(
         attachmentUri: Uri?,
         elements: List<EditDataModel.Element>
     ): Pair<Aggregate, List<Element>> {
+
         var date: Date? = null
         aggregate.str_date?.let { strDate ->
             date = SimpleDateFormat("dd/MM/yyyy").parse(strDate)

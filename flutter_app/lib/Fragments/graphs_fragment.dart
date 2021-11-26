@@ -32,9 +32,7 @@ class GraphsFragment extends StatelessWidget
         child: Text("graph fragment"),
       ),
       // BOTTOM -------------------------
-      floatingActionButton: AdaptiveFab(
-        state: FABstate.addRecipt,
-      ),
+      floatingActionButton: null,
       floatingActionButtonLocation: AdaptiveFab.location(context),
       bottomNavigationBar: BottomAppBar(
         elevation: 1.0,
