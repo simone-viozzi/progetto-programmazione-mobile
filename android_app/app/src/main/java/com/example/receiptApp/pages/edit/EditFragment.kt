@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.add
+package com.example.receiptApp.pages.edit
 
 import android.Manifest
 import android.annotation.TargetApi
@@ -28,8 +28,8 @@ import com.example.receiptApp.DATE_PICKER_TAG
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.EditFragmentBinding
-import com.example.receiptApp.pages.add.adapters.EditAdapter
-import com.example.receiptApp.pages.add.adapters.GalleryAdapter
+import com.example.receiptApp.pages.edit.adapters.EditAdapter
+import com.example.receiptApp.pages.edit.adapters.GalleryAdapter
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.utils.PermissionsHandling
 import com.google.android.material.bottomappbar.BottomAppBar

@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.add.adapters
+package com.example.receiptApp.pages.edit.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

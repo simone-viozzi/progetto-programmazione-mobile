@@ -8,7 +8,7 @@ import com.example.receiptApp.db.element.Element
 import com.example.receiptApp.db.element.PublicElementsDao
 import com.example.receiptApp.db.tag.Tag
 import com.example.receiptApp.db.tag.TagsDao
-import com.example.receiptApp.pages.add.EditDataModel
+import com.example.receiptApp.pages.edit.EditDataModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -717,6 +717,4 @@ class DbRepository(
             elem_num_casual = true
         )
     }
-
-
 }

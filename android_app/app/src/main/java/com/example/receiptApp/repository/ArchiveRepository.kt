@@ -115,6 +115,6 @@ class ArchiveRepository(
     }
 
     suspend fun deleteAggregate(aggregateId: Long) {
-        dbRepository.deleteAggregate(aggregateId)
+        dbRepository.deleteAggregateWithElements(aggregateId)
     }
 }

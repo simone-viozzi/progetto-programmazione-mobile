@@ -5,6 +5,7 @@ import com.example.receiptApp.pages.archive.ArchiveDataModel
 import com.example.receiptApp.repository.ArchiveRepository
 import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.repository.DbRepository
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -19,11 +20,17 @@ class AggregatePageViewModel(
         get() = _rvList
 
     init{
+
+    }
+
+    fun loadData()
+    {
         viewModelScope.launch {
             _rvList.value = archiveRepository.getAggregatesWithElementsByIdInArchiveFormat(aggregate_id)
         }
     }
 
+    @DelicateCoroutinesApi
     fun deleteAggregate() = GlobalScope.launch {
         archiveRepository.deleteAggregate(aggregate_id)
     }

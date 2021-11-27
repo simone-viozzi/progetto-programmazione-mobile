@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/editFragment"
-        android:name="com.example.receiptApp.pages.add.EditFragment"
+        android:name="com.example.receiptApp.pages.edit.EditFragment"
         android:label="edit_fragment"
         tools:layout="@layout/edit_fragment">
         <argument

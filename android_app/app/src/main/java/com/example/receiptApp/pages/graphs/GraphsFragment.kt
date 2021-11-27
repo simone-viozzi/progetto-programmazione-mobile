@@ -4,21 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.receiptApp.App
 import com.example.receiptApp.MainActivity
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.GraphsFragmentBinding
-import com.example.receiptApp.pages.add.AddViewModel
-import com.example.receiptApp.repository.AttachmentRepository
-import com.example.receiptApp.repository.GraphsRepository
-import com.google.android.material.bottomappbar.BottomAppBar
-import timber.log.Timber
 
 class GraphsFragment : Fragment(R.layout.graphs_fragment)
 {
