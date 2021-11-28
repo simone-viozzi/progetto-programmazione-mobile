@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 // import data widgets
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
+import '../definitions.dart';
+
 enum FABstate {
   addRecipt,
 }
@@ -38,7 +40,7 @@ class AdaptiveFab extends StatelessWidget{
               color: Colors.white,
             ),
             onPressed: () {
-              MainFragDataWidget.of(context).modifyDash(false);
+
             }
         );
       }else{
@@ -49,7 +51,7 @@ class AdaptiveFab extends StatelessWidget{
               color: Colors.white,
             ),
             onPressed: () {
-
+              MainFragDataWidget.of(context).changePage(PageMap.editAgrId);
             }
         );
       }
