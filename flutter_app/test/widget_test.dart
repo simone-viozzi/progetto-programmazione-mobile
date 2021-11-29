@@ -21,7 +21,7 @@ void main() {
 
     // Tap the '+' icon and trigger a frame.
     await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pump();https://teams.microsoft.com/api/mt/emea/beta/users/S1077153@studenti.univpm.it/profilepicturev2?displayname=BIANCUCCI%20MASSIMILIANO&size=HR196x196&voidCache=true
 
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
