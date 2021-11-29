@@ -1,5 +1,6 @@
 // importing main components
 import 'package:flutter/material.dart';
+import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
 // importing themes
 import 'package:flutter_app/Styles/recipteapp_theme.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_app/Widgets/bottom_navigation_drawer.dart';
 // import widgets
 import 'package:flutter_app/Widgets/floating_action_button.dart';
 import 'package:flutter_app/Widgets/home_settings_menu.dart';
+
+import '../definitions.dart';
 
 class ArchiveFragment extends StatelessWidget {
   final String title;
@@ -109,6 +112,7 @@ class ArchiveElement extends StatelessWidget {
         child: InkWell(
             onTap: () {
               print(data);
+              MainFragDataWidget.of(context).changePage(PageMap.agrViewId);
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),

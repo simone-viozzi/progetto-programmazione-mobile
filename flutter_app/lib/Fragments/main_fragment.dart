@@ -11,6 +11,7 @@ import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 // import fragments
 import 'package:flutter_app/Fragments/dashboard_fragment.dart';
 
+import 'aggregate_page.dart';
 import 'edit_fragment.dart';
 import 'graphs_fragment.dart';
 
@@ -58,6 +59,8 @@ class MainFragState extends State<MainFrag>{
         );
       case PageMap.editAgrId:
         return EditFragment();
+      case PageMap.agrViewId:
+        return AggregatePage();
       default:
         return DashboardFragment(
             title: 'home'
