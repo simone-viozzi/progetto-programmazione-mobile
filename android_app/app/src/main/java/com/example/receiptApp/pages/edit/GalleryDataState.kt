@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.add
+package com.example.receiptApp.pages.edit
 
 import androidx.paging.PagingData
 import com.example.receiptApp.repository.AttachmentRepository

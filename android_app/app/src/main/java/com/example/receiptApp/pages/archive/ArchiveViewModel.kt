@@ -22,23 +22,13 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
     private var selectedTag: String? = null
 
     // start filter date
-    var startDate: Date
+    lateinit var startDate: Date
 
     // end filter date
-    var endDate: Date
+    lateinit var endDate: Date
 
     init {
-        // set date filter parameters
-        val cal = Calendar.getInstance()
-        endDate = cal.time // put as end date now
-        cal.add(Calendar.YEAR, -1)
-        startDate = cal.time // put as start date of the filter one year ago
 
-        loadingTags()
-
-        reloadAggregatesList()
-
-        Timber.e("ArchiveViewModel INIT")
     }
 
     /**
@@ -66,6 +56,20 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
                 tag_name =  selectedTag
             )
         }
+    }
+
+    fun loadData() {
+        // set date filter parameters
+        val cal = Calendar.getInstance()
+        endDate = cal.time // put as end date now
+        cal.add(Calendar.YEAR, -1)
+        startDate = cal.time // put as start date of the filter one year ago
+
+        loadingTags()
+
+        reloadAggregatesList()
+
+        Timber.e("ArchiveViewModel INIT")
     }
 }
 

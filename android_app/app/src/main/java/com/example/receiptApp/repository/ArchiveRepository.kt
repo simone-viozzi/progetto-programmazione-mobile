@@ -113,4 +113,8 @@ class ArchiveRepository(
     suspend fun getAggregatesTagsList(): List<String>{
         return dbRepository.getAggregateTagNames().toList().filterNotNull()
     }
+
+    suspend fun deleteAggregate(aggregateId: Long) {
+        dbRepository.deleteAggregateWithElements(aggregateId)
+    }
 }

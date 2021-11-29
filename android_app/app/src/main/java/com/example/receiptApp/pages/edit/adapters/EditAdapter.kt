@@ -1,4 +1,4 @@
-package com.example.receiptApp.pages.add.adapters
+package com.example.receiptApp.pages.edit.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -18,7 +18,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.receiptApp.R
 import com.example.receiptApp.databinding.EditRvHeaderBinding
 import com.example.receiptApp.databinding.EditRvSingleElementBinding
-import com.example.receiptApp.pages.add.EditDataModel
+import com.example.receiptApp.pages.edit.EditDataModel
 import com.example.receiptApp.toEditable
 import timber.log.Timber
 

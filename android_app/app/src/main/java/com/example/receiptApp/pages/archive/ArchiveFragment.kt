@@ -55,7 +55,6 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
     ): View
     {
         binding = ArchiveFragmentBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -66,6 +65,8 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
         // this is needed for binding the view model to the binding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        viewModel.loadData()
 
         with((activity as MainActivity))
         {
@@ -146,7 +147,7 @@ class ArchiveFragment : Fragment(R.layout.archive_fragment)
                             )
                         )
                         newText?.let {
-                            suggestions?.forEachIndexed { index, suggestion ->
+                            suggestions.forEachIndexed { index, suggestion ->
                                 if (suggestion.contains(newText, true))
                                     cursor.addRow(arrayOf(index, suggestion))
                             }

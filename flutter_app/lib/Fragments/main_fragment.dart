@@ -9,8 +9,9 @@ import 'package:flutter_app/definitions.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
 // import fragments
-import 'package:flutter_app/Fragments/home_fragment.dart';
+import 'package:flutter_app/Fragments/dashboard_fragment.dart';
 
+import 'edit_fragment.dart';
 import 'graphs_fragment.dart';
 
 
@@ -44,7 +45,7 @@ class MainFragState extends State<MainFrag>{
     print('rebuild MainFrag()');
     switch(MainFragDataScope.of(context).pageSelected){
       case PageMap.homeId:
-        return HomeFragment(
+        return DashboardFragment(
             title: 'home'
         );
       case PageMap.archiveId:
@@ -55,8 +56,10 @@ class MainFragState extends State<MainFrag>{
         return GraphsFragment(
             title: 'graphs'
         );
+      case PageMap.editAgrId:
+        return EditFragment();
       default:
-        return HomeFragment(
+        return DashboardFragment(
             title: 'home'
         );
     }
