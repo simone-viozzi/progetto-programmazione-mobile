@@ -9,6 +9,72 @@ import 'package:flutter_app/Database/dataModels/tag.dart';
 
 class databaseTest{
 
+  static final databaseTest instance = databaseTest._init();
+
+  static Database? _database;
+
+  databaseTest._init();
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+
+    _database = await _initDB('tags.db');
+    return _database!;
+  }
+
+  Future<Database> _initDB(String filePath) async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, filePath);
+
+    return await openDatabase(path, version: 1, onCreate: _createDB);
+  }
+
+  Future _createDB(Database db, int version) async {
+    final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    final textType = 'TEXT NOT NULL';
+    final boolType = 'BOOLEAN NOT NULL';
+    final integerType = 'INTEGER NOT NULL';
+
+    await db.execute('''
+      CREATE TABLE tag (
+      tag_id $idType, 
+      tag_name $textType,
+      aggregate $boolType
+      )'''
+    );
+  }
+
+  Future<int> insertTag (Tag tag) async {
+    final db = await instance.database;
+    final id = await db.insert("tag", tag.toMap());
+    return id;
+  }
+
+  Future<Tag> readTag (int tag_id) async {
+    final db = await instance.database;
+    final maps = await db.query(
+      'tag',
+      //columns: [],
+      where: 'tag_id = ?',
+      whereArgs: [tag_id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Tag.fromMap(maps.first);
+    } else {
+      throw Exception('ID $tag_id not found');
+    }
+  }
+
+  Future close() async {
+    final db = await instance.database;
+    db.close();
+  }
+}
+
+/*
+class databaseTest{
+
   static late Future<Database> _database;
   static bool db_init = false;
 
@@ -90,5 +156,5 @@ class databaseTest{
   }
 
 }
-
+*/
 

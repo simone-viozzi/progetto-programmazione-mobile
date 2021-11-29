@@ -18,6 +18,14 @@ class Tag{
     };
   }
 
+  static Tag fromMap(Map<String, dynamic> map){
+    return Tag(
+      tag_id: map['tag_id'],
+      tag_name: map['tag_name'],
+      aggregate: map['aggregate']
+    );
+  }
+
   @override
   String toString(){
     return 'Tag{tag_id: $tag_id, tag_name: $tag_name, aggregate: $aggregate}';
