@@ -10,7 +10,7 @@ class EditFragment extends StatelessWidget {
     return Scaffold(
         extendBody: true,
         appBar: AppBar(
-          title: Text("edit"),
+          title: const Text("edit"),
         ),
         body: EditMainList());
   }
@@ -36,7 +36,6 @@ class AggregateDataModel extends EditDataModel implements HasIndex {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "AggregateDataModel -> {index: $index; date: $date; tag: $tag;}";
   }
 }
