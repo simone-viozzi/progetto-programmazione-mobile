@@ -40,13 +40,13 @@ class DbTagMng{
     );
   }
 
-  Future<int> insertTag (Tag tag) async {
+  Future<int> insert (Tag tag) async {
     final db = await instance.database;
     final id = await db.insert("tag", tag.toMap());
     return id;
   }
 
-  Future<Tag> readTag (int tag_id) async {
+  Future<Tag> read (int tag_id) async {
     final db = await instance.database;
     final maps = await db.query(
       'tag',
@@ -62,7 +62,23 @@ class DbTagMng{
     }
   }
 
-  Future<List<Tag>> readAllTags() async {
+  Future<Tag> readByName (int tag_id) async {
+    final db = await instance.database;
+    final maps = await db.query(
+      'tag',
+      //columns: [],
+      where: 'tag_id = ?',
+      whereArgs: [tag_id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Tag.fromMap(maps.first);
+    } else {
+      throw Exception('ID $tag_id not found');
+    }
+  }
+
+  Future<List<Tag>> readAll() async {
     // Not tested
     final db = await instance.database;
 

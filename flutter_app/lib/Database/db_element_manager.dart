@@ -45,13 +45,13 @@ class DbElementMng{
     );
   }
 
-  Future<int> insertTag (Element element) async {
+  Future<int> insert (Element element) async {
     final db = await instance.database;
     final id = await db.insert("element", element.toMap());
     return id;
   }
 
-  Future<Element> readTag (int elem_id) async {
+  Future<Element> read (int elem_id) async {
     final db = await instance.database;
     final maps = await db.query(
       'element',
@@ -67,7 +67,23 @@ class DbElementMng{
     }
   }
 
-  Future<List<Element>> readAllAggregates() async {
+  Future<List<Element>> readByAggrId(int aggr_id) async {
+    // Not tested
+    final db = await instance.database;
+
+    // final result =
+    //     await db.rawQuery('SELECT * FROM element WHERE aggregate_id = aggr_id');
+
+    final result = await db.query(
+        'element',
+        where: 'aggregate_id = ?',
+        whereArgs: [aggr_id],
+    );
+
+    return result.map((json) => Element.fromMap(json)).toList();
+  }
+
+  Future<List<Element>> readAll() async {
     // Not tested
     final db = await instance.database;
 
