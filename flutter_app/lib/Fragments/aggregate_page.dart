@@ -9,6 +9,8 @@ import 'package:flutter_app/Widgets/bottom_navigation_drawer.dart';
 import 'package:flutter_app/Widgets/floating_action_button.dart';
 import 'package:flutter_app/Widgets/home_settings_menu.dart';
 
+import '../data_models.dart';
+
 class AggregatePage extends StatefulWidget {
   const AggregatePage({Key? key}) : super(key: key);
 
@@ -18,10 +20,10 @@ class AggregatePage extends StatefulWidget {
 
 class AggregatePageState extends State<AggregatePage>
 {
-  var elements = [
-    "bla", "blu"
+  List elements = [
+    AggregateDataModel(index: 0, date: DateTime.now(), tag: ""),
+    ElementDataModel(index: 1, name: "", tag: "", cost: 0, num: 0)
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class AggregatePageState extends State<AggregatePage>
       // HEADER -------------------------
       extendBody: true,
       appBar: AppBar(
-        title: Text("aggregate"),
+        title: const Text("aggregate"),
       ),
       // BODY ---------------------------
       body: AggregatePageMainList(elements: elements),
@@ -74,7 +76,7 @@ class AggregatePageMainList extends StatelessWidget
       itemCount: elements.length,
       itemBuilder: (BuildContext context, int index) {
         return Text(
-          elements[index],
+          elements[index].toString(),
         );
       },
     );

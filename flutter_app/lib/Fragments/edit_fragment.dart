@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../data_models.dart';
+
 class EditFragment extends StatelessWidget {
   const EditFragment({Key? key}) : super(key: key);
 
@@ -13,51 +15,6 @@ class EditFragment extends StatelessWidget {
           title: const Text("edit"),
         ),
         body: EditMainList());
-  }
-}
-
-class EditDataModel {}
-
-class HasIndex {
-  int index = 0;
-}
-
-class AggregateDataModel extends EditDataModel implements HasIndex {
-  @override
-  int index;
-  DateTime date;
-  String tag;
-
-  AggregateDataModel({
-    this.index = 0,
-    required this.date,
-    required this.tag,
-  });
-
-  @override
-  String toString() {
-    return "AggregateDataModel -> {index: $index; date: $date; tag: $tag;}";
-  }
-}
-
-class ElementDataModel extends EditDataModel implements HasIndex {
-  @override
-  int index;
-  String name;
-  String tag;
-  double cost;
-  int num;
-
-  ElementDataModel(
-      {this.index = 0,
-      required this.name,
-      required this.tag,
-      required this.cost,
-      required this.num});
-
-  @override
-  String toString() {
-    return "ElementDataModel -> {index: $index; name: $name; tag: $tag; cost: $cost; num: $num;}";
   }
 }
 
@@ -135,13 +92,13 @@ class EditMainListState extends State<EditMainList> {
 }
 
 class Aggregate extends StatelessWidget {
-  AggregateDataModel data;
+  final AggregateDataModel data;
 
   final void Function(BuildContext context) selectDate;
 
   final void Function(EditDataModel value) update;
 
-  var dateController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
 
   Aggregate(
       {Key? key,
@@ -182,7 +139,7 @@ class Aggregate extends StatelessWidget {
 }
 
 class Element extends StatelessWidget {
-  Element({Key? key, required this.data, required this.update})
+  const Element({Key? key, required this.data, required this.update})
       : super(key: key);
 
   final void Function(EditDataModel value) update;
