@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 import 'package:flutter_app/Database/db_tag_manager.dart';
 import 'package:flutter_app/Database/dataModels/tag.dart';
+import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 
 // import widgets
 import 'package:flutter_app/Widgets/floating_action_button.dart';
@@ -42,26 +43,7 @@ class GraphsFragment extends StatelessWidget
       ),
       // BOTTOM -------------------------
       floatingActionButton: null,
-      floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 1.0,
-        notchMargin: 10,
-        shape: const CircularNotchedRectangle(),
-        color: ThemeColors.matPrimary,
-        child: Row(
-          children: [
-            IconButton(
-                color: Colors.white,
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  openBottomNavigationDrawer(context);
-                }
-            ),
-            const Spacer(),
-            const HomeSettings(),
-          ],
-        ),
-      ),
+      bottomNavigationBar: MyBottomAppBar(displayHamburger: true,)
     );
   }
 

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 // import data widgets
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 
+import '../definitions.dart';
+
 class HomeSettings extends StatelessWidget {
   const HomeSettings({Key? key}) : super(key: key);
 
