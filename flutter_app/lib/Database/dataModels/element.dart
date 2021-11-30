@@ -29,9 +29,19 @@ class Element{
       'num': num,
       'elem_tag_id': elem_tag_id,
       'cost': cost,
-      'name': name,
-      'parent_tag_id': parent_tag_id
+      'name': name
     };
+  }
+
+  static Element fromMap(Map<String, dynamic> map){
+    return Element(
+        elem_id: map['elem_id'],
+        aggregate_id: map['aggregate_id'],
+        num: map['num'],
+        elem_tag_id: map['elem_tag_id'],
+        cost: map['cost'],
+        name: map['name']
+    );
   }
 
   @override

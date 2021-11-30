@@ -7,4 +7,5 @@ class PageMap{
   static const int editAgrId =      3; // add aggregate page
   static const int agrViewId =      4; // aggregate view page
   static const int cameraViewId =   5; // camera input page
+  static const int tests =          6; // test page
 }

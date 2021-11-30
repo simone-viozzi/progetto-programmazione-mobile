@@ -87,9 +87,8 @@ class MainFragDataWidgetState extends State<MainFragDataWidget>{
   void modifyDash(bool newState){
     // method that change the modification state of the dashboard
     // do anything if pageSelected != homeId
-
+    print('modifyDash()');
     setState(() {
-      print('modifyDash()');
       _data.dashModify = newState;
     });
   }

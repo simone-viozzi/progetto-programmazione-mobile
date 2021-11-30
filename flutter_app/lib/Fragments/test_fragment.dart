@@ -15,11 +15,10 @@ import 'package:flutter_app/Widgets/home_settings_menu.dart';
 import 'package:flutter_app/Styles/recipteapp_theme.dart';
 
 
-class GraphsFragment extends StatelessWidget
+class TestFragment extends StatelessWidget
 {
-  final String title;
 
-  const GraphsFragment({Key? key, required this.title}) : super(key: key);
+  const TestFragment({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +26,38 @@ class GraphsFragment extends StatelessWidget
       // HEADER -------------------------
       extendBody: true,
       appBar: AppBar(
-        title: Text(title),
+        title: const Text("Tests"),
       ),
       // BODY ---------------------------
       body: Center(
         child: Column(
           children: [
-            Container(
-                child: Text("graph fragment"),
-                margin: EdgeInsets.symmetric(vertical: 20.0)
-            )
+            const Text("TEST PAGE"),
+            ElevatedButton(
+                child: const Text("test 1 button"),
+                onPressed: () async {
+
+                  WidgetsFlutterBinding.ensureInitialized();
+
+                  Tag tag = Tag(
+                      tag_name: "test",
+                      aggregate: 1
+                  );
+
+                  final id = await DbTagMng.instance.insertTag(tag);
+
+                  final readedTag = await DbTagMng.instance.readTag(id);
+
+                  print(await readedTag);
+
+                  if(tag.tag_name !=  readedTag.tag_name){
+                    print("${tag.tag_name} while exected is ${readedTag.tag_name}");
+                  }else{
+                    print("query executed correctly");
+                  }
+                }
+            ),
+
           ],
         ),
       ),

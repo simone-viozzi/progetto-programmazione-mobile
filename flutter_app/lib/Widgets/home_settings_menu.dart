@@ -31,6 +31,15 @@ class HomeSettings extends StatelessWidget {
             title: Text('Settings'),
           ),
         ),
+        PopupMenuItem(
+          onTap:() {
+            MainFragDataWidget.of(context).changePage(PageMap.tests);
+          },
+          child: const ListTile(
+            leading: Icon(Icons.warning),
+            title: Text('Tests'),
+          ),
+        ),
       ],
     );
   }

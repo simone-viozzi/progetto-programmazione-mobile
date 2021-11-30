@@ -1,6 +1,7 @@
 // importing main components
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Fragments/archive_fragment.dart';
+import 'package:flutter_app/Fragments/test_fragment.dart';
 
 // import constants
 import 'package:flutter_app/definitions.dart';
@@ -59,8 +60,13 @@ class MainFragState extends State<MainFrag>{
         );
       case PageMap.editAgrId:
         return EditFragment();
-      case PageMap.agrViewId:
+
+	  case PageMap.agrViewId:
         return AggregatePage();
+
+      case PageMap.tests:
+        return TestFragment();
+
       default:
         return DashboardFragment(
             title: 'home'
