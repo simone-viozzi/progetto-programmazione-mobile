@@ -44,13 +44,13 @@ class DbAggregateMng{
     );
   }
 
-  Future<int> insertTag (Aggregate aggregate) async {
+  Future<int> insert (Aggregate aggregate) async {
     final db = await instance.database;
     final id = await db.insert("aggregate", aggregate.toMap());
     return id;
   }
 
-  Future<Aggregate> readTag (int id) async {
+  Future<Aggregate> read (int id) async {
     final db = await instance.database;
     final maps = await db.query(
       'aggregate',
@@ -66,7 +66,7 @@ class DbAggregateMng{
     }
   }
 
-  Future<List<Aggregate>> readAllAggregates() async {
+  Future<List<Aggregate>> readAll() async {
     // Not tested
     final db = await instance.database;
 

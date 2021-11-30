@@ -1,15 +1,15 @@
 
 class Aggregate{
 
-  final int id;
-  int tag_id;
+  int? id;
+  int? tag_id;
   final int date;
   String attachment;
   final double total_cost;
   String tag;
 
   Aggregate({
-    required this.id,
+    this.id = null,
     required this.date,
     required this.total_cost,
     this.tag_id = -1,
