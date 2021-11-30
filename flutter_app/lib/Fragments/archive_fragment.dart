@@ -27,8 +27,6 @@ class ArchiveFragment extends StatelessWidget {
       // BODY ---------------------------
       body: ArchiveMainList(),
       // BOTTOM -------------------------
-      floatingActionButton: AdaptiveFab(),
-      floatingActionButtonLocation: AdaptiveFab.location(context),
       bottomNavigationBar: MyBottomAppBar(displayHamburger: true,)
     );
   }

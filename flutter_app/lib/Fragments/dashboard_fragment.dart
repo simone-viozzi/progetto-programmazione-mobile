@@ -1,9 +1,12 @@
 // importing main components
 import 'package:flutter/material.dart';
+import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 // import widgets
 import 'package:flutter_app/Widgets/floating_action_button.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import '../definitions.dart';
 
 class DashboardFragment extends StatelessWidget {
   final String title;
@@ -24,7 +27,13 @@ class DashboardFragment extends StatelessWidget {
         child: DashboardContent(),
       ),
       // BOTTOM -------------------------
-      floatingActionButton: AdaptiveFab(),
+      floatingActionButton: AdaptiveFab(
+        icon: Icons.add,
+        position: FloatingActionButtonLocation.centerDocked,
+        onPressed: (){
+          MainFragDataWidget.of(context).changePage(PageMap.editAgrId);
+        },
+      ),
       floatingActionButtonLocation: AdaptiveFab.location(context),
       bottomNavigationBar: MyBottomAppBar(displayHamburger: true),
     );

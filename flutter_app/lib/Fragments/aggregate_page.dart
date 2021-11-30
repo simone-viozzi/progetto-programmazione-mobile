@@ -4,8 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
-// import widgets
-import 'package:flutter_app/Widgets/floating_action_button.dart';
 
 import '../data_models.dart';
 import '../definitions.dart';
@@ -41,8 +39,7 @@ class AggregatePageState extends State<AggregatePage>
         // BODY ---------------------------
         body: AggregatePageMainList(elements: elements),
         // BOTTOM -------------------------
-        floatingActionButton: AdaptiveFab(),
-        floatingActionButtonLocation: AdaptiveFab.location(context),
+        floatingActionButton: null,
         bottomNavigationBar: MyBottomAppBar(
           displayHamburger: false,
         ));

@@ -1,8 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
+import 'package:flutter_app/Widgets/bottom_app_bar.dart';
+import 'package:flutter_app/Widgets/floating_action_button.dart';
 
 import '../data_models.dart';
+import '../definitions.dart';
 
 class EditFragment extends StatelessWidget {
   const EditFragment({Key? key}) : super(key: key);
@@ -12,10 +16,24 @@ class EditFragment extends StatelessWidget {
     return Scaffold(
         extendBody: true,
         appBar: AppBar(
-          title: const Text("edit"),
+          title: const Text("aggregate"),
+          leading: BackButton(
+            color: Colors.white,
+            onPressed: () {
+              MainFragDataWidget.of(context).changePage(PageMap.homeId);
+            },
+          ),
         ),
-        body: EditMainList()
+        body: EditMainList(),
+        floatingActionButton: AdaptiveFab(
+          icon: Icons.check,
+          position: FloatingActionButtonLocation.endDocked,
+          onPressed: (){
 
+          },
+        ),
+        floatingActionButtonLocation: AdaptiveFab.location(context),
+        bottomNavigationBar: MyBottomAppBar(displayHamburger: false),
     );
   }
 }
