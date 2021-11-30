@@ -14,7 +14,9 @@ class EditFragment extends StatelessWidget {
         appBar: AppBar(
           title: const Text("edit"),
         ),
-        body: EditMainList());
+        body: EditMainList()
+
+    );
   }
 }
 
@@ -43,6 +45,7 @@ class EditMainListState extends State<EditMainList> {
       }
       print(elements);
     });
+
   }
 
   List saveElements() {

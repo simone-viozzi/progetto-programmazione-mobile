@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 // importing themes
 import 'package:flutter_app/Styles/recipteapp_theme.dart';
+import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 import 'package:flutter_app/Widgets/bottom_navigation_drawer.dart';
 // import widgets
 import 'package:flutter_app/Widgets/floating_action_button.dart';
@@ -28,24 +29,7 @@ class ArchiveFragment extends StatelessWidget {
       // BOTTOM -------------------------
       floatingActionButton: AdaptiveFab(),
       floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 1.0,
-        notchMargin: 10,
-        shape: const CircularNotchedRectangle(),
-        color: ThemeColors.matPrimary,
-        child: Row(
-          children: [
-            IconButton(
-                color: Colors.white,
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  openBottomNavigationDrawer(context);
-                }),
-            const Spacer(),
-            const HomeSettings(),
-          ],
-        ),
-      ),
+      bottomNavigationBar: MyBottomAppBar(displayHamburger: true,)
     );
   }
 }

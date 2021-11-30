@@ -2,14 +2,13 @@
 
 
 import 'package:flutter/material.dart';
-// importing themes
-import 'package:flutter_app/Styles/recipteapp_theme.dart';
-import 'package:flutter_app/Widgets/bottom_navigation_drawer.dart';
+import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
+import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 // import widgets
 import 'package:flutter_app/Widgets/floating_action_button.dart';
-import 'package:flutter_app/Widgets/home_settings_menu.dart';
 
 import '../data_models.dart';
+import '../definitions.dart';
 
 class AggregatePage extends StatefulWidget {
   const AggregatePage({Key? key}) : super(key: key);
@@ -32,33 +31,21 @@ class AggregatePageState extends State<AggregatePage>
       extendBody: true,
       appBar: AppBar(
         title: const Text("aggregate"),
-      ),
-      // BODY ---------------------------
-      body: AggregatePageMainList(elements: elements),
-      // BOTTOM -------------------------
-      floatingActionButton: AdaptiveFab(
-        state: FABstate.addRecipt,
-      ),
-      floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 1.0,
-        notchMargin: 10,
-        shape: const CircularNotchedRectangle(),
-        color: ThemeColors.matPrimary,
-        child: Row(
-          children: [
-            IconButton(
-                color: Colors.white,
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  openBottomNavigationDrawer(context);
-                }),
-            const Spacer(),
-            const HomeSettings(),
-          ],
+          leading: BackButton(
+            color: Colors.white,
+            onPressed: () {
+              MainFragDataWidget.of(context).changePage(PageMap.archiveId);
+            },
+          ),
         ),
-      ),
-    );
+        // BODY ---------------------------
+        body: AggregatePageMainList(elements: elements),
+        // BOTTOM -------------------------
+        floatingActionButton: AdaptiveFab(),
+        floatingActionButtonLocation: AdaptiveFab.location(context),
+        bottomNavigationBar: MyBottomAppBar(
+          displayHamburger: false,
+        ));
   }
 }
 

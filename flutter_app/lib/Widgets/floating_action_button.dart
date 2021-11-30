@@ -7,7 +7,10 @@ import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 import '../definitions.dart';
 
 
-class AdaptiveFab extends StatelessWidget{
+class AdaptiveFab extends StatelessWidget
+{
+  const AdaptiveFab({Key? key}) : super(key: key);
+
   // variables
 
   static FloatingActionButtonLocation location(BuildContext context) {
@@ -47,6 +50,5 @@ class AdaptiveFab extends StatelessWidget{
       );
     }
 
-    throw UnimplementedError();
   }
 }
