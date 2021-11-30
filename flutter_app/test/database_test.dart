@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:flutter_app/Database/db_manager.dart';
+import 'package:flutter_app/Database/db_tag_manager.dart';
 import 'package:flutter_app/Database/dataModels/tag.dart';
 import 'package:flutter/widgets.dart';
 
@@ -14,7 +14,7 @@ void main() {
     Tag tag = Tag(
         tag_id: 0,
         tag_name: "test",
-        aggregate: true
+        aggregate: 1
     );
 
     final id = await databaseTest.instance.insertTag(tag);
@@ -50,6 +50,5 @@ void main() {
     expect(tag, (await allTags)[0]);
   });
   */
-
 
 }

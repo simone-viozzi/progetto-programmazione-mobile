@@ -1,13 +1,13 @@
 class Tag{
 
-  final int tag_id;
+  int? tag_id = null;
   final String tag_name;
-  final bool aggregate;
+  final int aggregate;
 
   Tag({
-    required this.tag_id,
     required this.tag_name,
-    required this.aggregate
+    required this.aggregate,
+    this.tag_id,
   });
 
   Map<String, dynamic> toMap() {

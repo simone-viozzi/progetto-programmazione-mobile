@@ -11,6 +11,7 @@ class Application : FlutterApplication(), PluginRegistrantCallback {
     }
 
     override fun registerWith(registry: PluginRegistry?) {
-        SqflitePlugin.registerWith(registry?.registrarFor("com.tekartik.sqflite.SqflitePlugin"));
+        SqflitePlugin.registerWith(
+                registry?.registrarFor("com.tekartik.sqflite.SqflitePlugin"));
     }
 }
