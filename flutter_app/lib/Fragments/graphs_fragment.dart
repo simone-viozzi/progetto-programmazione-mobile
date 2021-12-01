@@ -15,6 +15,9 @@ import 'package:flutter_app/Widgets/home_settings_menu.dart';
 // importing themes
 import 'package:flutter_app/Styles/recipteapp_theme.dart';
 
+// import charts
+import 'package:flutter_app/Charts/data_series.dart';
+import 'package:flutter_app/Charts/simple_barchart.dart';
 
 class GraphsFragment extends StatelessWidget
 {
@@ -24,6 +27,10 @@ class GraphsFragment extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+
+    // test graphs
+
+
     return Scaffold(
       // HEADER -------------------------
       extendBody: true,
@@ -34,16 +41,22 @@ class GraphsFragment extends StatelessWidget
       body: Center(
         child: Column(
           children: [
-            Container(
-                child: Text("graph fragment"),
-                margin: EdgeInsets.symmetric(vertical: 20.0)
+            SimpleIntBarChart(
+              chartId: "chart1",
+              chartName: "Test chart this is a test",
+              data: testIntList,
+            ),
+            SimpleDoubleBarChart(
+              chartId: "chart2",
+              chartName: "Test chart this is a test with doubles",
+              data: testDoubleList,
             )
           ],
-        ),
+        )
       ),
       // BOTTOM -------------------------
       floatingActionButton: null,
-      bottomNavigationBar: MyBottomAppBar(displayHamburger: true,)
+      bottomNavigationBar: const MyBottomAppBar(displayHamburger: true,)
     );
   }
 
