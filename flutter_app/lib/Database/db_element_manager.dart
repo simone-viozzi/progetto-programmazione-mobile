@@ -51,6 +51,17 @@ class DbElementMng{
     return id;
   }
 
+  Future<List<int>> insertList(List<Element> elements) async {
+
+    List<int> ids = [];
+
+    final db = await instance.database;
+    elements.forEach((element) async {
+      ids.add(await db.insert("element", element.toMap()));
+    });
+    return ids;
+  }
+
   Future<Element> read (int elem_id) async {
     final db = await instance.database;
     final maps = await db.query(

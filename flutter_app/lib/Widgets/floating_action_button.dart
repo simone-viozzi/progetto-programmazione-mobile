@@ -34,6 +34,7 @@ class AdaptiveFab extends StatelessWidget
             color: Colors.white,
           ),
           onPressed: () {
+
             MainFragDataWidget.of(context).modifyDash(false);
           }
       );

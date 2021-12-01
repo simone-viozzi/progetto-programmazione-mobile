@@ -34,8 +34,7 @@ class DbTagMng{
     await db.execute('''
       CREATE TABLE tag (
       tag_id $idType, 
-      tag_name $textType,
-      aggregate $integerType
+      tag_name $textType
       )'''
     );
   }
@@ -62,19 +61,28 @@ class DbTagMng{
     }
   }
 
-  Future<Tag> readByName (int tag_id) async {
+  Future<Tag?> readByName (String tag_name) async {
     final db = await instance.database;
     final maps = await db.query(
       'tag',
       //columns: [],
-      where: 'tag_id = ?',
-      whereArgs: [tag_id],
+      where: 'tag_name = ?',
+      whereArgs: [tag_name]
     );
 
     if (maps.isNotEmpty) {
       return Tag.fromMap(maps.first);
+    }else{
+      return null;
+    }
+  }
+
+  Future<int?> readTagId(String tagName) async {
+    Tag? tag = await readByName(tagName);
+    if(tag != null) {
+      return tag.tag_id;
     } else {
-      throw Exception('ID $tag_id not found');
+      return null;
     }
   }
 

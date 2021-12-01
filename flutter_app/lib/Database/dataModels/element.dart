@@ -1,7 +1,7 @@
 class Element{
 
-  final int elem_id;
-  final int aggregate_id;
+  int? elem_id;
+  int? aggregate_id;
   String name;
   final int num;
   int parent_tag_id;
@@ -9,8 +9,8 @@ class Element{
   String parent_tag;
 
   Element({
-    required this.elem_id,
-    required this.aggregate_id,
+    this.elem_id = null,
+    this.aggregate_id = null,
     required this.num,
     required this.cost,
     this.name = "",

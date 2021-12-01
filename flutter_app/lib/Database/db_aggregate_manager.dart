@@ -105,6 +105,23 @@ class DbAggregateMng{
     return await db.delete("aggregate");
   }
 
+  Future<int> countByTagId(int tag_id) async {
+    final db = await instance.database;
+
+    final result = Sqflite.firstIntValue(
+        await db.rawQuery(
+            'SELECT COUNT(*) FROM aggregate WHERE aggregate.tag_id = ?',
+            [tag_id]
+        )
+    );
+
+    if(result != null) {
+      return result;
+    }else{
+      return 0;
+    }
+  }
+
   Future close() async {
     final db = await instance.database;
     db.close();

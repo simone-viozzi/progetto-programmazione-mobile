@@ -12,7 +12,7 @@ class Aggregate{
     this.id = null,
     required this.date,
     required this.total_cost,
-    this.tag_id = -1,
+    this.tag_id,
     this.attachment = "",
     this.tag = ""
   });
