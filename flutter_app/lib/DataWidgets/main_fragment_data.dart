@@ -76,7 +76,7 @@ class MainFragDataWidgetState extends State<MainFragDataWidget>{
   // Nota: per accedere ai metodi: MainFragDataWidget.of(context).method()
   // TODO aggiungi qui i metodi per modificare le variabili da tutto il subtree
 
-  void changePage(int pageId){
+  void changePage(int pageId) {
     // method that change the page in the mainFrag
     print('changePage()');
     setState(() {
@@ -84,7 +84,7 @@ class MainFragDataWidgetState extends State<MainFragDataWidget>{
     });
   }
 
-  void modifyDash(bool newState){
+  void modifyDash(bool newState) {
     // method that change the modification state of the dashboard
     // do anything if pageSelected != homeId
     print('modifyDash()');

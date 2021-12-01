@@ -20,7 +20,7 @@ class MyBottomAppBar extends StatelessWidget {
             openBottomNavigationDrawer(context);
           });
     } else {
-      return SizedBox(
+      return const SizedBox(
         width: 5,
         height: 5,
       );
