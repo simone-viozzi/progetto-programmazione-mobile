@@ -38,7 +38,7 @@ class DbAggregateMng{
       id $idType,
       tag_id $integerType,
       date $integerType $notNull,
-      attachement $textType,
+      attachment $textType,
       total_cost $doubleType $notNull
       )'''
     );
