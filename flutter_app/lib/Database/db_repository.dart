@@ -53,7 +53,7 @@ class DbRepository {
     };
   }
 
-  Future<Map<Aggregate, List<Element>>> getAllAggregates() async
+  Future<Map<Aggregate, List<Element>>> getAllAggregatesAndElements() async
   {
 
     final Map<Aggregate, List<Element>> result = {};
@@ -66,6 +66,12 @@ class DbRepository {
 
     return result;
   }
+
+  Future<List> getAllAggregates() async
+  {
+    return DbAggregateMng.instance.readAll();
+  }
+
 
   ///////////////////////////////////////////////////////////////////////
   //// DELETE

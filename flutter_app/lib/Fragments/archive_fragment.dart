@@ -61,9 +61,8 @@ class ArchiveMainListState extends State<ArchiveMainList> {
     var dbAggregates =
         MainFragDataWidget.of(context).getRepository().getAllAggregates();
 
-    dbAggregates.then((value) {
-      var dbAggregates = value.keys;
-
+    dbAggregates.then((dbAggregates) {
+      
       var aggregates = dbAggregates
           .map((e) {
             return ArchiveDataModel(
