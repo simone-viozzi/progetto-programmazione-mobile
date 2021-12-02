@@ -40,13 +40,12 @@ class TestFragment extends StatelessWidget
                   WidgetsFlutterBinding.ensureInitialized();
 
                   Tag tag = Tag(
-                      tag_name: "test",
-                      //aggregate: 1
+                      tag_name: "test"
                   );
 
-                  final id = null;//await DbTagMng.instance.insertTag(tag);
+                  final id = await DbTagMng.instance.insert(tag);
 
-                  final readedTag = null;//await DbTagMng.instance.readTag(id);
+                  final readedTag = await DbTagMng.instance.read(id);
 
                   print(await readedTag);
 
