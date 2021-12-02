@@ -5,7 +5,7 @@ import 'dataModels/element.dart';
 import 'dataModels/aggregate.dart';
 import 'dataModels/tag.dart';
 
-class dbRepository{
+class DbRepository {
 
   ///////////////////////////////////////////////////////////////////////
   //// INSERT
@@ -53,7 +53,7 @@ class dbRepository{
     };
   }
 
-  Future<Map<Aggregate, List<Element>>> getAllAggregates() async
+  Future<Map<Aggregate, List<Element>>> getAllAggregatesAndElements() async
   {
 
     final Map<Aggregate, List<Element>> result = {};
@@ -66,6 +66,12 @@ class dbRepository{
 
     return result;
   }
+
+  Future<List> getAllAggregates() async
+  {
+    return DbAggregateMng.instance.readAll();
+  }
+
 
   ///////////////////////////////////////////////////////////////////////
   //// DELETE

@@ -1,16 +1,20 @@
 // importing main components
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Database/db_repository.dart';
 import 'package:flutter_app/definitions.dart';
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////Data managements objects///////////////////////////////////
 // Object that can handle the data
-class MainFragData{
+class MainFragData {
   // class that contain all MainFrag states
 
   // states
   int pageSelected; //
   bool dashModify; // se true indica che la dashboard è in stato di modifica
+
+  DbRepository dbRepository = DbRepository();
+
 
   // constructor
   MainFragData({
@@ -91,6 +95,11 @@ class MainFragDataWidgetState extends State<MainFragDataWidget>{
     setState(() {
       _data.dashModify = newState;
     });
+  }
+
+  DbRepository getRepository()
+  {
+    return _data.dbRepository;
   }
 
   // overrides ///////////////////

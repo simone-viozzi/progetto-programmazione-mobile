@@ -1,13 +1,7 @@
 // importing main components
 import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
-// importing themes
-import 'package:flutter_app/Styles/recipteapp_theme.dart';
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
-import 'package:flutter_app/Widgets/bottom_navigation_drawer.dart';
-// import widgets
-import 'package:flutter_app/Widgets/floating_action_button.dart';
-import 'package:flutter_app/Widgets/home_settings_menu.dart';
 
 import '../definitions.dart';
 
@@ -60,19 +54,40 @@ class ArchiveDataModel {
 }
 
 class ArchiveMainListState extends State<ArchiveMainList> {
-  List elements = [
-    ArchiveDataModel(index: 0, date: DateTime.now(), tag: "tag 1", total: 20),
-    ArchiveDataModel(index: 1, date: DateTime.now(), tag: "tag 2", total: 40)
-  ];
+
+  List aggregates = [];
+
+  void getAggregates() {
+    var dbAggregates =
+        MainFragDataWidget.of(context).getRepository().getAllAggregates();
+
+    dbAggregates.then((dbAggregates) {
+      
+      var aggregates = dbAggregates
+          .map((e) {
+            return ArchiveDataModel(
+                  index: e.id ?? 0,
+                  date: DateTime.fromMillisecondsSinceEpoch(e.date),
+                  total: e.total_cost,
+                  tag: e.tag,
+                );
+          });
+      setState(() {
+        this.aggregates = aggregates.toList();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    getAggregates();
+
     return ListView.builder(
       padding: const EdgeInsets.all(8),
-      itemCount: elements.length,
+      itemCount: aggregates.length,
       itemBuilder: (BuildContext context, int index) {
         return ArchiveElement(
-          data: elements[index],
+          data: aggregates[index],
         );
       },
     );
