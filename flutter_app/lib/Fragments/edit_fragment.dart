@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
+import 'package:flutter_app/Database/dataModels/aggregate.dart';
+import 'package:flutter_app/Database/dataModels/element.dart';
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 import 'package:flutter_app/Widgets/floating_action_button.dart';
 
@@ -9,31 +11,58 @@ import '../data_models.dart';
 import '../definitions.dart';
 
 class EditFragment extends StatelessWidget {
-  const EditFragment({Key? key}) : super(key: key);
+  EditFragment({Key? key}) : super(key: key);
+
+  final GlobalKey<EditMainListState> mainListKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBody: true,
-        appBar: AppBar(
-          title: const Text("aggregate"),
-          leading: BackButton(
-            color: Colors.white,
-            onPressed: () {
-              MainFragDataWidget.of(context).changePage(PageMap.homeId);
-            },
-          ),
-        ),
-        body: EditMainList(),
-        floatingActionButton: AdaptiveFab(
-          icon: Icons.check,
-          position: FloatingActionButtonLocation.endDocked,
-          onPressed: (){
-
+      extendBody: true,
+      appBar: AppBar(
+        title: const Text("aggregate"),
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () {
+            MainFragDataWidget.of(context).changePage(PageMap.homeId);
           },
         ),
-        floatingActionButtonLocation: AdaptiveFab.location(context),
-        bottomNavigationBar: MyBottomAppBar(displayHamburger: false),
+      ),
+      body: EditMainList(key: mainListKey),
+      floatingActionButton: AdaptiveFab(
+        icon: Icons.check,
+        position: FloatingActionButtonLocation.endDocked,
+        onPressed: () {
+          List? list = mainListKey.currentState?.elements;
+          if (list == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("there was an error in the data"),
+            ));
+            return;
+          }
+          var aggregate = list[0] as AggregateDataModel;
+          var elements = list.getRange(1, list.length).map((e) => e as ElementDataModel );
+
+          double totalCost = 0;
+
+          var dbElements = elements.map((e) {
+            totalCost += e.cost * e.num;
+            return Element(
+                num: e.num,
+                cost: e.cost,
+                name: e.name
+            );
+          });
+
+          var dbAggregate = Aggregate(
+            date: aggregate.date.millisecondsSinceEpoch,
+            tag: aggregate.tag,
+              total_cost: totalCost
+          );
+        },
+      ),
+      floatingActionButtonLocation: AdaptiveFab.location(context),
+      bottomNavigationBar: const MyBottomAppBar(displayHamburger: false),
     );
   }
 }
@@ -61,9 +90,7 @@ class EditMainListState extends State<EditMainList> {
         elements.add(ElementDataModel(
             index: elements.length, name: "", tag: "", cost: 0, num: 0));
       }
-      print(elements);
     });
-
   }
 
   List saveElements() {
@@ -90,11 +117,11 @@ class EditMainListState extends State<EditMainList> {
 
   Widget buildSingleElement(EditDataModel data) {
     if (data is AggregateDataModel) {
-      return Aggregate(data: data, update: updateList, selectDate: _selectDate);
+      return AggregateWidget(data: data, update: updateList, selectDate: _selectDate);
     }
 
     if (data is ElementDataModel) {
-      return Element(data: data, update: updateList);
+      return ElementWidget(data: data, update: updateList);
     }
     throw UnsupportedError("");
   }
@@ -112,7 +139,7 @@ class EditMainListState extends State<EditMainList> {
   }
 }
 
-class Aggregate extends StatelessWidget {
+class AggregateWidget extends StatelessWidget {
   final AggregateDataModel data;
 
   final void Function(BuildContext context) selectDate;
@@ -121,7 +148,7 @@ class Aggregate extends StatelessWidget {
 
   final TextEditingController dateController = TextEditingController();
 
-  Aggregate(
+  AggregateWidget(
       {Key? key,
       required this.data,
       required this.update,
@@ -159,8 +186,8 @@ class Aggregate extends StatelessWidget {
   }
 }
 
-class Element extends StatelessWidget {
-  const Element({Key? key, required this.data, required this.update})
+class ElementWidget extends StatelessWidget {
+  const ElementWidget({Key? key, required this.data, required this.update})
       : super(key: key);
 
   final void Function(EditDataModel value) update;

@@ -41,12 +41,12 @@ class TestFragment extends StatelessWidget
 
                   Tag tag = Tag(
                       tag_name: "test",
-                      aggregate: 1
+                      //aggregate: 1
                   );
 
-                  final id = await DbTagMng.instance.insertTag(tag);
+                  final id = null;//await DbTagMng.instance.insertTag(tag);
 
-                  final readedTag = await DbTagMng.instance.readTag(id);
+                  final readedTag = null;//await DbTagMng.instance.readTag(id);
 
                   print(await readedTag);
 
