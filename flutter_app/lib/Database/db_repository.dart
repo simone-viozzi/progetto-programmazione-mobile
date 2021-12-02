@@ -5,7 +5,7 @@ import 'dataModels/element.dart';
 import 'dataModels/aggregate.dart';
 import 'dataModels/tag.dart';
 
-class dbRepository{
+class DbRepository {
 
   ///////////////////////////////////////////////////////////////////////
   //// INSERT
