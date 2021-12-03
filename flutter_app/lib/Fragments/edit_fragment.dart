@@ -205,40 +205,36 @@ class ElementWidget extends StatelessWidget {
     return Flex(direction: Axis.vertical, children: [
       Padding(
           padding: const EdgeInsets.only(bottom: 6),
-          child: Row(children: [
-            Expanded(
-                flex: 60,
-                child: Padding(
-                    padding: const EdgeInsets.only(right: 2),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'name',
-                      ),
-                      onChanged: (text) {
-                        data.name = text;
-                        update(data);
-                      },
-                    ))),
-            Expanded(
-                flex: 40,
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 2),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'cost',
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (text) {
-                        data.cost = double.tryParse(text) ?? 0;
-                        update(data);
-                      },
-                    ))),
-          ])),
+          child: Padding(
+              padding: const EdgeInsets.only(right: 2),
+              child: TextField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'name',
+                ),
+                onChanged: (text) {
+                  data.name = text;
+                  update(data);
+                },
+              ))),
       Row(children: [
         Expanded(
-            flex: 25,
+            flex: 60,
+            child: Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'cost',
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (text) {
+                    data.cost = double.tryParse(text) ?? 0;
+                    update(data);
+                  },
+                ))),
+        Expanded(
+            flex: 40,
             child: Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: TextField(
