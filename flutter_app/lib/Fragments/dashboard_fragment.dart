@@ -7,6 +7,7 @@ import 'package:flutter_app/Widgets/floating_action_button.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../definitions.dart';
+import '../utils.dart';
 
 class DashboardFragment extends StatelessWidget {
   final String title;
@@ -16,27 +17,37 @@ class DashboardFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('rebuild HomeFragment()');
-    return Scaffold(
-      // HEADER -------------------------
-      extendBody: true,
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      // BODY ---------------------------
-      body: const Center(
-        child: DashboardContent(),
-      ),
-      // BOTTOM -------------------------
-      floatingActionButton: AdaptiveFab(
-        icon: Icons.add,
-        position: FloatingActionButtonLocation.centerDocked,
-        onPressed: (){
-          MainFragDataWidget.of(context).changePage(PageMap.editAgrId);
+    return WillPopScope(
+        onWillPop: () {
+          return sureToExit(
+              context,
+              'Do you want to exit an App',
+              () => Navigator.of(context).pop(true),
+              () => Navigator.of(context).pop(false)
+          );
         },
-      ),
-      floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: MyBottomAppBar(displayHamburger: true),
-    );
+        child: Scaffold(
+          // HEADER -------------------------
+          extendBody: true,
+          appBar: AppBar(
+            title: Text(title),
+          ),
+          // BODY ---------------------------
+          body: const Center(
+            child: DashboardContent(),
+          ),
+          // BOTTOM -------------------------
+          floatingActionButton: AdaptiveFab(
+        icon: Icons.add,
+            position: FloatingActionButtonLocation.centerDocked,
+            onPressed: () {
+              MainFragDataWidget.of(context).changePage(PageMap.editAgrId);
+            },
+          ),
+          floatingActionButtonLocation: AdaptiveFab.location(context),
+          bottomNavigationBar: const MyBottomAppBar(
+              displayHamburger: true, displayOptionMenu: true),
+        ));
   }
 }
 

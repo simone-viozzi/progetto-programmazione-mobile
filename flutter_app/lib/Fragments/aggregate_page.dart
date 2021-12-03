@@ -44,7 +44,12 @@ class AggregatePageState extends State<AggregatePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () {
+          MainFragDataWidget.of(context).changePage(PageMap.archiveId);
+          return Future.value(false);
+        },
+        child: Scaffold(
       // HEADER -------------------------
         extendBody: true,
         appBar: AppBar(
@@ -79,9 +84,10 @@ class AggregatePageState extends State<AggregatePage>
         ),
         // BOTTOM -------------------------
         floatingActionButton: null,
-        bottomNavigationBar: MyBottomAppBar(
+        bottomNavigationBar: const MyBottomAppBar(
           displayHamburger: false,
-        ));
+          displayOptionMenu: false
+        )));
   }
 }
 
@@ -91,6 +97,20 @@ class AggregatePageMainList extends StatelessWidget
 
   const AggregatePageMainList({Key? key, required this.elements}) : super(key: key);
 
+  Widget buildSingleElement(EditDataModel data) {
+    if (data is AggregateDataModel)
+      {
+        return StaticAggregateWidget(data: data);
+      }
+    
+    if (data is ElementDataModel)
+      {
+        return StaticElementWidget(data: data);
+      }
+
+    throw UnsupportedError("");
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -98,10 +118,112 @@ class AggregatePageMainList extends StatelessWidget
       padding: const EdgeInsets.all(8),
       itemCount: elements.length,
       itemBuilder: (BuildContext context, int index) {
-        return Text(
-          elements[index].toString(),
+        return buildSingleElement(
+          elements[index],
         );
       },
+    );
+  }
+}
+
+
+
+class StaticAggregateWidget extends StatelessWidget {
+
+  final AggregateDataModel data;
+
+  const StaticAggregateWidget({Key? key, required this.data}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return  Card(
+        child:Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Row(children: [
+              const Text(
+                "tag: \t   ",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(data.tag)
+            ]),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Row(children: [
+              const Text(
+                "date: \t ",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(data.date.toString())
+            ]),
+          ),
+          Padding(
+              padding: const EdgeInsets.all(4),
+              child: Row(children: [
+                const Text(
+                  "total: \t ",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data.totalCost.toString())
+              ]))
+        ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class StaticElementWidget extends StatelessWidget {
+  final ElementDataModel data;
+
+  const StaticElementWidget({Key? key, required this.data}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return  Card(
+      child:Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Row(children: [
+                const Text(
+                  "name: \t",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data.name)
+              ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Row(children: [
+                const Text(
+                  "num: \t  ",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data.num.toString())
+              ]),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(4),
+                child: Row(children: [
+                  const Text(
+                    "cost: \t  ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(data.cost.toString())
+                ]))
+          ],
+        ),
+      ),
     );
   }
 }
