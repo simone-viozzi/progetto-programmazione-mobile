@@ -74,7 +74,26 @@ class DbRepository {
 
   Future<List> getAllAggregates() async
   {
-    return DbAggregateMng.instance.readAll();
+    List<Aggregate> aggregates = await DbAggregateMng.instance.readAll();
+
+    for (var element in aggregates)
+    {
+
+      final tagId = element.tag_id;
+      if (tagId == null)
+        {
+          continue;
+        }
+      var tag =  (await DbTagMng.instance.read(tagId)).tag_name;
+
+      print(tag);
+
+      element.tag = tag;
+    }
+
+    print(aggregates);
+
+    return aggregates;
   }
 
 

@@ -17,10 +17,20 @@ class AggregatePage extends StatefulWidget {
 
 class AggregatePageState extends State<AggregatePage>
 {
-  List elements = [
-    AggregateDataModel(index: 0, date: DateTime.now(), tag: ""),
-    ElementDataModel(index: 1, name: "", tag: "", cost: 0, num: 0)
-  ];
+  List elements = [];
+
+  void readData()
+  {
+    setState(() {
+      var aggrId = MainFragDataScope.of(context).selectedAggregate;
+
+      var data = MainFragDataScope.of(context).dbRepository.getAggregateById(aggrId);
+
+      data.then((value) {
+
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

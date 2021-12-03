@@ -11,15 +11,15 @@ class MainFragData {
 
   // states
   int pageSelected; //
-  bool dashModify; // se true indica che la dashboard è in stato di modifica
 
   DbRepository dbRepository = DbRepository();
+
+  int selectedAggregate = -1;
 
 
   // constructor
   MainFragData({
     this.pageSelected = PageMap.homeId,
-    this.dashModify = false,
   });
 
   // getter/setter methods
@@ -86,20 +86,6 @@ class MainFragDataWidgetState extends State<MainFragDataWidget>{
     setState(() {
       _data.pageSelected = pageId;
     });
-  }
-
-  void modifyDash(bool newState) {
-    // method that change the modification state of the dashboard
-    // do anything if pageSelected != homeId
-    print('modifyDash()');
-    setState(() {
-      _data.dashModify = newState;
-    });
-  }
-
-  DbRepository getRepository()
-  {
-    return _data.dbRepository;
   }
 
   // overrides ///////////////////

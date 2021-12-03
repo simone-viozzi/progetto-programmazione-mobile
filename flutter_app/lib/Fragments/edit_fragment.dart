@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
-
 import 'package:flutter_app/Database/dataModels/aggregate.dart';
 import 'package:flutter_app/Database/dataModels/element.dart' as DbElement;
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 import 'package:flutter_app/Widgets/floating_action_button.dart';
-
 
 import '../data_models.dart';
 import '../definitions.dart';
@@ -45,27 +43,28 @@ class EditFragment extends StatelessWidget {
           var aggregate = list[0] as AggregateDataModel;
           var elements = list.getRange(1, list.length-1).map((e) => e as ElementDataModel );
 
-          print(aggregate);
-          print(elements);
-
           double totalCost = 0;
 
           var dbElements = elements.map((e) {
-            totalCost += e.cost * e.num;
+            totalCost = totalCost + (e.cost * e.num);
+            print("map totalCost -> $totalCost");
             return DbElement.Element(
                 num: e.num,
                 cost: e.cost,
                 name: e.name
             );
-          });
+          }).toList();
+
+          print("totalCost -> $totalCost");
 
           var dbAggregate = Aggregate(
-            date: aggregate.date.millisecondsSinceEpoch,
-            tag: aggregate.tag,
+              date: aggregate.date.millisecondsSinceEpoch,
+              tag: aggregate.tag,
               total_cost: totalCost
           );
 
-          MainFragDataWidget.of(context).getRepository().insertAggregate(dbAggregate, dbElements.toList());
+          MainFragDataScope.of(context).dbRepository.insertAggregate(dbAggregate, dbElements);
+          MainFragDataWidget.of(context).changePage(PageMap.homeId);
 
         },
       ),

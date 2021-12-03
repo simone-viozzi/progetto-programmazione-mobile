@@ -26,7 +26,7 @@ class HomeSettings extends StatelessWidget {
         ),
         PopupMenuItem(
           onTap:() {
-            MainFragDataWidget.of(context).modifyDash(true);
+            //MainFragDataWidget.of(context).modifyDash(true);
           },
           child: const ListTile(
             leading: Icon(Icons.edit),

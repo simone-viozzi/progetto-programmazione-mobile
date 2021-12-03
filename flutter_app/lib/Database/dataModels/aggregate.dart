@@ -39,6 +39,6 @@ class Aggregate{
 
   @override
   String toString(){
-    return 'Aggregate{id: $id, tag_id: $tag_id, date: $date, attachment: $attachment, total_cost: $total_cost }';
+    return 'Aggregate{id: $id, tag_id: $tag_id, date: $date, attachment: $attachment, total_cost: $total_cost, tag: $tag }';
   }
 }

@@ -8,29 +8,23 @@ import '../definitions.dart';
 class ArchiveFragment extends StatelessWidget {
   final String title;
 
-  const ArchiveFragment({Key? key, required this.title}) : super(key: key);
+  ArchiveFragment({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // HEADER -------------------------
       extendBody: true,
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      // BODY ---------------------------
-      body: ArchiveMainList(),
-      // BOTTOM -------------------------
-      bottomNavigationBar: MyBottomAppBar(displayHamburger: true,)
-    );
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        // BODY ---------------------------
+        body: ArchiveMainList(),
+        // BOTTOM -------------------------
+        bottomNavigationBar: MyBottomAppBar(
+          displayHamburger: true,
+        ));
   }
-}
-
-class ArchiveMainList extends StatefulWidget {
-  const ArchiveMainList({Key? key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => ArchiveMainListState();
 }
 
 class ArchiveDataModel {
@@ -53,34 +47,46 @@ class ArchiveDataModel {
   }
 }
 
-class ArchiveMainListState extends State<ArchiveMainList> {
+class ArchiveMainList extends StatefulWidget {
+  ArchiveMainList({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => ArchiveMainListState();
+}
+
+class ArchiveMainListState extends State<ArchiveMainList> {
   List aggregates = [];
 
-  void getAggregates() {
-    var dbAggregates =
-        MainFragDataWidget.of(context).getRepository().getAllAggregates();
+  ArchiveMainListState()
+  {
+    getAggregates();
+  }
 
-    dbAggregates.then((dbAggregates) {
-      
-      var aggregates = dbAggregates
-          .map((e) {
-            return ArchiveDataModel(
-                  index: e.id ?? 0,
-                  date: DateTime.fromMillisecondsSinceEpoch(e.date),
-                  total: e.total_cost,
-                  tag: e.tag,
-                );
-          });
-      setState(() {
-        this.aggregates = aggregates.toList();
+  void getAggregates()  {
+    setState(() {
+    MainFragDataScope.of(context).dbRepository.getAllAggregates().then((dbAggregates) {
+      var aggregates = dbAggregates.map((e) {
+        return ArchiveDataModel(
+          index: e.id ?? 0,
+          date: DateTime.fromMillisecondsSinceEpoch(e.date),
+          total: e.total_cost,
+          tag: e.tag,
+        );
+      }).toList();
+
+      print(aggregates);
+
+
+        print(aggregates);
+        this.aggregates = aggregates;
       });
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    getAggregates();
+
 
     return ListView.builder(
       padding: const EdgeInsets.all(8),
@@ -105,6 +111,9 @@ class ArchiveElement extends StatelessWidget {
         child: InkWell(
             onTap: () {
               print(data);
+
+              MainFragDataScope.of(context).selectedAggregate = data.index;
+
               MainFragDataWidget.of(context).changePage(PageMap.agrViewId);
             },
             child: Padding(
