@@ -77,23 +77,17 @@ class DbRepository {
   {
     List<Aggregate> aggregates = await DbAggregateMng.instance.readAll();
 
-    for (var element in aggregates)
+    for (var aggregate in aggregates)
     {
 
-      final tagId = element.tag_id;
-      if (tagId == null)
-        {
-          continue;
-        }
+      final tagId = aggregate.tag_id;
+      if (tagId == null){
+        continue;
+      }
       var tag =  (await DbTagMng.instance.read(tagId)).tag_name;
-
-      print(tag);
-
-      element.tag = tag;
+      aggregate.tag = tag;
     }
-
-    print(aggregates);
-
+    
     return aggregates;
   }
 
