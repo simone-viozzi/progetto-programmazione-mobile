@@ -47,7 +47,7 @@ class EditFragment extends StatelessWidget {
 
           var dbElements = elements.map((e) {
             totalCost = totalCost + (e.cost * e.num);
-            print("map totalCost -> $totalCost");
+
             return DbElement.Element(
                 num: e.num,
                 cost: e.cost,
@@ -84,7 +84,7 @@ class EditMainList extends StatefulWidget {
 class EditMainListState extends State<EditMainList> {
   List elements = [
     AggregateDataModel(index: 0, date: DateTime.now(), tag: ""),
-    ElementDataModel(index: 1, name: "", tag: "", cost: 0, num: 0)
+    ElementDataModel(index: 1, name: "", cost: 0, num: 0)
   ];
 
   DateTime selectedDate = DateTime.now();
@@ -95,7 +95,7 @@ class EditMainListState extends State<EditMainList> {
       elements[index] = value;
       if (index == elements.length - 1) {
         elements.add(ElementDataModel(
-            index: elements.length, name: "", tag: "", cost: 0, num: 0));
+            index: elements.length, name: "", cost: 0, num: 0));
       }
     });
   }
@@ -237,20 +237,6 @@ class ElementWidget extends StatelessWidget {
                     ))),
           ])),
       Row(children: [
-        Expanded(
-            flex: 85,
-            child: Padding(
-                padding: const EdgeInsets.only(right: 2),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Tag',
-                  ),
-                  onChanged: (text) {
-                    data.tag = text;
-                    update(data);
-                  },
-                ))),
         Expanded(
             flex: 25,
             child: Padding(

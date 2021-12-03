@@ -17,28 +17,38 @@ class AggregatePage extends StatefulWidget {
 
 class AggregatePageState extends State<AggregatePage>
 {
-  List elements = [];
+  Future<List> readData() async {
+    var aggrId = MainFragDataScope.of(context).selectedAggregate;
 
-  void readData()
-  {
-    setState(() {
-      var aggrId = MainFragDataScope.of(context).selectedAggregate;
+    var data = await MainFragDataScope.of(context)
+        .dbRepository
+        .getAggregateById(aggrId);
 
-      var data = MainFragDataScope.of(context).dbRepository.getAggregateById(aggrId);
+    var dbAggregate = data.a;
+    var dbElements = data.b;
 
-      data.then((value) {
-
-      });
+    var aggregate = AggregateDataModel(
+        index: 0,
+        date: DateTime.fromMillisecondsSinceEpoch(dbAggregate.date),
+        tag: dbAggregate.tag,
+        totalCost: dbAggregate.total_cost);
+    var elements = dbElements.map((e) {
+      return ElementDataModel(name: e.name, cost: e.cost, num: e.num);
     });
+
+    var list = [(aggregate as EditDataModel)];
+    list.addAll(elements);
+
+    return list;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // HEADER -------------------------
-      extendBody: true,
-      appBar: AppBar(
-        title: const Text("aggregate"),
+        extendBody: true,
+        appBar: AppBar(
+          title: const Text("aggregate"),
           leading: BackButton(
             color: Colors.white,
             onPressed: () {
@@ -47,7 +57,26 @@ class AggregatePageState extends State<AggregatePage>
           ),
         ),
         // BODY ---------------------------
-        body: AggregatePageMainList(elements: elements),
+        body: FutureBuilder(
+          future: readData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              final data = snapshot.data as List?;
+
+              if (data == null) {
+                return const Center(
+                  child: Text("errrorr"),
+                );
+              }
+
+              return AggregatePageMainList(elements: data);
+            } else if (snapshot.hasError) {
+              throw snapshot.error ?? Error();
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
         // BOTTOM -------------------------
         floatingActionButton: null,
         bottomNavigationBar: MyBottomAppBar(
@@ -75,5 +104,4 @@ class AggregatePageMainList extends StatelessWidget
       },
     );
   }
-
 }

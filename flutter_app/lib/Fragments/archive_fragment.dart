@@ -28,7 +28,6 @@ class ArchiveFragment extends StatelessWidget {
 }
 
 class ArchiveDataModel {
-  @override
   int index;
   DateTime date;
   String tag;
@@ -55,48 +54,52 @@ class ArchiveMainList extends StatefulWidget {
 }
 
 class ArchiveMainListState extends State<ArchiveMainList> {
-  List aggregates = [];
+  Future<List> getAggregates() async {
+    var dbAggregates =
+        await MainFragDataScope.of(context).dbRepository.getAllAggregates();
+    var aggregates = dbAggregates.map((e) {
+      return ArchiveDataModel(
+        index: e.id ?? 0,
+        date: DateTime.fromMillisecondsSinceEpoch(e.date),
+        total: e.total_cost,
+        tag: e.tag,
+      );
+    }).toList();
 
-  ArchiveMainListState()
-  {
-    getAggregates();
+    print(aggregates);
+
+    return aggregates;
   }
-
-  void getAggregates()  {
-    setState(() {
-    MainFragDataScope.of(context).dbRepository.getAllAggregates().then((dbAggregates) {
-      var aggregates = dbAggregates.map((e) {
-        return ArchiveDataModel(
-          index: e.id ?? 0,
-          date: DateTime.fromMillisecondsSinceEpoch(e.date),
-          total: e.total_cost,
-          tag: e.tag,
-        );
-      }).toList();
-
-      print(aggregates);
-
-
-        print(aggregates);
-        this.aggregates = aggregates;
-      });
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: getAggregates(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final data = snapshot.data as List?;
 
+            if (data == null) {
+              return const Center(
+                child: Text("errrorr"),
+              );
+            }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: aggregates.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ArchiveElement(
-          data: aggregates[index],
-        );
-      },
-    );
+            return ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: data.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ArchiveElement(
+                  data: data[index],
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            throw snapshot.error ?? Error();
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        });
   }
 }
 

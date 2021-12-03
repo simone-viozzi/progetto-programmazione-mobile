@@ -1,3 +1,4 @@
+import '../utils.dart';
 import 'db_aggregate_manager.dart';
 import 'db_element_manager.dart';
 import 'db_tag_manager.dart';
@@ -43,7 +44,7 @@ class DbRepository {
   ///////////////////////////////////////////////////////////////////////
   //// GET
 
-  Future<Map<Aggregate, List<Element>>> getAggregateById(int id) async
+  Future<Pair<Aggregate, List<Element>>> getAggregateById(int id) async
   {
 
     Aggregate aggregate = await DbAggregateMng.instance.read(id);
@@ -53,9 +54,9 @@ class DbRepository {
       aggregate.tag = (await DbTagMng.instance.read(aggregate.tag_id!)).tag_name;
     }
 
-    return {
-      aggregate: elements
-    };
+    return Pair(
+      aggregate, elements
+    );
   }
 
   Future<Map<Aggregate, List<Element>>> getAllAggregatesAndElements() async
