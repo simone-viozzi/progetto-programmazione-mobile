@@ -13,7 +13,7 @@ class DbRepository {
   //// INSERT
 
   Future<int> insertAggregate(Aggregate aggregate, List<Element> elements) async {
-    
+
     aggregate.id = null;
 
     if(aggregate.tag != ""){
@@ -73,7 +73,7 @@ class DbRepository {
     return result;
   }
 
-  Future<List> getAllAggregates() async
+  Future<List<Aggregate>> getAllAggregates() async
   {
     List<Aggregate> aggregates = await DbAggregateMng.instance.readAll();
 
@@ -91,6 +91,9 @@ class DbRepository {
     return aggregates;
   }
 
+  Future<List<Tag>> getAllTags() async {
+    return await DbTagMng.instance.readAll();
+  }
 
   ///////////////////////////////////////////////////////////////////////
   //// DELETE
@@ -175,7 +178,7 @@ class DbRepository {
         ), element_list
       );
 
-      date = date.add(const Duration(days: 1));
+      date = date.subtract(const Duration(days: 1));
     }
   }
 

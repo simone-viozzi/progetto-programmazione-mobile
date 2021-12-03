@@ -58,12 +58,14 @@ class SimpleDoubleBarChart extends StatelessWidget {
   final List<DoubleDataSeries> data;
   final String chartId;
   final String chartName;
+  final bool littleLabels;
 
-  SimpleDoubleBarChart({
+  const SimpleDoubleBarChart({
     Key? key,
     required this.chartName,
     required this.chartId,
-    required this.data
+    required this.data,
+    this.littleLabels = false
   }) : super(key: key);
 
   @override
@@ -80,8 +82,8 @@ class SimpleDoubleBarChart extends StatelessWidget {
     ];
 
     return Container(
-      height: 300,
-      padding: const EdgeInsets.all(10),
+      height: 350,
+      padding: const EdgeInsets.all(5),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(9.0),
@@ -92,7 +94,18 @@ class SimpleDoubleBarChart extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyText1,
               ),
               Expanded(
-                child: charts.BarChart(series, animate: true),
+                child: charts.BarChart(
+                    series,
+                    animate: true,
+                    domainAxis: charts.OrdinalAxisSpec(
+                      renderSpec: charts.SmallTickRendererSpec(
+                        labelRotation: 70,
+                        labelStyle: charts.TextStyleSpec(
+                            fontSize: (littleLabels) ? 8 : 14, // size in Pts.
+                            color: charts.MaterialPalette.black)
+                      ),
+                    )
+                ),
               )
             ],
           ),

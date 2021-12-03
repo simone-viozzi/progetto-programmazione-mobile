@@ -38,7 +38,7 @@ class TestFragment extends StatelessWidget
                 onPressed: () async {
                   WidgetsFlutterBinding.ensureInitialized();
                   print("executed: generateFakeData()");
-                  MainFragDataScope.of(context).dbRepository.generateFakeData();
+                  MainFragDataScope.of(context).dbRepository.generateFakeData(aggregates_num: 365);
                 }
             ),
             ElevatedButton(

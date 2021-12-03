@@ -55,9 +55,8 @@ class MainFragState extends State<MainFrag>{
             title: 'archive'
         );
       case PageMap.graphsId:
-        return GraphsFragment(
-            title: 'graphs'
-        );
+        return GraphsFragment();
+
       case PageMap.editAgrId:
         return EditFragment();
 
