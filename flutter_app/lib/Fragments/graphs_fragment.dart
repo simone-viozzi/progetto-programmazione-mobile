@@ -19,6 +19,8 @@ import 'package:flutter_app/Styles/recipteapp_theme.dart';
 import 'package:flutter_app/Charts/data_series.dart';
 import 'package:flutter_app/Charts/simple_barchart.dart';
 
+import '../utils.dart';
+
 class GraphsFragment extends StatelessWidget
 {
   final String title;
@@ -31,7 +33,16 @@ class GraphsFragment extends StatelessWidget
     // test graphs
 
 
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () {
+      return sureToExit(
+          context,
+          'Do you want to exit an App',
+              () => Navigator.of(context).pop(true),
+              () => Navigator.of(context).pop(false)
+      );
+    },
+    child: Scaffold(
       // HEADER -------------------------
       extendBody: true,
       appBar: AppBar(
@@ -60,7 +71,7 @@ class GraphsFragment extends StatelessWidget
         displayHamburger: true,
         displayOptionMenu: true
       )
-    );
+    ));
   }
 
 }

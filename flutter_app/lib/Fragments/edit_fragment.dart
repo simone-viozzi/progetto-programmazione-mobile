@@ -9,6 +9,7 @@ import 'package:flutter_app/Widgets/floating_action_button.dart';
 
 import '../data_models.dart';
 import '../definitions.dart';
+import '../utils.dart';
 
 class EditFragment extends StatelessWidget {
   EditFragment({Key? key}) : super(key: key);
@@ -17,63 +18,74 @@ class EditFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      appBar: AppBar(
-        title: const Text("aggregate"),
-        leading: BackButton(
-          color: Colors.white,
-          onPressed: () {
+    return WillPopScope(
+        onWillPop: () {
+          return sureToExit(context, "", () {
             MainFragDataWidget.of(context).changePage(PageMap.homeId);
-          },
-        ),
-      ),
-      body: EditMainList(key: mainListKey),
-      floatingActionButton: AdaptiveFab(
-        icon: Icons.check,
-        position: FloatingActionButtonLocation.endDocked,
-        onPressed: () {
-          List? list = mainListKey.currentState?.elements;
-          if (list == null) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("there was an error in the data"),
-            ));
-            return;
-          }
-          var aggregate = list[0] as AggregateDataModel;
-          var elements = list.getRange(1, list.length-1).map((e) => e as ElementDataModel );
-
-          double totalCost = 0;
-
-          var dbElements = elements.map((e) {
-            totalCost = totalCost + (e.cost * e.num);
-
-            return DbElement.Element(
-                num: e.num,
-                cost: e.cost,
-                name: e.name
-            );
-          }).toList();
-
-          print("totalCost -> $totalCost");
-
-          var dbAggregate = Aggregate(
-              date: aggregate.date.millisecondsSinceEpoch,
-              tag: aggregate.tag,
-              total_cost: totalCost
-          );
-
-          MainFragDataScope.of(context).dbRepository.insertAggregate(dbAggregate, dbElements);
-          MainFragDataWidget.of(context).changePage(PageMap.homeId);
-
+            Navigator.of(context).pop(false);
+          }, () {
+            Navigator.of(context).pop(false);
+          });
         },
-      ),
-      floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: const MyBottomAppBar(
-          displayHamburger: false,
-        displayOptionMenu: false
-      ),
-    );
+        child: Scaffold(
+          extendBody: true,
+          appBar: AppBar(
+            title: const Text("aggregate"),
+            leading: BackButton(
+              color: Colors.white,
+              onPressed: () {
+                sureToExit(context, "", () {
+                  MainFragDataWidget.of(context).changePage(PageMap.homeId);
+                  Navigator.of(context).pop(false);
+                }, () {
+                  Navigator.of(context).pop(false);
+                });
+              },
+            ),
+          ),
+          body: EditMainList(key: mainListKey),
+          floatingActionButton: AdaptiveFab(
+            icon: Icons.check,
+            position: FloatingActionButtonLocation.endDocked,
+            onPressed: () {
+              List? list = mainListKey.currentState?.elements;
+              if (list == null) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("there was an error in the data"),
+                ));
+                return;
+              }
+              var aggregate = list[0] as AggregateDataModel;
+              var elements = list
+                  .getRange(1, list.length - 1)
+                  .map((e) => e as ElementDataModel);
+
+              double totalCost = 0;
+
+              var dbElements = elements.map((e) {
+                totalCost = totalCost + (e.cost * e.num);
+
+                return DbElement.Element(
+                    num: e.num, cost: e.cost, name: e.name);
+              }).toList();
+
+              print("totalCost -> $totalCost");
+
+              var dbAggregate = Aggregate(
+                  date: aggregate.date.millisecondsSinceEpoch,
+                  tag: aggregate.tag,
+                  total_cost: totalCost);
+
+              MainFragDataScope.of(context)
+                  .dbRepository
+                  .insertAggregate(dbAggregate, dbElements);
+              MainFragDataWidget.of(context).changePage(PageMap.homeId);
+            },
+          ),
+          floatingActionButtonLocation: AdaptiveFab.location(context),
+          bottomNavigationBar: const MyBottomAppBar(
+              displayHamburger: false, displayOptionMenu: false),
+        ));
   }
 }
 

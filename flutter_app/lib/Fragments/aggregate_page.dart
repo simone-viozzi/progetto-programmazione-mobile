@@ -44,7 +44,12 @@ class AggregatePageState extends State<AggregatePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () {
+          MainFragDataWidget.of(context).changePage(PageMap.archiveId);
+          return Future.value(false);
+        },
+        child: Scaffold(
       // HEADER -------------------------
         extendBody: true,
         appBar: AppBar(
@@ -82,7 +87,7 @@ class AggregatePageState extends State<AggregatePage>
         bottomNavigationBar: const MyBottomAppBar(
           displayHamburger: false,
           displayOptionMenu: false
-        ));
+        )));
   }
 }
 

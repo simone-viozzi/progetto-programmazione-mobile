@@ -4,6 +4,7 @@ import 'package:flutter_app/DataWidgets/main_fragment_data.dart';
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
 
 import '../definitions.dart';
+import '../utils.dart';
 
 class ArchiveFragment extends StatelessWidget {
   final String title;
@@ -12,7 +13,16 @@ class ArchiveFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () {
+      return sureToExit(
+          context,
+          'Do you want to exit an App',
+              () => Navigator.of(context).pop(true),
+              () => Navigator.of(context).pop(false)
+      );
+    },
+    child: Scaffold(
       // HEADER -------------------------
       extendBody: true,
         appBar: AppBar(
@@ -24,7 +34,7 @@ class ArchiveFragment extends StatelessWidget {
         bottomNavigationBar: const MyBottomAppBar(
           displayHamburger: true,
           displayOptionMenu: true
-        ));
+        )));
   }
 }
 
