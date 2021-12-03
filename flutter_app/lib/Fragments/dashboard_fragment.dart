@@ -35,7 +35,10 @@ class DashboardFragment extends StatelessWidget {
         },
       ),
       floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: MyBottomAppBar(displayHamburger: true),
+      bottomNavigationBar: const MyBottomAppBar(
+          displayHamburger: true,
+        displayOptionMenu: true
+      ),
     );
   }
 }

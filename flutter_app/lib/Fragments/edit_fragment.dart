@@ -69,7 +69,10 @@ class EditFragment extends StatelessWidget {
         },
       ),
       floatingActionButtonLocation: AdaptiveFab.location(context),
-      bottomNavigationBar: const MyBottomAppBar(displayHamburger: false),
+      bottomNavigationBar: const MyBottomAppBar(
+          displayHamburger: false,
+        displayOptionMenu: false
+      ),
     );
   }
 }

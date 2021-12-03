@@ -21,8 +21,9 @@ class ArchiveFragment extends StatelessWidget {
         // BODY ---------------------------
         body: ArchiveMainList(),
         // BOTTOM -------------------------
-        bottomNavigationBar: MyBottomAppBar(
+        bottomNavigationBar: const MyBottomAppBar(
           displayHamburger: true,
+          displayOptionMenu: true
         ));
   }
 }

@@ -79,8 +79,9 @@ class AggregatePageState extends State<AggregatePage>
         ),
         // BOTTOM -------------------------
         floatingActionButton: null,
-        bottomNavigationBar: MyBottomAppBar(
+        bottomNavigationBar: const MyBottomAppBar(
           displayHamburger: false,
+          displayOptionMenu: false
         ));
   }
 }

@@ -8,7 +8,13 @@ import 'package:flutter_app/Widgets/home_settings_menu.dart';
 class MyBottomAppBar extends StatelessWidget {
   final bool displayHamburger;
 
-  const MyBottomAppBar({Key? key, required this.displayHamburger})
+  final bool displayOptionMenu;
+
+  const MyBottomAppBar({
+    Key? key,
+    required this.displayHamburger,
+    required this.displayOptionMenu
+  })
       : super(key: key);
 
   Widget hamburger(BuildContext context) {
@@ -21,8 +27,20 @@ class MyBottomAppBar extends StatelessWidget {
           });
     } else {
       return const SizedBox(
-        width: 5,
-        height: 5,
+        width: 48,
+        height: 48,
+      );
+    }
+  }
+
+  Widget optionMenu()
+  {
+    if (displayOptionMenu) {
+      return const HomeSettings();
+    } else {
+      return const SizedBox(
+        width: 48,
+        height: 48,
       );
     }
   }
@@ -36,11 +54,9 @@ class MyBottomAppBar extends StatelessWidget {
       color: ThemeColors.matPrimary,
       child: Row(
         children: [
-          hamburger(
-            context,
-          ),
+          hamburger(context),
           const Spacer(),
-          const HomeSettings(),
+          optionMenu(),
         ],
       ),
     );

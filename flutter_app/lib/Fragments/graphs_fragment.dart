@@ -56,7 +56,10 @@ class GraphsFragment extends StatelessWidget
       ),
       // BOTTOM -------------------------
       floatingActionButton: null,
-      bottomNavigationBar: const MyBottomAppBar(displayHamburger: true,)
+      bottomNavigationBar: const MyBottomAppBar(
+        displayHamburger: true,
+        displayOptionMenu: true
+      )
     );
   }
 
