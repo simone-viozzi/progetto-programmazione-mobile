@@ -34,29 +34,37 @@ class TestFragment extends StatelessWidget
           children: [
             const Text("TEST PAGE"),
             ElevatedButton(
-                child: const Text("test 1 button"),
+                child: const Text("generate fake data"),
                 onPressed: () async {
-
                   WidgetsFlutterBinding.ensureInitialized();
-
-                  Tag tag = Tag(
-                      tag_name: "test"
-                  );
-
-                  final id = await DbTagMng.instance.insert(tag);
-
-                  final readedTag = await DbTagMng.instance.read(id);
-
-                  print(await readedTag);
-
-                  if(tag.tag_name !=  readedTag.tag_name){
-                    print("${tag.tag_name} while exected is ${readedTag.tag_name}");
-                  }else{
-                    print("query executed correctly");
-                  }
+                  print("executed: generateFakeData()");
+                  MainFragDataScope.of(context).dbRepository.generateFakeData();
                 }
             ),
-
+            ElevatedButton(
+                child: const Text("Inspect database"),
+                onPressed: () async {
+                  WidgetsFlutterBinding.ensureInitialized();
+                  print("executed: inspectDatabase()");
+                  MainFragDataScope.of(context).dbRepository.inspectDatabase();
+                }
+            ),
+            ElevatedButton(
+                child: const Text("Database hard reset"),
+                onPressed: () async {
+                  WidgetsFlutterBinding.ensureInitialized();
+                  print("executed: resetDatabase()");
+                  MainFragDataScope.of(context).dbRepository.resetDatabase();
+                }
+            ),
+            ElevatedButton(
+                child: const Text("Database values reset"),
+                onPressed: () async {
+                  WidgetsFlutterBinding.ensureInitialized();
+                  print("executed: deleteAll()");
+                  MainFragDataScope.of(context).dbRepository.deleteAll();
+                }
+            ),
           ],
         ),
       ),

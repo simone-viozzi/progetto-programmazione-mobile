@@ -4,7 +4,6 @@ class Element{
   int? aggregate_id;
   String name;
   final int num;
-  int parent_tag_id;
   final double cost;
   String parent_tag;
 
@@ -14,7 +13,6 @@ class Element{
     required this.num,
     required this.cost,
     this.name = "",
-    this.parent_tag_id = -1,
     this.parent_tag = "",
   });
 
@@ -40,6 +38,6 @@ class Element{
 
   @override
   String toString(){
-    return 'Element{ elem_id: $elem_id, aggregate_id: $aggregate_id, num: $num, cost: $cost, name: $name, parent_tag_id: $parent_tag_id}';
+    return 'Element{ elem_id: $elem_id, aggregate_id: $aggregate_id, num: $num, cost: $cost, name: $name}';
   }
 }

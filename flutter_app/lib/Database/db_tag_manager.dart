@@ -125,6 +125,12 @@ class DbTagMng{
     return await db.delete("tag");
   }
 
+  Future resetTable() async {
+    final db = await instance.database;
+    await db.execute("DROP TABLE tag;");
+    await _createDB(db, 1);
+  }
+
   Future close() async {
     final db = await instance.database;
     db.close();

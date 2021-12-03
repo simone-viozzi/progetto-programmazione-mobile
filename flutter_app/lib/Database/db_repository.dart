@@ -4,6 +4,7 @@ import 'db_tag_manager.dart';
 import 'dataModels/element.dart';
 import 'dataModels/aggregate.dart';
 import 'dataModels/tag.dart';
+import 'dart:math';
 
 class DbRepository {
 
@@ -15,21 +16,25 @@ class DbRepository {
     aggregate.id = null;
 
     if(aggregate.tag != ""){
+
       int? tagId = await DbTagMng.instance.readTagId(aggregate.tag);
+
       if( tagId != null ){
         // if the tag exist it will be recovered and the id will be added to the aggregate
         aggregate.tag_id = tagId;
       }else{
         // if the tag dosen't exist it will be created and the id will be added to the aggregate
-        Tag new_tag = Tag(
+        Tag newTag = Tag(
           tag_name: aggregate.tag
         );
-        aggregate.tag_id = await DbTagMng.instance.insert(new_tag);
+        aggregate.tag_id = await DbTagMng.instance.insert(newTag);
       }
     }
 
     int id = await DbAggregateMng.instance.insert(aggregate);
-    for(final e in elements){e.aggregate_id = id;}
+    for(final e in elements){
+      e.aggregate_id = id;
+    }
     DbElementMng.instance.insertList(elements);
 
     return id;
@@ -76,9 +81,9 @@ class DbRepository {
   ///////////////////////////////////////////////////////////////////////
   //// DELETE
 
-  void deleteAggregateById(int aggr_id) async {
+  void deleteAggregateById(int aggrId) async {
 
-    final aggregate = await DbAggregateMng.instance.read(aggr_id);
+    final aggregate = await DbAggregateMng.instance.read(aggrId);
 
     if(aggregate.tag_id != null){
       // if the aggregate has a tag, shuld be verified if there is another aggregate associated
@@ -89,7 +94,7 @@ class DbRepository {
       }
     }
 
-    final elements = await DbElementMng.instance.readByAggrId(aggr_id);
+    final elements = await DbElementMng.instance.readByAggrId(aggrId);
     for( var elem in elements){
       DbElementMng.instance.delete(elem.elem_id!);
     }
@@ -98,9 +103,85 @@ class DbRepository {
   }
 
   void deleteAll(){
+    // reset only records inside each table
     DbAggregateMng.instance.deleteAll();
     DbElementMng.instance.deleteAll();
     DbTagMng.instance.deleteAll();
+  }
+
+  void resetDatabase(){
+    // delete completely every table
+    DbAggregateMng.instance.resetTable();
+    DbElementMng.instance.resetTable();
+    DbTagMng.instance.resetTable();
+  }
+
+  ///////////////////////////////////////////////////////////////////////
+  //// DEBUG
+
+  List<String> tag_list = ["spesa", "cinema", "ristorante", "bollette", "affitto", "auto"];
+
+  void generateFakeData({
+    int aggregates_num = 10,
+    int elements_num = 10
+  }) async {
+
+    var rng = Random();
+    var date = DateTime.now();
+
+    for(int i = 0; i < aggregates_num; i++){
+
+      //print("inserrting element " + i.toString());
+      //await inspectDatabase();
+
+      List<Element> element_list = [];
+      double totCost = 0.0;
+
+      for(int j = 0; j < elements_num; j++){
+
+        final newNum = rng.nextInt(5);
+        final newCost = rng.nextDouble()*100.0;
+
+        totCost += newNum * newCost;
+
+        element_list.add(
+          Element(
+            num: newNum,
+            cost: newCost,
+            name: "elem_" + j.toString()
+          )
+        );
+      }
+
+      await insertAggregate(
+        Aggregate(
+          date: date.millisecondsSinceEpoch,
+          tag: tag_list[rng.nextInt(tag_list.length)],
+          total_cost: totCost
+        ), element_list
+      );
+
+      date = date.add(const Duration(days: 1));
+    }
+  }
+
+  Future inspectDatabase() async {
+
+    final tagList = await DbTagMng.instance.readAll();
+    final aggregateList = await DbAggregateMng.instance.readAll();
+    final elementList = await DbElementMng.instance.readAll();
+
+    print("##################################################");
+    print("## TAGS:");
+    tagList.forEach((element) {print(element);});
+    print("\n##################################################");
+    print("## AGGREGATES:");
+    aggregateList.forEach((element) {print(element);});
+    print("\n##################################################");
+    print("## ELEMENTS:");
+    elementList.forEach((element) {print(element);});
+    print("##################################################\n");
+
   }
 
 }

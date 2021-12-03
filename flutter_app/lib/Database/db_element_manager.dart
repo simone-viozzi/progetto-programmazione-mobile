@@ -38,7 +38,6 @@ class DbElementMng{
       elem_id $idType,
       aggregate_id $integerType $notNull,
       num $integerType $notNull,
-      elem_tag_id $integerType,
       cost $doubleType $notNull,
       name $textType
       )'''
@@ -131,6 +130,12 @@ class DbElementMng{
   Future<int> deleteAll() async {
     final db = await instance.database;
     return await db.delete("element");
+  }
+
+  Future resetTable() async {
+    final db = await instance.database;
+    await db.execute("DROP TABLE element;");
+    await _createDB(db, 1);
   }
 
   Future close() async {

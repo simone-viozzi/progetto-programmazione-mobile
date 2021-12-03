@@ -122,6 +122,12 @@ class DbAggregateMng{
     }
   }
 
+  Future resetTable() async {
+    final db = await instance.database;
+    await db.execute("DROP TABLE aggregate;");
+    await _createDB(db, 1);
+  }
+
   Future close() async {
     final db = await instance.database;
     db.close();
