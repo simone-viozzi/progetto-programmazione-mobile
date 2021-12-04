@@ -50,31 +50,31 @@ class AggregatePageState extends State<AggregatePage>
           return Future.value(false);
         },
         child: Scaffold(
-      // HEADER -------------------------
-        extendBody: true,
-        appBar: AppBar(
-          title: const Text("aggregate"),
-          leading: BackButton(
-            color: Colors.white,
-            onPressed: () {
-              MainFragDataWidget.of(context).changePage(PageMap.archiveId);
-            },
-          ),
-        ),
-        // BODY ---------------------------
-        body: FutureBuilder(
-          future: readData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              final data = snapshot.data as List?;
+            // HEADER -------------------------
+            extendBody: false,
+            appBar: AppBar(
+              title: const Text("aggregate"),
+              leading: BackButton(
+                color: Colors.white,
+                onPressed: () {
+                  MainFragDataWidget.of(context).changePage(PageMap.archiveId);
+                },
+              ),
+            ),
+            // BODY ---------------------------
+            body: FutureBuilder(
+              future: readData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  final data = snapshot.data as List?;
 
-              if (data == null) {
-                return const Center(
-                  child: Text("errrorr"),
-                );
-              }
+                  if (data == null) {
+                    return const Center(
+                      child: Text("errrorr"),
+                    );
+                  }
 
-              return AggregatePageMainList(elements: data);
+                  return AggregatePageMainList(elements: data);
             } else if (snapshot.hasError) {
               throw snapshot.error ?? Error();
             } else {
@@ -136,18 +136,19 @@ class StaticAggregateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Card(
-        child:Padding(
+    return Column(children: [
+      Card(
+        child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
           child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: Row(children: [
-              const Text(
-                "tag: \t   ",
-                style: TextStyle(fontWeight: FontWeight.bold),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: Row(children: [
+                  const Text(
+                    "tag: \t   ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(data.tag)
             ]),
@@ -164,17 +165,24 @@ class StaticAggregateWidget extends StatelessWidget {
           ),
           Padding(
               padding: const EdgeInsets.all(4),
-              child: Row(children: [
-                const Text(
-                  "total: \t ",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data.totalCost.toString())
-              ]))
-        ],
+                  child: Row(children: [
+                    const Text(
+                      "total: \t ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(data.totalCost.toString())
+                  ]))
+            ],
+          ),
         ),
       ),
-    );
+      // adding a divider after the aggregate to make it easier to distinguish
+      // the two types of card
+      const Padding(
+        padding: EdgeInsets.only(top: 3.0, bottom: 3.0),
+        child: Divider(),
+      )
+    ]);
   }
 }
 

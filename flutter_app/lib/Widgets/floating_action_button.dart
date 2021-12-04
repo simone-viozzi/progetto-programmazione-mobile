@@ -8,6 +8,7 @@ import '../definitions.dart';
 
 class AdaptiveFab extends StatelessWidget
 {
+  // completely modular fab
   final Function onPressed;
   final FloatingActionButtonLocation position;
   static late FloatingActionButtonLocation staticPosition;
@@ -23,6 +24,8 @@ class AdaptiveFab extends StatelessWidget
     staticPosition = position;
   }
 
+  // to set the gravity as a fab property and than take it back statically
+  // to set it into the floatingActionButtonLocation of the scaffold
   static FloatingActionButtonLocation location(BuildContext context) {
     return staticPosition;
   }

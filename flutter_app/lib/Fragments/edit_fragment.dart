@@ -16,16 +16,19 @@ class EditFragment extends StatelessWidget {
 
   final GlobalKey<EditMainListState> mainListKey = GlobalKey();
 
+  // dialog to be sure the user want to go back to the home
+  Future<bool> sureToExitEdit(BuildContext context) {
+    return sureToExit(context, "", () {
+      MainFragDataWidget.of(context).changePage(PageMap.homeId);
+      Navigator.of(context).pop(false);
+    }, () => Navigator.of(context).pop(false));
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () {
-          return sureToExit(context, "", () {
-            MainFragDataWidget.of(context).changePage(PageMap.homeId);
-            Navigator.of(context).pop(false);
-          }, () {
-            Navigator.of(context).pop(false);
-          });
+          return sureToExitEdit(context);
         },
         child: Scaffold(
           extendBody: true,
@@ -34,20 +37,17 @@ class EditFragment extends StatelessWidget {
             leading: BackButton(
               color: Colors.white,
               onPressed: () {
-                sureToExit(context, "", () {
-                  MainFragDataWidget.of(context).changePage(PageMap.homeId);
-                  Navigator.of(context).pop(false);
-                }, () {
-                  Navigator.of(context).pop(false);
-                });
+                sureToExitEdit(context);
               },
             ),
           ),
+          // i use the key to the sole purpose of accessing it's variable
           body: EditMainList(key: mainListKey),
           floatingActionButton: AdaptiveFab(
             icon: Icons.check,
             position: FloatingActionButtonLocation.endDocked,
             onPressed: () {
+              // the data is in a child widget so i use the key to get it.
               List? list = mainListKey.currentState?.elements;
               if (list == null) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -55,13 +55,17 @@ class EditFragment extends StatelessWidget {
                 ));
                 return;
               }
+              // the data need to be converted into the db format
               var aggregate = list[0] as AggregateDataModel;
               var elements = list
                   .getRange(1, list.length - 1)
                   .map((e) => e as ElementDataModel);
 
+              // need to calculate the total cost
               double totalCost = 0;
 
+              // map is lazy, the toList need to be called here otherwise the
+              //  total cost would be wrong.
               var dbElements = elements.map((e) {
                 totalCost = totalCost + (e.cost * e.num);
 
@@ -76,6 +80,7 @@ class EditFragment extends StatelessWidget {
                   tag: aggregate.tag,
                   total_cost: totalCost);
 
+              // i can get the repository instance from the inheritedWidget
               MainFragDataScope.of(context)
                   .dbRepository
                   .insertAggregate(dbAggregate, dbElements);
@@ -97,17 +102,18 @@ class EditMainList extends StatefulWidget {
 }
 
 class EditMainListState extends State<EditMainList> {
+  // the list will always start with a blank aggregate and an element
   List elements = [
     AggregateDataModel(index: 0, date: DateTime.now(), tag: ""),
     ElementDataModel(index: 1, name: "", cost: 0, num: 0)
   ];
 
-  DateTime selectedDate = DateTime.now();
-
+  // callback called every time the user writes something
   void updateList(EditDataModel value) {
     var index = (value as HasIndex).index;
     setState(() {
       elements[index] = value;
+      // if the user wrote on the last element, add an element
       if (index == elements.length - 1) {
         elements.add(ElementDataModel(
             index: elements.length, name: "", cost: 0, num: 0));
@@ -115,20 +121,16 @@ class EditMainListState extends State<EditMainList> {
     });
   }
 
-  List saveElements() {
-    return elements;
-  }
-
+  // show the date picker, if the user selected something save it.
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: DateTime.now(),
       firstDate: DateTime(1970),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
-        selectedDate = picked;
         var aggregate = elements[0] as AggregateDataModel;
         aggregate.date = picked;
         elements[0] = aggregate;
@@ -137,6 +139,7 @@ class EditMainListState extends State<EditMainList> {
     }
   }
 
+  // basically the on bind view holder.
   Widget buildSingleElement(EditDataModel data) {
     if (data is AggregateDataModel) {
       return AggregateWidget(data: data, update: updateList, selectDate: _selectDate);
@@ -168,6 +171,8 @@ class AggregateWidget extends StatelessWidget {
 
   final void Function(EditDataModel value) update;
 
+  // to keep the ui harmonic i use a TextField fro the date too, to change the
+  // text of a TextField i need a controller
   final TextEditingController dateController = TextEditingController();
 
   AggregateWidget(
@@ -201,6 +206,7 @@ class AggregateWidget extends StatelessWidget {
               labelText: 'Date',
             ),
             controller: dateController,
+            // with readOnly it can't take focus
             readOnly: true,
             onTap: () => selectDate(context)),
       ],

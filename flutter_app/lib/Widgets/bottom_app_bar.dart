@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-
 // importing themes
 import 'package:flutter_app/Styles/recipteapp_theme.dart';
 import 'package:flutter_app/Widgets/bottom_navigation_drawer.dart';
 import 'package:flutter_app/Widgets/home_settings_menu.dart';
 
 class MyBottomAppBar extends StatelessWidget {
+  // can choose if to display the hamburger or/and the option menu
   final bool displayHamburger;
-
   final bool displayOptionMenu;
 
   const MyBottomAppBar({
@@ -26,6 +25,8 @@ class MyBottomAppBar extends StatelessWidget {
             openBottomNavigationDrawer(context);
           });
     } else {
+      // if displayHamburger == false than display a transparent box so that the
+      // appbar does not collapse
       return const SizedBox(
         width: 48,
         height: 48,
