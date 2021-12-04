@@ -48,7 +48,7 @@ class GraphsFragmentState extends State<GraphsFragment>
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if(snapshot.hasData){
               return ListView(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 children: <Widget>[
                   SimpleDoubleBarChart(
                     chartId: "chart1",
@@ -81,7 +81,10 @@ class GraphsFragmentState extends State<GraphsFragment>
       ),
       // BOTTOM -------------------------
       floatingActionButton: null,
-      bottomNavigationBar: const MyBottomAppBar(displayHamburger: true,)
+      bottomNavigationBar: const MyBottomAppBar(
+        displayHamburger: true,
+        displayOptionMenu: false,
+      )
     );
   }
 
