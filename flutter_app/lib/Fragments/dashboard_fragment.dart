@@ -7,7 +7,6 @@ import 'package:flutter_app/Database/dataModels/aggregate.dart';
 import 'package:flutter_app/Database/dataModels/tag.dart';
 import 'package:flutter_app/Database/db_repository.dart';
 import 'package:flutter_app/Widgets/bottom_app_bar.dart';
-
 // import widgets
 import 'package:flutter_app/Widgets/floating_action_button.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -23,6 +22,7 @@ class DashboardFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('rebuild HomeFragment()');
+    // to override the behavior of the bach button
     return WillPopScope(
         onWillPop: () {
           return sureToExit(
@@ -39,7 +39,7 @@ class DashboardFragment extends StatelessWidget {
             title: Text(title),
           ),
           // BODY ---------------------------
-          body: Center(
+          body: const Center(
             child: DashboardContent(),
           ),
           // BOTTOM -------------------------
@@ -58,6 +58,8 @@ class DashboardFragment extends StatelessWidget {
 }
 
 class DashboardContent extends StatefulWidget {
+  const DashboardContent({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => DashboardContentState();
 }
@@ -69,6 +71,7 @@ class DashboardContentState extends State<DashboardContent> {
 
   @override
   Widget build(BuildContext context) {
+    // reading the db will take some time
     return FutureBuilder<bool>(
         future: repository.loadData(),
         builder: (context, snapshot) {
@@ -95,7 +98,7 @@ class DashboardContentState extends State<DashboardContent> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ListTile(
-                              title: Text(repository.sumLastMonth.toString(),
+                              title: Text(repository.sumLastMonth.toStringAsFixed(2),
                                   textAlign: TextAlign.center),
                               subtitle: Text(
                                 'This month expenses',
@@ -111,7 +114,7 @@ class DashboardContentState extends State<DashboardContent> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ListTile(
-                              title: Text(repository.sumLastYear.toString(),
+                              title: Text(repository.sumLastYear.toStringAsFixed(2),
                                   textAlign: TextAlign.center),
                               subtitle: Text(
                                 'This year expenses',
@@ -141,9 +144,11 @@ class DashboardRepository {
   double sumLastYear = 0;
 
   Future<bool> loadData() async {
+    // the the data out of the db
     tagList = await dbRepository.getAllTags();
     aggregatesList = await dbRepository.getAllAggregates();
 
+    // inject the data into the chart class and start the calculations
     charts
       ..tagList = tagList
       ..aggregatesList = aggregatesList
@@ -151,10 +156,11 @@ class DashboardRepository {
       ..generateAggregatesSublists()
       ..generateChartsSeries();
 
+    // calculate sumLastMonth and sumLastYear
     DateTime date = DateTime.now();
     date = DateTime(date.year, date.month, date.day);
 
-    // creation of a list of aggregates contained inside the last 30 days
+    // last 30 days
     DateTime endDate = date.add(const Duration(days: 1));
     DateTime startDate = date.subtract(const Duration(days: 30));
 
@@ -165,7 +171,7 @@ class DashboardRepository {
       }
     }
 
-    // creation of a list of aggregates contained inside the last 365 days
+    // last 365 days
     endDate = date.add(const Duration(days: 1));
     startDate = date.subtract(const Duration(days: 365));
 

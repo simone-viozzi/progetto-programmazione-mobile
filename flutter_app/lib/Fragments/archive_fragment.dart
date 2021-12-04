@@ -9,7 +9,7 @@ import '../utils.dart';
 class ArchiveFragment extends StatelessWidget {
   final String title;
 
-  ArchiveFragment({Key? key, required this.title}) : super(key: key);
+  const ArchiveFragment({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ArchiveFragment extends StatelessWidget {
     },
     child: Scaffold(
       // HEADER -------------------------
-      extendBody: true,
+      extendBody: false,
         appBar: AppBar(
           title: Text(title),
         ),
@@ -58,7 +58,7 @@ class ArchiveDataModel {
 }
 
 class ArchiveMainList extends StatefulWidget {
-  ArchiveMainList({Key? key}) : super(key: key);
+  const ArchiveMainList({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ArchiveMainListState();
@@ -125,6 +125,8 @@ class ArchiveElement extends StatelessWidget {
             onTap: () {
               print(data);
 
+              // to tell the aggregate page what aggregate it should display i
+              // use the inheritedWidget
               MainFragDataScope.of(context).selectedAggregate = data.index;
 
               MainFragDataWidget.of(context).changePage(PageMap.agrViewId);

@@ -4,6 +4,7 @@
 
 class EditDataModel {}
 
+// for practicality the classes extend an index interface
 class HasIndex {
   int index = 0;
 }
