@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/state-diagram
+
+scale 350 width
+[*] --> NoState
+NoState --> EmptyDashMode
+NoState --> NormalMode
+NoState --> EditMode
+NoState --> StoreModeWelcome
+NoState --> StoreModeEdit
+EditMode --> StoreModeEdit
+StoreModeEdit --> EditMode
+NormalMode -> EditMode
+StoreModeWelcome --> EditMode
+EditMode --> NormalMode
+EmptyDashMode -> StoreModeWelcome
+StoreModeWelcome --> EmptyDashMode
+
+@enduml
