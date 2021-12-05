@@ -37,20 +37,20 @@ enum class TYPE()
 //  every type have it's own field but all of them implement DashboardElement
 sealed class DashboardDataModel : DashboardElement
 {
-    data class Label(
-        override var id: Int = 0,
-        override val type: TYPE = TYPE.LABEL,
-        var name: String = "",
-        override var content: String = "",
-        var value: Float = 0f,
-    ) : DashboardDataModel()
-
     data class Pie(
         override var id: Int = 0,
         override val type: TYPE = TYPE.PIE,
         override var content: String = "",
         var name: String = "",
         var aaChartModel: AAChartModel = AAChartModel()
+    ) : DashboardDataModel()
+
+    data class Label(
+        override var id: Int = 0,
+        override val type: TYPE = TYPE.LABEL,
+        override var content: String = "",
+        var name: String = "",
+        var value: Float = 0f,
     ) : DashboardDataModel()
 
     data class Histogram(

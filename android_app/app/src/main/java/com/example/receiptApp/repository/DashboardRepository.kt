@@ -5,9 +5,6 @@ import com.example.receiptApp.pages.dashboard.DashboardDataModel
 import timber.log.Timber
 import java.util.*
 
-
-// TODO add docs
-
 class DashboardRepository(
     private val sharedPrefRepository: SharedPrefRepository,
     private val dbRepository: DbRepository,
@@ -72,8 +69,10 @@ class DashboardRepository(
     {
         return when (el)
         {
+            // need to fill every type of element individually
             is DashboardDataModel.Label ->
             {
+                // and every subtype individually
                 val contentParsing = el.content.split(":")
 
                 when (contentParsing[0]) {
@@ -147,9 +146,15 @@ class DashboardRepository(
         }
     }
 
+    /**
+     * Load store
+     *
+     * @param dashboard needed because i don't want to load widgets that are already in the dashboard
+     * @return
+     */
     suspend fun loadStore(dashboard: List<DashboardDataModel>?): MutableList<DashboardDataModel>
     {
-        loadStoreTagExpense(dashboard)
+        loadTagExpense(dashboard)
         loadAllExpenses(dashboard)
         loadPies(dashboard)
         loadHistograms(dashboard)
@@ -165,7 +170,7 @@ class DashboardRepository(
         return loadStore(dashboard)
     }
 
-    private suspend fun loadStoreTagExpense(dashboard: List<DashboardDataModel>?)
+    private suspend fun loadTagExpense(dashboard: List<DashboardDataModel>?)
     {
         val period = DbRepository.Period.MONTH
         val allTags = dbRepository.getAggregateTagsAndCountByPeriod(period)
@@ -288,7 +293,12 @@ class DashboardRepository(
         }
     }
 
-
+    /**
+     * Notify add to dash
+     *  if a widget is added to the dashboard it needs to be removed from the store
+     *
+     * @param element
+     */
     fun notifyAddToDash(element: DashboardDataModel)
     {
         currentStore.remove(element)
