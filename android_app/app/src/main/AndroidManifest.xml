@@ -12,7 +12,6 @@
     <uses-feature android:name="android.hardware.camera"
         android:required="false" />
 
-
     <application
         android:name="com.example.receiptApp.App"
         android:allowBackup="true"

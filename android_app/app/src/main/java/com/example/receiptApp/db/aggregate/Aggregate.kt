@@ -22,13 +22,6 @@ import java.util.*
 
 @Entity(
     tableName = "aggregate",
-    foreignKeys = [
-        ForeignKey(
-            entity = Tag::class,
-            parentColumns = ["tag_id"],
-            childColumns = ["tag_id"]
-        ),
-    ],
     indices = [Index("id")]
 )
 data class Aggregate @JvmOverloads constructor(

@@ -32,12 +32,7 @@ import com.example.receiptApp.db.tag.Tag
         entity = Aggregate::class,
         parentColumns = ["id"],
         childColumns = ["aggregate_id"]
-        ),
-        ForeignKey(
-            entity = Tag::class,
-            parentColumns = ["tag_id"],
-            childColumns = ["elem_tag_id"]
-        ),
+        )
     ],
     indices = [Index("elem_id")]
 )

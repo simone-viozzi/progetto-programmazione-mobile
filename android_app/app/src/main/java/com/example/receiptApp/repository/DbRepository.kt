@@ -411,7 +411,7 @@ class DbRepository(
         var mapTagCount = mutableMapOf<String?, Long>()
 
         tagsList?.forEach {
-            mapTagCount[it.tag_name] = elementDao.countAllSingleElementsBetweenDatesByElementTagId(start, end, it.tag_id)
+            mapTagCount[it.tag_name] = elementDao.countAllSingleElementsBetweenDatesByElementTagId(start, end, it.tag_id) ?: 0
         }
 
         return mapTagCount.toList().sortedByDescending { pair -> pair.second }.toMap()
@@ -483,7 +483,8 @@ class DbRepository(
         var mapTagExpenses = mutableMapOf<String?, Float>()
 
         tagsList?.forEach {
-            mapTagExpenses[it.tag_name] = elementDao.countAllExpensesBetweenDatesByElementTagId(start, end, it.tag_id)
+            val expense = elementDao.countAllExpensesBetweenDatesByElementTagId(start, end, it.tag_id)
+            mapTagExpenses[it.tag_name] = expense ?: 0.0f
         }
         return mapTagExpenses.toList().sortedByDescending { pair -> pair.second }.toMap()
     }
@@ -712,7 +713,7 @@ class DbRepository(
             aggregateTagsList = aggregateTagsList,
             elementTagsList = elementTagsList,
             aggregatesDao = aggregateDao,
-            aggr_num = 300,
+            aggr_num = 600,
             elem_num = 10,
             elem_num_casual = true
         )

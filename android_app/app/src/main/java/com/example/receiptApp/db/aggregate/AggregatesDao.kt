@@ -126,8 +126,8 @@ interface AggregatesDao : BaseAggregatesDao, ElementsDao, TagsDao {
     @Transaction
     suspend fun _deleteAggregateWithTag(aggregate: Aggregate){
 
-        if(aggregate.tag != null) {
-            val resultTag = getAggregateTagByName(aggregate.tag!!)
+        if(aggregate.tag_id != null) {
+            val resultTag = getAggregateTagById(aggregate.tag_id!!)
             if (resultTag != null) {
                 // se il tag specificato per l'aggregato è diverso da null
                 // allora verifico se è collegato solo a questo agregato
