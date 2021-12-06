@@ -1,0 +1,72 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+
+node graphics {
+    [App]
+    [MainActivity]
+    [GraphsFragment]
+    [EditFragment]
+    [DashboardFragment]
+    [ArchiveFragment]
+    [AggregatePageFragment]
+    [AboutFragment]
+
+    [App] -> [MainActivity]
+    [MainActivity] --> [GraphsFragment]
+    [MainActivity] --> [EditFragment]
+    [MainActivity] --> [DashboardFragment]
+    [MainActivity] --> [ArchiveFragment]
+    [MainActivity] --> [AggregatePageFragment]
+    [MainActivity] --> [AboutFragment]
+}
+
+node repository {
+    [DbRepository]
+    [sharedPrefRepository]
+    [graphsRepository]
+    [DashboardRepository]
+    [ArchiveRepository]
+    [attachmentRepository]
+}
+
+[GraphsFragment] -> [graphsRepository]
+[EditFragment] --> [DbRepository]
+[EditFragment] --> [attachmentRepository]
+[DashboardFragment] --> [DashboardRepository]
+[ArchiveFragment] -> [ArchiveRepository]
+[AggregatePageFragment] -> [ArchiveRepository]
+
+
+
+[ArchiveRepository] ---> [DbRepository]
+[DashboardRepository] --> [graphsRepository]
+[DashboardRepository] ---> [sharedPrefRepository]
+[DashboardRepository] --> [DbRepository]
+[graphsRepository] --> [DbRepository]
+
+
+[graphsRepository] ---> [GraphBuilder]
+[attachmentRepository] ----> [GalleryImagesPaginated]
+
+[GalleryImagesPaginated] --> [GalleryImages]
+
+database "db" {
+
+
+
+    frame "AppDatabase" {
+                [TagsDao]
+                [PublicElementsDao]
+                [PublicAggregatesDao]
+          }
+
+  [DbRepository] -->[TagsDao]
+  [DbRepository] -->[PublicElementsDao]
+  [DbRepository] -->[PublicAggregatesDao]
+
+
+}
+
+
+@enduml
