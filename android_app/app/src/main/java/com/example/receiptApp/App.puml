@@ -53,18 +53,13 @@ node repository {
 
 database "db" {
 
+    [TagsDao]
+    [PublicElementsDao]
+    [PublicAggregatesDao]
 
-
-    frame "AppDatabase" {
-                [TagsDao]
-                [PublicElementsDao]
-                [PublicAggregatesDao]
-          }
-
-  [DbRepository] -->[TagsDao]
-  [DbRepository] -->[PublicElementsDao]
-  [DbRepository] -->[PublicAggregatesDao]
-
+    [DbRepository] -->[TagsDao]
+    [DbRepository] -->[PublicElementsDao]
+    [DbRepository] -->[PublicAggregatesDao]
 
 }
 

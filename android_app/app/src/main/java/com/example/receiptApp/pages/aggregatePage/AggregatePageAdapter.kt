@@ -2,7 +2,6 @@ package com.example.receiptApp.pages.aggregatePage
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +13,7 @@ import com.example.receiptApp.repository.AttachmentRepository
 import com.example.receiptApp.round
 
 class AggregatePageAdapter (
-    val attachemntRepository: AttachmentRepository
+    private val attachmentRepository: AttachmentRepository
 ) : ListAdapter<ArchiveDataModel, AggregatePageAdapter.AggregatePageViewHolder>(AggregatePageAdapter.AggregatePageDiffCallback()){
 
     class AggregatePageDiffCallback : DiffUtil.ItemCallback<ArchiveDataModel>()
@@ -52,8 +51,8 @@ class AggregatePageAdapter (
 
         class AggregateViewHolder(
             private val binding: ArchiveAggregateBinding,
-            private val attachemntRepository: AttachmentRepository
-        ): AggregatePageAdapter.AggregatePageViewHolder(binding) {
+            private val attachmentRepository: AttachmentRepository
+        ): AggregatePageViewHolder(binding) {
 
             // the callbacks need to be in the init section
             init {}
@@ -66,12 +65,12 @@ class AggregatePageAdapter (
                     costTextView.text = aggregate.tot_cost?.round(2).toString() + "€"
 
                     if(aggregate.thumbnail != null){
-                        // if attachemnt isn't null load bitmap from uri at bind time
-                        attachemntRepository.generateThumbnailFromUri(aggregate.thumbnail)?.let{
+                        // if attachment isn't null load bitmap from uri at bind time
+                        attachmentRepository.generateThumbnailFromUri(aggregate.thumbnail)?.let{
                             imageAttachment.setImageBitmap(it)
                         }
                     }else{
-                        imageAttachment.setImageBitmap(attachemntRepository.getDefaultBitmap())
+                        imageAttachment.setImageBitmap(attachmentRepository.getDefaultBitmap())
                     }
                 }
             }
@@ -79,7 +78,7 @@ class AggregatePageAdapter (
 
         class ElementViewHolder(
             private val binding: ArchiveElementBinding
-        ): AggregatePageAdapter.AggregatePageViewHolder(binding) {
+        ): AggregatePageViewHolder(binding) {
 
             // the callbacks need to be in the init section
             init {}
@@ -96,20 +95,20 @@ class AggregatePageAdapter (
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AggregatePageAdapter.AggregatePageViewHolder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AggregatePageViewHolder
     {
         // depending on the view type i return the corresponding holder
         return when (viewType){
-            com.example.receiptApp.R.layout.archive_aggregate -> AggregatePageAdapter.AggregatePageViewHolder.AggregateViewHolder(
+            com.example.receiptApp.R.layout.archive_aggregate -> AggregatePageViewHolder.AggregateViewHolder(
                 // this is the binding!
                 ArchiveAggregateBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
                 ),
-                attachemntRepository
+                attachmentRepository
             )
-            com.example.receiptApp.R.layout.archive_element -> AggregatePageAdapter.AggregatePageViewHolder.ElementViewHolder(
+            com.example.receiptApp.R.layout.archive_element -> AggregatePageViewHolder.ElementViewHolder(
                 // this is the binding!
                 ArchiveElementBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -122,12 +121,12 @@ class AggregatePageAdapter (
         }
     }
 
-    override fun onBindViewHolder(holder: AggregatePageAdapter.AggregatePageViewHolder, position: Int)
+    override fun onBindViewHolder(holder: AggregatePageViewHolder, position: Int)
     {
         // depending on the type of the holder i need to bind the corresponding view
         when (holder){
-            is AggregatePageAdapter.AggregatePageViewHolder.AggregateViewHolder -> holder.bind(getItem(position) as ArchiveDataModel.Aggregate)
-            is AggregatePageAdapter.AggregatePageViewHolder.ElementViewHolder -> holder.bind(getItem(position) as ArchiveDataModel.Element)
+            is AggregatePageViewHolder.AggregateViewHolder -> holder.bind(getItem(position) as ArchiveDataModel.Aggregate)
+            is AggregatePageViewHolder.ElementViewHolder -> holder.bind(getItem(position) as ArchiveDataModel.Element)
         }
     }
 
