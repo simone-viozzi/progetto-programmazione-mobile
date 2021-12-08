@@ -25,10 +25,14 @@ class GalleryImages(private val contentResolver: ContentResolver)
     {
         // those are the columns i need
         val projection: Array<String> = arrayOf(
-            MediaStore.Images.Media._ID,    // -> needed to get the thumbnail on older versions of SDK
-            MediaStore.Images.Media.DISPLAY_NAME, // -> the name of the file
-            MediaStore.Images.Media.MIME_TYPE, // -> i need only images to i need this column to filter
-            MediaStore.Images.Media.DATE_MODIFIED // -> sort descending
+            // -> needed to get the thumbnail on older versions of SDK
+            MediaStore.Images.Media._ID,
+            // -> the name of the file
+            MediaStore.Images.Media.DISPLAY_NAME,
+            // -> i need only images to i need this column to filter
+            MediaStore.Images.Media.MIME_TYPE,
+            // -> sort descending
+            MediaStore.Images.Media.DATE_MODIFIED
         )
 
         // depending of the SDK i need to query different places

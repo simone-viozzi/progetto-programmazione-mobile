@@ -5,10 +5,10 @@
 node graphics {
     [App]
     [MainActivity]
+    [ArchiveFragment]
     [GraphsFragment]
     [EditFragment]
     [DashboardFragment]
-    [ArchiveFragment]
     [AggregatePageFragment]
     [AboutFragment]
 
@@ -30,24 +30,40 @@ node repository {
     [attachmentRepository]
 }
 
-[GraphsFragment] -> [graphsRepository]
-[EditFragment] --> [DbRepository]
-[EditFragment] --> [attachmentRepository]
-[DashboardFragment] --> [DashboardRepository]
-[ArchiveFragment] -> [ArchiveRepository]
-[AggregatePageFragment] -> [ArchiveRepository]
+node ViewModels {
+    [GraphsViewModel]
+    [EditViewModel]
+    [DashboardViewModel]
+    [ArchiveViewModel]
+    [AggregatePageViewModel]
+}
+
+[GraphsFragment] --> [GraphsViewModel]
+[EditFragment] --> [EditViewModel]
+[DashboardFragment] --> [DashboardViewModel]
+[ArchiveFragment] --> [ArchiveViewModel]
+[AggregatePageFragment] --> [AggregatePageViewModel]
+
+[EditViewModel] --> [DbRepository]
+[GraphsViewModel] --> [graphsRepository]
+[EditViewModel] --> [attachmentRepository]
+[DashboardViewModel] -> [DashboardRepository]
+[ArchiveViewModel] --> [ArchiveRepository]
+[AggregatePageViewModel] --> [ArchiveRepository]
 
 
 
-[ArchiveRepository] ---> [DbRepository]
+
+[ArchiveRepository] --> [DbRepository]
+[graphsRepository] -> [DbRepository]
 [DashboardRepository] --> [graphsRepository]
-[DashboardRepository] ---> [sharedPrefRepository]
+[DashboardRepository] --> [sharedPrefRepository]
 [DashboardRepository] --> [DbRepository]
-[graphsRepository] --> [DbRepository]
 
 
-[graphsRepository] ---> [GraphBuilder]
-[attachmentRepository] ----> [GalleryImagesPaginated]
+
+[graphsRepository] --> [GraphBuilder]
+[attachmentRepository] ---> [GalleryImagesPaginated]
 
 [GalleryImagesPaginated] --> [GalleryImages]
 

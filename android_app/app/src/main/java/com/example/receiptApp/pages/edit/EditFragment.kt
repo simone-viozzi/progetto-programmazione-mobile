@@ -51,8 +51,8 @@ class EditFragment : Fragment(R.layout.edit_fragment)
     private val args: EditFragmentArgs by navArgs()
 
 
-    private val viewModel: AddViewModel by viewModels {
-        AddViewModelFactory(
+    private val viewModel: EditViewModel by viewModels {
+        EditViewModelFactory(
             (activity?.application as App).attachmentRepository,
             (activity?.application as App).dbRepository,
             args.aggregateId

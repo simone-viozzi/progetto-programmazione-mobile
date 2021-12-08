@@ -15,25 +15,11 @@ class AttachmentRepository {
 
 }
 
-class SharedPrefRepository {
-
-}
-
-class GraphsRepository
-{
-
-}
-
-
 class ArchiveRepository
 {
 
 }
 
-class DashboardRepository
-{
-
-}
 
 class App {
     AppDatabase
@@ -47,12 +33,13 @@ class App {
 }
 
 AppDatabase ---* App
-DbRepository --* App
+DbRepository ---* App
 AttachmentRepository --* App
-SharedPrefRepository ---* App
-GraphsRepository --* App
 ArchiveRepository --* App
-DashboardRepository --* App
+
+AppDatabase <. DbRepository
+DbRepository -o ArchiveRepository
+AttachmentRepository -o ArchiveRepository
 
 
 App <. AggregatePageFragment
@@ -70,8 +57,13 @@ class AggregatePageFragment
 
 class AggregatePageAdapter
 {
+    attachmentRepository: AttachmentRepository
+    onCreateViewHolder()
+    onBindViewHolder()
+    getItemViewType()
 }
 
+AttachmentRepository ---o AggregatePageAdapter
 AggregatePageFragment *-- AggregatePageAdapter
 
 class AggregatePageViewModelFactory
@@ -99,6 +91,62 @@ AggregatePageFragment o--- AggregatePageViewModel
 AttachmentRepository ---o AggregatePageViewModel
 ArchiveRepository ---o AggregatePageViewModel
 
+class AggregatePageDiffCallback
+{
+    areItemsTheSame()
+    areContentsTheSame()
+}
 
+
+
+class AggregatePageViewHolder
+{
+}
+
+
+AggregatePageAdapter *-- AggregatePageDiffCallback
+AggregatePageAdapter *-- AggregatePageViewHolder
+
+class AggregateViewHolder
+{
+    bind()
+}
+
+class ElementViewHolder
+{
+    bind()
+}
+
+AggregatePageViewHolder <|- AggregateViewHolder
+AggregatePageViewHolder <|- ElementViewHolder
+
+class ArchiveDataModel
+
+class Aggregate
+{
+    id: Int
+    aggr_id: Long
+    tag: String?
+    str_date: String?
+    thumbnail: Uri?
+    tot_cost: Float
+}
+
+class Element{
+    id: Int
+    name: String?
+    num: Int?
+    elem_tag: String?
+    cost: Double?
+}
+
+ArchiveDataModel <|-- Aggregate
+ArchiveDataModel <|-- Element
+
+AggregateViewHolder ..> Aggregate
+ElementViewHolder ..> Element
+
+AggregatePageViewModel ..> ArchiveDataModel
+ArchiveRepository ...> AggregatePageViewHolder
 
 @enduml

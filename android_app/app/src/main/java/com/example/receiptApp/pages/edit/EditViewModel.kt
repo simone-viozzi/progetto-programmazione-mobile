@@ -15,7 +15,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 
 
-class AddViewModel(
+class EditViewModel(
     private val attachmentRepository: AttachmentRepository,
     private val dbRepository: DbRepository,
     private val aggregateId: Long
@@ -289,7 +289,7 @@ class AddViewModel(
 }
 
 
-class AddViewModelFactory(
+class EditViewModelFactory(
     private val attachmentRepository: AttachmentRepository,
     private val dbRepository: DbRepository,
     private val aggregateId: Long
@@ -297,10 +297,10 @@ class AddViewModelFactory(
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
     {
-        if (modelClass.isAssignableFrom(AddViewModel::class.java))
+        if (modelClass.isAssignableFrom(EditViewModel::class.java))
         {
             @Suppress("UNCHECKED_CAST")
-            return AddViewModel(
+            return EditViewModel(
                 attachmentRepository,
                 dbRepository,
                 aggregateId

@@ -98,7 +98,7 @@ class AggregatePageFragment : Fragment(R.layout.aggregate_page_fragment) {
             (activity?.application as App).attachmentRepository
         )
 
-        // observe the graph list view
+        // observe the list
         viewModel.rvList.observe(viewLifecycleOwner){
             aggregatePageAdapter.submitList(it)
         }

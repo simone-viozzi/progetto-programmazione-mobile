@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.receiptApp.pages.edit.AddViewModel" />
+            type="com.example.receiptApp.pages.edit.EditViewModel" />
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
