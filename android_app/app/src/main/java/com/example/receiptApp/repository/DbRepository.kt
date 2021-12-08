@@ -713,8 +713,8 @@ class DbRepository(
             aggregateTagsList = aggregateTagsList,
             elementTagsList = elementTagsList,
             aggregatesDao = aggregateDao,
-            aggr_num = 600,
-            elem_num = 10,
+            aggr_num = 150,
+            elem_num = 5,
             elem_num_casual = true
         )
     }
