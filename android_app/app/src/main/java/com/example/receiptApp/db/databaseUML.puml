@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class DbRepository
+
+abstract class AppDatabase
+
+node "Dao interfaces" {
+    DbRepository <== PublicAggregatesDao
+    DbRepository <== PublicElementsDao
+    DbRepository <== TagsDao
+
+    AppDatabase <== PublicAggregatesDao
+    AppDatabase <== PublicElementsDao
+    AppDatabase <== TagsDao
+
+    interface PublicAggregatesDao implements AggregatesDao, BaseElementsDao
+    interface AggregatesDao implements BaseAggregatesDao, ElementsDao, TagsDao
+    interface BaseAggregatesDao implements TagsDao
+
+    interface PublicElementsDao implements ElementsDao
+    interface ElementsDao implements BaseElementsDao, BaseAggregatesDao, TagsDao
+    interface BaseElementsDao implements TagsDao
+}
+
+@enduml

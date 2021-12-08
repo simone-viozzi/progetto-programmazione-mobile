@@ -2,6 +2,7 @@ package com.example.receiptApp.pages.archive
 
 import androidx.lifecycle.*
 import com.example.receiptApp.repository.ArchiveRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -27,9 +28,7 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
     // end filter date
     lateinit var endDate: Date
 
-    init {
-
-    }
+    init {}
 
     /**
      * Set tag
@@ -41,19 +40,23 @@ class ArchiveViewModel(private val archiveRepository: ArchiveRepository) : ViewM
     }
 
     fun loadingTags(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // loading tags list
-            _tagList.value = archiveRepository.getAggregatesTagsList()
+            _tagList.postValue(
+                archiveRepository.getAggregatesTagsList()
+            )
         }
     }
 
     fun reloadAggregatesList(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // generate aggregate list
-            _rvList.value = archiveRepository.getAggregates(
-                start = startDate,
-                end = endDate,
-                tag_name =  selectedTag
+            _rvList.postValue(
+                archiveRepository.getAggregates(
+                    start = startDate,
+                    end = endDate,
+                    tag_name =  selectedTag
+                )
             )
         }
     }
