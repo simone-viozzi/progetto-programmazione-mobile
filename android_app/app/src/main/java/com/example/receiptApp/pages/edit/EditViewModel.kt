@@ -86,15 +86,19 @@ class AddViewModel(
                 EditDataModel.Element(vId = getLastId())
             )
         } else {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 val (aggregate, elements) = preloadAggregateElements()
-                _rvList.value = mutableListOf(aggregate as EditDataModel).also {it.addAll(elements) }
+                _rvList.postValue(mutableListOf(aggregate as EditDataModel).also {
+                    it.addAll(
+                        elements
+                    )
+                })
             }
         }
         loadAutocomplete()
     }
 
-    private suspend fun preloadAggregateElements(): Pair<EditDataModel.Aggregate, List<EditDataModel.Element>> = withContext(Dispatchers.IO) {
+    private suspend fun preloadAggregateElements(): Pair<EditDataModel.Aggregate, List<EditDataModel.Element>> {
         val (dbAggregate, dbElements) = dbRepository.getAggregateWithElementsById(
             aggregateId
         ).asIterable().first()
@@ -132,7 +136,7 @@ class AddViewModel(
                 dbId = it.elem_id
             )
         }
-        return@withContext Pair(aggregate, elements)
+        return Pair(aggregate, elements)
     }
 
 
@@ -162,14 +166,11 @@ class AddViewModel(
 
     // to make the collecting of the flow async, i collect it with dispatcher.IO and put it into a stateFlow.
     //  this don't break the flow, the images are still paginated but the app doesn't freeze for half a minute
-    fun galleryCollect()
-    {
+    fun galleryCollect() {
         _galleryState.value = GalleryDataState.Loading
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                flow.collectLatest { pagingData ->
-                    _galleryState.value = GalleryDataState.Data(pagingData)
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            flow.collectLatest { pagingData ->
+                _galleryState.value = GalleryDataState.Data(pagingData)
             }
         }
     }
