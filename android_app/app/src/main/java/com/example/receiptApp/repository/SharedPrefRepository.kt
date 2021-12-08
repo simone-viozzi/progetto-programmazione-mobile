@@ -28,7 +28,6 @@ class SharedPrefRepository(applicationContext: Context)
             dashboard.entries.forEach {
 
                 //Timber.d("it.value -> ${it.value}")
-
                 writeDashboardElement(it.key, it.value, this)
             }
 

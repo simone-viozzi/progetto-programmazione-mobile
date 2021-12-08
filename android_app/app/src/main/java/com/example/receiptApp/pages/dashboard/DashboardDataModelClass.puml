@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface DashboardElement {
+    var id: Int
+    val type: TYPE
+    var content: String
+}
+
+class DashboardDataModel {}
+
+class Pie {
+        override var id: Int = 0
+        override val type: TYPE = TYPE.PIE
+        override var content: String = ""
+        var name: String = ""
+        var aaChartModel: AAChartModel = AAChartModel
+}
+
+class Label {
+        override var id: Int = 0
+        override val type: TYPE = TYPE.LABEL
+        override var content: String = ""
+        var name: String = ""
+        var value: Float = 0f
+}
+
+class Histogram {
+        override var id: Int = 0,
+        override val type: TYPE = TYPE.HISTOGRAM,
+        override var content: String = "",
+        var name: String = "",
+        var aaChartModel: AAChartModel = AAChartModel
+}
+
+
+enum TYPE
+{
+    LABEL
+    PIE
+    HISTOGRAM
+
+    getObj(): DashboardDataModel
+}
+
+
+class DashboardDataModel implements DashboardElement
+class Pie extends DashboardDataModel
+class Label extends DashboardDataModel
+class Histogram extends DashboardDataModel
+DashboardElement o-- TYPE
+
+@enduml

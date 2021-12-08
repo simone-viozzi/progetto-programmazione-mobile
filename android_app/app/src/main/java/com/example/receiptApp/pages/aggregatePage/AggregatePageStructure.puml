@@ -1,0 +1,104 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class AppDatabase
+{
+
+
+}
+
+class DbRepository {
+
+}
+
+class AttachmentRepository {
+
+}
+
+class SharedPrefRepository {
+
+}
+
+class GraphsRepository
+{
+
+}
+
+
+class ArchiveRepository
+{
+
+}
+
+class DashboardRepository
+{
+
+}
+
+class App {
+    AppDatabase
+    DbRepository
+    AttachmentRepository
+    SharedPrefRepository
+    GraphsRepository
+    ArchiveRepository
+    DashboardRepository
+    onCreate()
+}
+
+AppDatabase ---* App
+DbRepository --* App
+AttachmentRepository --* App
+SharedPrefRepository ---* App
+GraphsRepository --* App
+ArchiveRepository --* App
+DashboardRepository --* App
+
+
+App <. AggregatePageFragment
+
+
+class AggregatePageFragment
+{
+    args: AggregatePageFragmentArgs
+    viewModel: AggregatePageViewModel
+    binding: AggregatePageFragmentBinding
+    aggregatePageAdapter: AggregatePageAdapter
+    onCreateView()
+    onViewCreated()
+}
+
+class AggregatePageAdapter
+{
+}
+
+AggregatePageFragment *-- AggregatePageAdapter
+
+class AggregatePageViewModelFactory
+{
+    attachmentRepository: AttachmentRepository
+    archiveRepository: ArchiveRepository
+    aggregate_id: Long
+    create()
+}
+
+
+class AggregatePageViewModel
+{
+    attachmentRepository: AttachmentRepository
+    archiveRepository: ArchiveRepository
+    aggregate_id : Long
+    loadData()
+    deleteAggregate()
+}
+
+AggregatePageFragment ..> AggregatePageViewModelFactory
+AggregatePageViewModelFactory *-- AggregatePageViewModel
+AggregatePageFragment o--- AggregatePageViewModel
+
+AttachmentRepository ---o AggregatePageViewModel
+ArchiveRepository ---o AggregatePageViewModel
+
+
+
+@enduml
