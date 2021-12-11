@@ -1,0 +1,85 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class StatelessWidget
+class StatefulWidget
+
+class State<EditMainList>
+
+class EditFragment {
+    GlobalKey<EditMainListState> mainListKey
+    sureToExitEdit()
+    build()
+}
+
+StatelessWidget <|-- EditFragment
+
+class EditMainList {
+    createState()
+}
+StatefulWidget <|-- EditMainList
+
+class EditMainListState {
+    List elements
+    updateList(EditDataModel value)
+    _selectDate()
+    buildSingleElement(EditDataModel data)
+    build()
+}
+
+State <|-- EditMainListState
+
+class AggregateWidget {
+    AggregateDataModel data
+    Function selectDate
+    Function update
+    TextEditingController dateController
+    build()
+}
+
+StatelessWidget <|-- AggregateWidget
+
+class ElementWidget {
+    ElementDataModel data
+    Function update
+    build()
+}
+
+StatelessWidget <|-- ElementWidget
+
+EditFragment *-- EditMainList
+EditMainList *-- EditMainListState
+
+class EditDataModel
+
+interface HasIndex {
+    int index
+}
+
+class AggregateDataModel {
+    int index
+    DateTime date
+    String tag
+    double totalCost
+}
+
+EditDataModel <|-- AggregateDataModel
+HasIndex <|.. AggregateDataModel
+
+class ElementDataModel {
+    int index
+    String name
+    double cost
+    int num
+}
+
+EditDataModel <|-- ElementDataModel
+HasIndex <|.. ElementDataModel
+
+EditMainListState *-- EditDataModel
+EditMainListState *-- AggregateWidget
+EditMainListState *-- ElementWidget
+AggregateWidget o-- AggregateDataModel
+ElementWidget o-- ElementDataModel
+
+@enduml
