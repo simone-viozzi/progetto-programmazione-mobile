@@ -78,6 +78,7 @@ class DashboardContentState extends State<DashboardContent> {
           if (snapshot.hasData) {
             return StaggeredGridView.count(
                 crossAxisCount: 2,
+                // the size of the tiles is defined here
                 staggeredTiles: const <StaggeredTile>[
                   StaggeredTile.count(2, 1.5),
                   StaggeredTile.count(1, 0.5),
@@ -86,6 +87,7 @@ class DashboardContentState extends State<DashboardContent> {
                 mainAxisSpacing: 2,
                 crossAxisSpacing: 2,
                 padding: const EdgeInsets.all(4),
+                // the content of the tiles is defined here, it assume the same order.
                 children: <Widget>[
                   SimpleDoubleBarChart(
                     chartId: "chart2",
@@ -133,6 +135,7 @@ class DashboardContentState extends State<DashboardContent> {
   }
 }
 
+// simple class to wrap the data conversion
 class DashboardRepository {
   List<Tag> tagList = [];
   List<Aggregate> aggregatesList = [];

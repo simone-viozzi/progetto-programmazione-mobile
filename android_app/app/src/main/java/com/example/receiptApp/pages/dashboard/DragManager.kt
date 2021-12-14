@@ -11,7 +11,7 @@ import com.google.android.material.card.MaterialCardView
  * @property viewModel
  * @constructor Create empty Drag manage adapter
  */
-class DragManageAdapter(
+class DragManager(
     var viewModel: DashboardViewModel,
 ) : ItemTouchHelper.Callback()
 {

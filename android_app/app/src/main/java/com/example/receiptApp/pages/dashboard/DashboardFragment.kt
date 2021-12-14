@@ -72,7 +72,7 @@ class DashboardFragment : Fragment()
             StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
 
         // to setup drag and drop
-        val callback = DragManageAdapter(viewModel)
+        val callback = DragManager(viewModel)
         val helper = ItemTouchHelper(callback)
 
         binding.recyclerViewDashboard.apply {
@@ -146,7 +146,7 @@ class DashboardFragment : Fragment()
                 }
                 is DashboardViewModel.DashboardState.NormalMode ->
                 {
-                    Timber.e("NORMAL STATE")
+                        Timber.e("NORMAL STATE")
 
                     // drag and drop are disabled in this state
                     helper.attachToRecyclerView(null)

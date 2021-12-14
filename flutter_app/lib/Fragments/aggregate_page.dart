@@ -17,9 +17,13 @@ class AggregatePage extends StatefulWidget {
 
 class AggregatePageState extends State<AggregatePage>
 {
+  // read the data from the db and load it onto the page.
   Future<List> readData() async {
+    // we dont't have a method to pass arguments between pages of the app,
+    //  so it's defined ad a globl variable
     var aggrId = MainFragDataScope.of(context).selectedAggregate;
 
+    // read from db
     var data = await MainFragDataScope.of(context)
         .dbRepository
         .getAggregateById(aggrId);
@@ -27,6 +31,7 @@ class AggregatePageState extends State<AggregatePage>
     var dbAggregate = data.a;
     var dbElements = data.b;
 
+    // convert the format from the db to the visualization
     var aggregate = AggregateDataModel(
         index: 0,
         date: DateTime.fromMillisecondsSinceEpoch(dbAggregate.date),
@@ -36,6 +41,7 @@ class AggregatePageState extends State<AggregatePage>
       return ElementDataModel(name: e.name, cost: e.cost, num: e.num);
     });
 
+    // the casting is needed so i can do allAll later.
     var list = [(aggregate as EditDataModel)];
     list.addAll(elements);
 
@@ -44,6 +50,7 @@ class AggregatePageState extends State<AggregatePage>
 
   @override
   Widget build(BuildContext context) {
+    // to handle the back button
     return WillPopScope(
         onWillPop: () {
           MainFragDataWidget.of(context).changePage(PageMap.archiveId);
@@ -62,6 +69,7 @@ class AggregatePageState extends State<AggregatePage>
               ),
             ),
             // BODY ---------------------------
+            // to load async data we use the FutureBuilder
             body: FutureBuilder(
               future: readData(),
               builder: (context, snapshot) {
@@ -78,6 +86,7 @@ class AggregatePageState extends State<AggregatePage>
             } else if (snapshot.hasError) {
               throw snapshot.error ?? Error();
             } else {
+                  // while the data is loading we have a nice progress indicator
               return const Center(child: CircularProgressIndicator());
             }
           },
@@ -91,8 +100,10 @@ class AggregatePageState extends State<AggregatePage>
   }
 }
 
+// this is a static list, so StatelessWidget
 class AggregatePageMainList extends StatelessWidget
 {
+  // the element in this list will never change
   final List elements;
 
   const AggregatePageMainList({Key? key, required this.elements}) : super(key: key);
