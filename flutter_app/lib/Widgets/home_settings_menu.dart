@@ -18,21 +18,6 @@ class HomeSettings extends StatelessWidget {
         color: Colors.white,
       ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        const PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('About'),
-          ),
-        ),
-        PopupMenuItem(
-          onTap:() {
-            //MainFragDataWidget.of(context).modifyDash(true);
-          },
-          child: const ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('Settings'),
-          ),
-        ),
         PopupMenuItem(
           onTap:() {
             MainFragDataWidget.of(context).changePage(PageMap.tests);
