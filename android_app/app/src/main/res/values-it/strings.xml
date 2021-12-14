@@ -37,4 +37,7 @@
     <string name="select_end_filter_date">Seleziona gli aggregati fino al:</string>
     <string name="start_date_filter_label">da: </string>
     <string name="end_date_filter_label">a: </string>
+    <string name="about_text">Quest\'app permette di tenere traccia di ogni singola spesa che si effettua giornalmente, permettendo all’utente di aggiungere degli scontrini con annesse le sotto voci.
+Da tutti questi dati è possibile poi realizzare grafici riassuntivi che evidenziano le abitudini di spesa dell’utente. Per rendere il tutto più utilizzabile la pagina principale dell’app è una dashboard in cui si può personalizzare cosa avere in primo piano.
+</string>
 </resources>

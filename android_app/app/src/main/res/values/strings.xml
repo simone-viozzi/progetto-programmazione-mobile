@@ -37,5 +37,7 @@
     <string name="select_end_filter_date">Select aggregates until:</string>
     <string name="start_date_filter_label">from: </string>
     <string name="end_date_filter_label">to: </string>
+    <string name="about_text">This app allows keeping record of every single little expense you have every day, you can add entire recipes here.\n\nFrom all this data we can generate graphs that highlight your spending habit.\n\nTo make all of it easier to use we constructed a customizable dashboard where you can choose what expenses you want to keep an eye on!
+    </string>
 
 </resources>
